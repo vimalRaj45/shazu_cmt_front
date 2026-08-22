@@ -306,96 +306,172 @@ export default function SubmissionDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Reviewer Suggestions & Feedback Section */}
-          <Card sx={{ mb: 3, border: '1px solid #E2E8F0', borderRadius: 2.5 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <i className="bi bi-journal-text" style={{ color: '#1565C0', fontSize: '1.25rem' }}></i>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F2942' }}>
-                    Peer Review Suggestions & Evaluations
+              {/* Microsoft CMT Standard "View Reviews" Questionnaire Section */}
+              <Card sx={{ mb: 3, border: '1px solid #E2E8F0', borderRadius: 2.5, overflow: 'hidden' }}>
+                {/* CMT Header Bar */}
+                <Box sx={{ backgroundColor: '#0F2942', color: '#FFFFFF', px: 3, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '0.8rem', color: '#90CAF9' }}>
+                    Conference Management Toolkit — View Reviews
                   </Typography>
+                  <Chip
+                    label={`${reviews.length} Review${reviews.length === 1 ? '' : 's'} Completed`}
+                    size="small"
+                    sx={{ fontWeight: 700, backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#FFFFFF' }}
+                  />
                 </Box>
-                <Chip
-                  label={`${reviews.length} Evaluation${reviews.length === 1 ? '' : 's'}`}
-                  size="small"
-                  sx={{ fontWeight: 700, backgroundColor: '#E3F2FD', color: '#1565C0' }}
-                />
-              </Box>
 
-              {reviewsLoading ? (
-                <TableSkeleton rows={2} columns={3} />
-              ) : reviews.length === 0 ? (
-                <EmptyState
-                  icon="bi-hourglass-split"
-                  title="Evaluation in Progress"
-                  description="Peer reviews are currently in progress by the Program Committee. Once finalized, suggestions will appear here."
-                />
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                  {reviews.map((rev, idx) => (
-                    <Paper
-                      key={rev.id || idx}
-                      elevation={0}
-                      sx={{
-                        p: 2.5,
-                        border: '1px solid #E2E8F0',
-                        borderRadius: 2,
-                        backgroundColor: '#F8FAFC',
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#1565C0' }}>
-                          Reviewer #{idx + 1} Feedback
-                        </Typography>
-                        <Chip
-                          label={`Recommendation: ${rev.recommendation?.toUpperCase() || 'EVALUATED'}`}
-                          size="small"
+                <CardContent sx={{ p: 3 }}>
+                  {reviewsLoading ? (
+                    <TableSkeleton rows={2} columns={3} />
+                  ) : reviews.length === 0 ? (
+                    <EmptyState
+                      icon="bi-hourglass-split"
+                      title="Evaluation in Progress"
+                      description="Peer reviews are currently in progress by the Program Committee. Once finalized, suggestions will appear here."
+                    />
+                  ) : (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
+                      {reviews.map((rev, idx) => (
+                        <Paper
+                          key={rev.id || idx}
+                          elevation={0}
                           sx={{
-                            fontWeight: 700,
-                            backgroundColor: rev.recommendation === 'accept' ? '#DCFCE7' : rev.recommendation === 'reject' ? '#FEE2E2' : '#FEF3C7',
-                            color: rev.recommendation === 'accept' ? '#166534' : rev.recommendation === 'reject' ? '#991B1B' : '#92400E',
+                            p: 3,
+                            border: '1px solid #CBD5E1',
+                            borderRadius: 2,
+                            backgroundColor: '#FFFFFF',
                           }}
-                        />
-                      </Box>
+                        >
+                          {/* Reviewer Header */}
+                          <Box sx={{ borderBottom: '2px solid #E2E8F0', pb: 1.5, mb: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: '#1565C0' }}>
+                              Reviewer #{idx + 1}
+                            </Typography>
+                            <Chip
+                              label={rev.q_reviewer_decision || rev.recommendation || 'Evaluation Completed'}
+                              sx={{
+                                fontWeight: 800,
+                                fontSize: '0.8rem',
+                                backgroundColor:
+                                  (rev.q_reviewer_decision || rev.recommendation)?.includes('Strongly') || (rev.q_reviewer_decision || rev.recommendation)?.includes('without')
+                                    ? '#DCFCE7'
+                                    : (rev.q_reviewer_decision || rev.recommendation)?.includes('Reject')
+                                    ? '#FEE2E2'
+                                    : '#FEF3C7',
+                                color:
+                                  (rev.q_reviewer_decision || rev.recommendation)?.includes('Strongly') || (rev.q_reviewer_decision || rev.recommendation)?.includes('without')
+                                    ? '#166534'
+                                    : (rev.q_reviewer_decision || rev.recommendation)?.includes('Reject')
+                                    ? '#991B1B'
+                                    : '#92400E',
+                              }}
+                            />
+                          </Box>
 
-                      {/* Criteria Scorecard */}
-                      <Grid container spacing={1.5} sx={{ mb: 2 }}>
-                        {[
-                          { label: 'Technical Quality', score: rev.technical_quality },
-                          { label: 'Originality & Novelty', score: rev.originality },
-                          { label: 'Conference Relevance', score: rev.relevance },
-                          { label: 'Presentation Quality', score: rev.presentation_quality },
-                          { label: 'Overall Score', score: rev.overall_score },
-                        ].map((c, i) => (
-                          <Grid item xs={6} sm={2.4} key={i}>
-                            <Box sx={{ p: 1, backgroundColor: '#FFFFFF', borderRadius: 1.5, border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.7rem' }}>
-                                {c.label}
+                          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F2942', mb: 2, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                            Questions & Evaluation Criteria
+                          </Typography>
+
+                          {/* 9 CMT Questions List */}
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {/* Q1 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                1. Relevance to the Conference
                               </Typography>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F2942' }}>
-                                {c.score ? `${c.score} / 5` : 'N/A'}
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_relevance || 'Relevant'}
                               </Typography>
                             </Box>
-                          </Grid>
-                        ))}
-                      </Grid>
 
-                      {/* Comments for Authors */}
-                      <Box sx={{ p: 2, backgroundColor: '#FFFFFF', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
-                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#64748B', display: 'block', mb: 0.5 }}>
-                          SUGGESTIONS & REMARKS FOR AUTHORS:
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#334155', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
-                          {rev.comments_for_authors || 'No written remarks provided.'}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  ))}
-                </Box>
-              )}
-            </CardContent>
-          </Card>
+                            {/* Q2 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                2. Structure of the Paper
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_structure || 'Good'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q3 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                3. Standard of Language
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_language || 'Good'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q4 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                4. Relevance and Clarity of Figures and Tables
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_figures_tables || 'Well Defined'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q5 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                5. Discussion and Conclusions
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_discussion_conclusions || 'Good'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q6 */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                6. Adequate References and Correctly Cited
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                                {rev.q_references_cited || 'Yes'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q7: Reviewer Comments */}
+                            <Box sx={{ p: 2, backgroundColor: '#EFF6FF', borderRadius: 1.5, border: '1px solid #BFDBFE' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#1E40AF', display: 'block', mb: 0.5 }}>
+                                7. Reviewer's Comments to the Authors
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: '#1E3A8A', whiteSpace: 'pre-wrap', lineHeight: 1.6, fontWeight: 500 }}>
+                                {rev.q_comments_authors || rev.comments_for_authors || 'No comments provided.'}
+                              </Typography>
+                            </Box>
+
+                            {/* Q8: Editor Notes (Admin only) */}
+                            {user?.role === 'admin' && rev.q_special_comments_editor && (
+                              <Box sx={{ p: 2, backgroundColor: '#FEF3C7', borderRadius: 1.5, border: '1px solid #FDE68A' }}>
+                                <Typography variant="caption" sx={{ fontWeight: 800, color: '#92400E', display: 'block', mb: 0.5 }}>
+                                  8. Special Comments to the Editor (Confidential to Chair/Admin)
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: '#78350F', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                                  {rev.q_special_comments_editor || rev.confidential_chair_notes}
+                                </Typography>
+                              </Box>
+                            )}
+
+                            {/* Q9: Decision */}
+                            <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
+                                9. Reviewer's Decision
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 800, color: '#1565C0' }}>
+                                {rev.q_reviewer_decision || rev.recommendation || 'Accepted with Minor Revision'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Paper>
+                      ))}
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
         </Grid>
 
         {/* Right Column: Files & Authors */}

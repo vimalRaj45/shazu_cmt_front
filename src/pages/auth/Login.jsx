@@ -8,20 +8,10 @@ import {
   Button,
   Alert,
   Divider,
-  Grid,
   CircularProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-
-const ROLE_PRESETS = [
-  { role: 'Administrator', email: 'admin@shazusoft.com', pass: 'password123', icon: 'bi-shield-lock' },
-  { role: 'Peer Reviewer', email: 'reviewer1@shazusoft.com', pass: 'password123', icon: 'bi-journal-check' },
-  { role: 'Paper Author', email: 'author@shazusoft.com', pass: 'password123', icon: 'bi-file-earmark-text' },
-];
 
 export default function Login() {
   const { login } = useAuth();
@@ -46,11 +36,6 @@ export default function Login() {
     }
   };
 
-  const handleQuickFill = (preset) => {
-    setEmail(preset.email);
-    setPassword(preset.pass);
-  };
-
   return (
     <Box
       sx={{
@@ -65,7 +50,7 @@ export default function Login() {
     >
       <Card
         sx={{
-          maxWidth: 480,
+          maxWidth: 460,
           width: '100%',
           borderRadius: 3,
           backgroundColor: '#FFFFFF',
@@ -158,47 +143,11 @@ export default function Login() {
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Quick Institutional Role Fillers */}
-          <Accordion elevation={0} sx={{ border: '1px solid #E2E8F0', borderRadius: 2, '&:before': { display: 'none' } }}>
-            <AccordionSummary expandIcon={<i className="bi bi-chevron-down text-muted"></i>}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#1565C0' }}>
-                <i className="bi bi-key" style={{ marginRight: 6 }}></i> PRE-CONFIGURED INSTITUTIONAL ACCOUNTS
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ pt: 0 }}>
-              <Grid container spacing={1}>
-                {ROLE_PRESETS.map((preset) => (
-                  <Grid item xs={6} key={preset.role}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleQuickFill(preset)}
-                      sx={{
-                        py: 0.75,
-                        fontSize: '0.725rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.25,
-                        borderColor: '#E2E8F0',
-                        color: '#0F2942',
-                        '&:hover': { borderColor: '#1565C0', backgroundColor: '#F0F7FF' },
-                      }}
-                    >
-                      <i className={`bi ${preset.icon}`} style={{ fontSize: '1rem', color: '#1565C0' }}></i>
-                      <span>{preset.role}</span>
-                    </Button>
-                  </Grid>
-                ))}
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Need a new conference account?{' '}
+              Don't have an account?{' '}
               <Link to="/register" style={{ color: '#1565C0', fontWeight: 700, textDecoration: 'none' }}>
-                Register here
+                Create CMT Account
               </Link>
             </Typography>
           </Box>

@@ -297,38 +297,42 @@ export default function DecisionsPage() {
               </Alert>
             ) : (
               decisionModal.reviews.map((rev, idx) => (
-                <Paper key={rev.id || idx} elevation={0} sx={{ p: 2, mb: 2, border: '1px solid #E2E8F0', borderRadius: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      Reviewer: {rev.reviewer_first_name} {rev.last_name} ({rev.reviewer_institution || 'PC Member'})
+                <Paper key={rev.id || idx} elevation={0} sx={{ p: 2.5, mb: 2.5, border: '1px solid #CBD5E1', borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1565C0' }}>
+                      Reviewer #{idx + 1}: {rev.reviewer_first_name} {rev.reviewer_last_name} ({rev.reviewer_institution || 'PC Member'})
                     </Typography>
                     <Chip
-                      label={`Rec: ${rev.recommendation?.toUpperCase() || 'N/A'}`}
+                      label={rev.q_reviewer_decision || rev.recommendation || 'Evaluated'}
                       size="small"
                       sx={{
-                        fontWeight: 700,
-                        backgroundColor: rev.recommendation === 'accept' ? '#E3F2FD' : '#F1F5F9',
-                        color: rev.recommendation === 'accept' ? '#1565C0' : '#475569',
+                        fontWeight: 800,
+                        backgroundColor: '#E3F2FD',
+                        color: '#1565C0',
                       }}
                     />
                   </Box>
-                  <Box sx={{ display: 'flex', gap: 2, backgroundColor: '#F8FAFC', p: 1, borderRadius: 1.5, mb: 1.5 }}>
-                    <Typography variant="caption">Tech Quality: <strong>{rev.technical_quality || '-'}/5</strong></Typography>
-                    <Typography variant="caption">Originality: <strong>{rev.originality || '-'}/5</strong></Typography>
-                    <Typography variant="caption">Relevance: <strong>{rev.relevance || '-'}/5</strong></Typography>
-                    <Typography variant="caption">Presentation: <strong>{rev.presentation_quality || '-'}/5</strong></Typography>
-                    <Typography variant="caption" sx={{ color: '#1565C0', fontWeight: 700 }}>Overall: {rev.overall_score || '-'}/5</Typography>
+
+                  {/* 9 CMT Questions Summary */}
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1, mb: 1.5, backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
+                    <Typography variant="caption">1. Relevance: <strong>{rev.q_relevance || 'Relevant'}</strong></Typography>
+                    <Typography variant="caption">2. Structure: <strong>{rev.q_structure || 'Good'}</strong></Typography>
+                    <Typography variant="caption">3. Language: <strong>{rev.q_language || 'Good'}</strong></Typography>
+                    <Typography variant="caption">4. Figures/Tables: <strong>{rev.q_figures_tables || 'Well Defined'}</strong></Typography>
+                    <Typography variant="caption">5. Conclusions: <strong>{rev.q_discussion_conclusions || 'Good'}</strong></Typography>
+                    <Typography variant="caption">6. References Cited: <strong>{rev.q_references_cited || 'Yes'}</strong></Typography>
                   </Box>
-                  <Typography variant="caption" sx={{ fontWeight: 700, display: 'block' }}>Author Comments:</Typography>
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334155', mb: 1 }}>
-                    {rev.comments_for_authors || 'No comments for author.'}
+
+                  <Typography variant="caption" sx={{ fontWeight: 800, display: 'block', color: '#1565C0' }}>7. Comments to Authors:</Typography>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334155', mb: 1.5, p: 1, backgroundColor: '#EFF6FF', borderRadius: 1 }}>
+                    {rev.q_comments_authors || rev.comments_for_authors || 'No comments for author.'}
                   </Typography>
 
-                  {rev.confidential_chair_notes && (
-                    <Paper sx={{ p: 1.5, backgroundColor: '#F0F7FF', border: '1px solid #90CAF9', borderRadius: 1.5 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#0D47A1' }}>🔒 Confidential Chair Notes:</Typography>
-                      <Typography variant="caption" sx={{ display: 'block', color: '#1565C0' }}>
-                        {rev.confidential_chair_notes}
+                  {(rev.q_special_comments_editor || rev.confidential_chair_notes) && (
+                    <Paper sx={{ p: 1.5, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 1.5 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#92400E' }}>🔒 8. Special Comments to Editor / Chair:</Typography>
+                      <Typography variant="body2" sx={{ display: 'block', color: '#78350F', mt: 0.25 }}>
+                        {rev.q_special_comments_editor || rev.confidential_chair_notes}
                       </Typography>
                     </Paper>
                   )}
