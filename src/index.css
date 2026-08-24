@@ -60,14 +60,31 @@ a {
   font-family: 'JetBrains Mono', monospace;
 }
 
-.gradient-header {
-  background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #0D9488 100%);
-  color: #ffffff;
+/* Fluid Media & Responsive Containment */
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
 }
 
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+/* Ensure text and long emails/ORCIDs wrap without breaking card layouts */
+p, h1, h2, h3, h4, h5, h6, span, a, td, th {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Fluid Table Responsive Containers */
+.MuiTableContainer-root {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile responsive dialogs and form controls */
+@media (max-width: 600px) {
+  .MuiDialog-paper {
+    margin: 12px !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+  }
 }
