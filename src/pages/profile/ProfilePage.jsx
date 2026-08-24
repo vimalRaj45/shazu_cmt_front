@@ -33,6 +33,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncingOrcid, setSyncingOrcid] = useState(false);
+  const [connectingOrcid, setConnectingOrcid] = useState(false);
+  const [newKeyword, setNewKeyword] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({
@@ -214,6 +216,37 @@ export default function ProfilePage() {
       });
     } finally {
       setSyncingOrcid(false);
+    }
+  };
+
+  const handleConnectOrcid = async () => {
+    setConnectingOrcid(true);
+    try {
+      const redirectUri = `${window.location.origin}/auth/orcid/callback`;
+      let targetUrl = '';
+      try {
+        const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
+        if (res.data?.authUrl && typeof res.data.authUrl === 'string' && res.data.authUrl.startsWith('http')) {
+          targetUrl = res.data.authUrl;
+        }
+      } catch (e) {
+        console.warn('[ORCID OAuth] Using direct OAuth fallback:', e.message);
+      }
+
+      if (!targetUrl) {
+        const clientId = 'APP-NZ8CPXKBRG5YOW1S';
+        targetUrl = `https://orcid.org/oauth/authorize?client_id=${encodeURIComponent(clientId)}&response_type=code&scope=/authenticate&redirect_uri=${encodeURIComponent(redirectUri)}`;
+      }
+
+      window.location.href = targetUrl;
+    } catch (err) {
+      console.error('[ORCID Connect] Error:', err);
+      setNotification({
+        open: true,
+        message: 'Failed to initiate ORCID connection. Please try again.',
+        severity: 'error',
+      });
+      setConnectingOrcid(false);
     }
   };
 
@@ -429,9 +462,39 @@ export default function ProfilePage() {
                   />
                 ) : (
                   <Chip
-                    label="No ORCID Connected"
+                    onClick={handleConnectOrcid}
+                    clickable
+                    label={connectingOrcid ? 'Connecting to ORCID...' : 'Connect ORCID iD (Recommended)'}
                     size="small"
-                    sx={{ backgroundColor: '#F1F5F9', color: '#64748B', fontWeight: 600, borderRadius: 1, height: 24 }}
+                    sx={{
+                      backgroundColor: '#E8EFEB',
+                      color: '#123B32',
+                      border: '1px solid #527A68',
+                      fontWeight: 800,
+                      borderRadius: 1,
+                      height: 26,
+                      fontSize: '0.75rem',
+                      '&:hover': { backgroundColor: '#D3DDD7' },
+                    }}
+                    icon={
+                      <Box
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: '50%',
+                          backgroundColor: '#123B32',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#FFFFFF',
+                          fontWeight: 900,
+                          fontSize: '0.65rem',
+                          ml: 0.5,
+                        }}
+                      >
+                        iD
+                      </Box>
+                    }
                   />
                 )}
 
@@ -775,7 +838,7 @@ export default function ProfilePage() {
                 }}
               />
 
-              {formData.orcidId && (
+              {formData.orcidId ? (
                 <Stack spacing={1.5}>
                   <Button
                     fullWidth
@@ -786,15 +849,15 @@ export default function ProfilePage() {
                     rel="noopener noreferrer"
                     startIcon={<i className="bi bi-box-arrow-up-right" />}
                     sx={{
-                      borderColor: '#A6CE39',
-                      color: '#166534',
+                      borderColor: '#527A68',
+                      color: '#123B32',
                       fontWeight: 700,
                       textTransform: 'none',
                       borderRadius: 1.5,
                       py: 0.9,
                       '&:hover': {
-                        borderColor: '#8eb32c',
-                        backgroundColor: '#F0FDF4',
+                        borderColor: '#123B32',
+                        backgroundColor: '#E8EFEB',
                       },
                     }}
                   >
@@ -807,21 +870,128 @@ export default function ProfilePage() {
                       variant="contained"
                       onClick={handleSyncOrcid}
                       disabled={syncingOrcid}
-                      startIcon={syncingOrcid ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-cloud-arrow-down" />}
+                      startIcon={syncingOrcid ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-cloud-arrow-down" />}
                       sx={{
-                        background: '#A6CE39',
+                        background: '#123B32',
                         color: '#FFFFFF',
                         fontWeight: 700,
                         textTransform: 'none',
                         borderRadius: 1.5,
                         py: 0.9,
-                        '&:hover': { background: '#8eb32c' },
+                        '&:hover': { background: '#0B241E' },
                       }}
                     >
                       {syncingOrcid ? 'Syncing...' : 'Sync Data from ORCID'}
                     </Button>
                   )}
                 </Stack>
+              ) : (
+                /* Unlinked ORCID Recommendation Box */
+                <Box
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 2,
+                    backgroundColor: '#E8EFEB',
+                    border: '1.5px dashed #527A68',
+                    textAlign: 'center',
+                    mt: 1,
+                  }}
+                >
+                  <Chip
+                    label="RECOMMENDED FOR BETTER SCHOLAR IDENTIFICATION"
+                    size="small"
+                    sx={{
+                      backgroundColor: '#123B32',
+                      color: '#FFFFFF',
+                      fontWeight: 800,
+                      fontSize: '0.65rem',
+                      letterSpacing: '0.04em',
+                      mb: 1.25,
+                      borderRadius: 1,
+                      height: 22,
+                    }}
+                  />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', mb: 0.5 }}>
+                    Connect or Register with ORCID iD
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#334E43', display: 'block', mb: 2, lineHeight: 1.5 }}>
+                    Please register or link your verified 16-digit ORCID iD. This ensures accurate reviewer assignment, publication tracking, and eliminates conflicts of interest.
+                  </Typography>
+
+                  <Stack spacing={1.25}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={handleConnectOrcid}
+                      disabled={connectingOrcid}
+                      startIcon={
+                        connectingOrcid ? (
+                          <CircularProgress size={16} sx={{ color: '#FFFFFF' }} />
+                        ) : (
+                          <Box
+                            sx={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              backgroundColor: '#FFFFFF',
+                              color: '#123B32',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 900,
+                              fontSize: '0.65rem',
+                            }}
+                          >
+                            iD
+                          </Box>
+                        )
+                      }
+                      sx={{
+                        background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
+                        color: '#FFFFFF',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        textTransform: 'none',
+                        borderRadius: 1.5,
+                        py: 1,
+                        boxShadow: '0 2px 8px rgba(18, 59, 50, 0.2)',
+                        '&.Mui-disabled': {
+                          background: '#123B32',
+                          color: '#FFFFFF',
+                          opacity: 0.85,
+                        },
+                        '&:hover': { background: '#0B241E' },
+                      }}
+                    >
+                      {connectingOrcid ? 'Connecting to ORCID...' : 'Connect ORCID iD (Recommended)'}
+                    </Button>
+
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      component="a"
+                      href="https://orcid.org/register"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      startIcon={<i className="bi bi-box-arrow-up-right" />}
+                      sx={{
+                        borderColor: '#527A68',
+                        color: '#123B32',
+                        fontWeight: 700,
+                        fontSize: '0.8rem',
+                        textTransform: 'none',
+                        borderRadius: 1.5,
+                        py: 0.8,
+                        '&:hover': {
+                          borderColor: '#123B32',
+                          backgroundColor: '#FFFFFF',
+                        },
+                      }}
+                    >
+                      Don't have an ORCID? Register at orcid.org
+                    </Button>
+                  </Stack>
+                </Box>
               )}
             </CardContent>
           </Card>

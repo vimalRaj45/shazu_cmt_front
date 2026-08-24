@@ -106,7 +106,7 @@ export default function Navbar({ onMobileToggle }) {
           <Autocomplete
             size="small"
             options={conferences}
-            getOptionLabel={(option) => `${option.short_name || ''} - ${option.name || ''}`}
+            getOptionLabel={(option) => option.short_name || option.name || ''}
             value={selectedConference || null}
             onChange={(_, newValue) => {
               if (newValue) selectConference(newValue);
@@ -114,15 +114,15 @@ export default function Navbar({ onMobileToggle }) {
             isOptionEqualToValue={(option, value) => option.id === value.id}
             disableClearable
             sx={{
-              minWidth: { xs: 115, sm: 190, md: 280 },
-              maxWidth: { xs: 145, sm: 260, md: 360 },
+              minWidth: { xs: 125, sm: 190, md: 280 },
+              maxWidth: { xs: 170, sm: 260, md: 360 },
               backgroundColor: '#FFFFFF',
               borderRadius: 1.5,
               '& .MuiOutlinedInput-root': {
-                fontSize: { xs: '0.75rem', sm: '0.825rem' },
-                fontWeight: 600,
-                color: '#26322E',
-                py: '1px',
+                fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                fontWeight: 700,
+                color: '#123B32',
+                py: '2px',
                 px: { xs: '6px', sm: '10px' },
                 '& fieldset': { borderColor: '#D3DDD7' },
                 '&:hover fieldset': { borderColor: '#123B32' },
@@ -132,12 +132,12 @@ export default function Navbar({ onMobileToggle }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Conference..."
+                placeholder="Conference"
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
                     <>
-                      <i className="bi bi-calendar-check" style={{ color: '#123B32', marginRight: 4, fontSize: '0.8rem' }}></i>
+                      <i className="bi bi-calendar-check" style={{ color: '#123B32', marginRight: 4, fontSize: '0.85rem' }}></i>
                       {params.InputProps.startAdornment}
                     </>
                   ),
@@ -145,13 +145,27 @@ export default function Navbar({ onMobileToggle }) {
               />
             )}
             renderOption={(props, option) => (
-              <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <i className="bi bi-calendar-check" style={{ color: '#123B32' }}></i>
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
+              <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1.25, py: 1 }}>
+                <Box
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 1,
+                    backgroundColor: '#E8EFEB',
+                    color: '#123B32',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <i className="bi bi-calendar2-check" style={{ fontSize: '0.85rem' }}></i>
+                </Box>
+                <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
                     {option.short_name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.75rem' }}>
+                  <Typography variant="caption" sx={{ color: '#334E43', display: 'block', fontSize: '0.75rem', mt: 0.25 }}>
                     {option.name}
                   </Typography>
                 </Box>

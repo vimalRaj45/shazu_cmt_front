@@ -189,16 +189,16 @@ export default function AuthorSubmissionsPage() {
             }
           />
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 650 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Paper ID</TableCell>
-                  <TableCell>Title & Track</TableCell>
-                  <TableCell>Conference</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Files</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell sx={{ minWidth: 140 }}>Paper ID</TableCell>
+                  <TableCell sx={{ minWidth: 220 }}>Title & Track</TableCell>
+                  <TableCell sx={{ minWidth: 140 }}>Conference</TableCell>
+                  <TableCell sx={{ minWidth: 120 }}>Status</TableCell>
+                  <TableCell sx={{ minWidth: 110 }}>Files</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 120 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -207,18 +207,18 @@ export default function AuthorSubmissionsPage() {
                   return (
                     <TableRow key={sub.id} hover>
                       <TableCell>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#1565C0' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#123B32' }}>
                           {sub.submission_number}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ maxWidth: 320 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F2942' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#123B32', whiteSpace: 'normal' }}>
                           {sub.title}
                         </Typography>
                         <Chip
                           label={sub.track_name || 'General Track'}
                           size="small"
-                          sx={{ mt: 0.5, fontSize: '0.7rem', backgroundColor: '#F0F6FC', color: '#1565C0' }}
+                          sx={{ mt: 0.5, fontSize: '0.7rem', backgroundColor: '#E8EFEB', color: '#123B32', fontWeight: 700 }}
                         />
                       </TableCell>
                       <TableCell>
