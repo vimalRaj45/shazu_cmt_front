@@ -98,7 +98,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
               py: 0.5,
               fontWeight: 800,
               letterSpacing: '0.06em',
-              color: '#1565C0',
+              color: '#123B32',
               display: 'block',
               fontSize: '0.675rem',
             }}
@@ -114,17 +114,17 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
                     onClick={() => handleNavClick(item.path)}
                     selected={isActive}
                     sx={{
-                      borderRadius: 2,
-                      py: 1,
+                      borderRadius: 1.5,
+                      py: 0.9,
                       px: 1.5,
-                      backgroundColor: isActive ? '#E3F2FD' : 'transparent',
-                      color: isActive ? '#1565C0' : '#4A657E',
+                      backgroundColor: isActive ? '#E8EFEB' : 'transparent',
+                      color: isActive ? '#123B32' : '#334E43',
                       '&:hover': {
-                        backgroundColor: isActive ? '#E3F2FD' : '#F0F7FF',
+                        backgroundColor: isActive ? '#E8EFEB' : '#F5F3EC',
                       },
                       '&.Mui-selected': {
-                        backgroundColor: '#E3F2FD',
-                        color: '#1565C0',
+                        backgroundColor: '#E8EFEB',
+                        color: '#123B32',
                         fontWeight: 700,
                       },
                     }}
@@ -132,7 +132,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
                     <ListItemIcon
                       sx={{
                         minWidth: 32,
-                        color: isActive ? '#1565C0' : '#64748B',
+                        color: isActive ? '#123B32' : '#527A68',
                         fontSize: '1.1rem',
                       }}
                     >
@@ -143,7 +143,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
                       primaryTypographyProps={{
                         fontSize: '0.85rem',
                         fontWeight: isActive ? 700 : 500,
-                        color: isActive ? '#1565C0' : 'inherit',
+                        color: isActive ? '#123B32' : 'inherit',
                       }}
                     />
                   </ListItemButton>
@@ -151,7 +151,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
               );
             })}
           </List>
-          {idx < navSections.length - 1 && <Divider sx={{ my: 1.5, borderColor: '#F0F4F8' }} />}
+          {idx < navSections.length - 1 && <Divider sx={{ my: 1.5, borderColor: '#D3DDD7' }} />}
         </Box>
       ))}
     </Box>
@@ -171,7 +171,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
             boxSizing: 'border-box',
             width: DRAWER_WIDTH,
             backgroundColor: '#FFFFFF',
-            borderRight: '1px solid #E2E8F0',
+            borderRight: '1px solid #D3DDD7',
           },
         }}
       >

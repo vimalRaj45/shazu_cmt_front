@@ -389,18 +389,18 @@ export default function CreateSubmissionPage() {
                 <Paper
                   variant="outlined"
                   sx={{
-                    p: 3,
+                    p: { xs: 2, sm: 2.5 },
                     textAlign: 'center',
-                    border: '2px dashed #93C5FD',
-                    backgroundColor: '#F8FAFC',
+                    border: '1.5px dashed #527A68',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: 2,
                   }}
                 >
-                  <i className="bi bi-file-earmark-pdf text-primary" style={{ fontSize: '2.5rem' }}></i>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mt: 1 }}>
+                  <i className="bi bi-file-earmark-pdf" style={{ fontSize: '1.8rem', color: '#123B32' }}></i>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mt: 0.75, color: '#123B32' }}>
                     Manuscript File (PDF) *
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>
                     Max 50MB. PDF format required.
                   </Typography>
                   <input
@@ -411,12 +411,26 @@ export default function CreateSubmissionPage() {
                     onChange={(e) => setManuscriptFile(e.target.files[0])}
                   />
                   <label htmlFor="manuscript-upload">
-                    <Button variant="outlined" component="span" startIcon={<i className="bi bi-upload"></i>}>
+                    <Button
+                      variant="outlined"
+                      component="span"
+                      size="small"
+                      startIcon={<i className="bi bi-upload"></i>}
+                      sx={{
+                        borderRadius: 1.5,
+                        fontWeight: 700,
+                        borderColor: '#2F5B4E',
+                        color: '#123B32',
+                        textTransform: 'none',
+                        px: 2,
+                        py: 0.6,
+                      }}
+                    >
                       {manuscriptFile ? 'Change PDF File' : 'Select PDF File'}
                     </Button>
                   </label>
                   {manuscriptFile && (
-                    <Typography variant="body2" sx={{ mt: 1.5, fontWeight: 600, color: '#166534' }}>
+                    <Typography variant="caption" sx={{ mt: 1, fontWeight: 700, color: '#123B32', display: 'block' }}>
                       ✓ {manuscriptFile.name} ({(manuscriptFile.size / 1024 / 1024).toFixed(2)} MB)
                     </Typography>
                   )}
@@ -427,18 +441,18 @@ export default function CreateSubmissionPage() {
                 <Paper
                   variant="outlined"
                   sx={{
-                    p: 3,
+                    p: { xs: 2, sm: 2.5 },
                     textAlign: 'center',
-                    border: '2px dashed #CBD5E1',
-                    backgroundColor: '#F8FAFC',
+                    border: '1.5px dashed #D3DDD7',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: 2,
                   }}
                 >
-                  <i className="bi bi-folder-symlink text-secondary" style={{ fontSize: '2.5rem' }}></i>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mt: 1 }}>
+                  <i className="bi bi-folder-symlink" style={{ fontSize: '1.8rem', color: '#527A68' }}></i>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mt: 0.75, color: '#123B32' }}>
                     Supplementary Materials (Optional)
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>
                     ZIP, PDF, dataset, or code appendix.
                   </Typography>
                   <input
@@ -448,12 +462,27 @@ export default function CreateSubmissionPage() {
                     onChange={(e) => setSupplementaryFile(e.target.files[0])}
                   />
                   <label htmlFor="supplementary-upload">
-                    <Button variant="outlined" color="inherit" component="span" startIcon={<i className="bi bi-upload"></i>}>
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      component="span"
+                      size="small"
+                      startIcon={<i className="bi bi-upload"></i>}
+                      sx={{
+                        borderRadius: 1.5,
+                        fontWeight: 600,
+                        borderColor: '#D3DDD7',
+                        color: '#334E43',
+                        textTransform: 'none',
+                        px: 2,
+                        py: 0.6,
+                      }}
+                    >
                       {supplementaryFile ? 'Change File' : 'Select File'}
                     </Button>
                   </label>
                   {supplementaryFile && (
-                    <Typography variant="body2" sx={{ mt: 1.5, fontWeight: 600, color: '#0D9488' }}>
+                    <Typography variant="caption" sx={{ mt: 1, fontWeight: 700, color: '#2F5B4E', display: 'block' }}>
                       ✓ {supplementaryFile.name} ({(supplementaryFile.size / 1024 / 1024).toFixed(2)} MB)
                     </Typography>
                   )}
@@ -463,19 +492,61 @@ export default function CreateSubmissionPage() {
           </CardContent>
         </Card>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button variant="outlined" onClick={() => navigate('/my-submissions')}>
+        {/* Compact Responsive Bottom Action Bar */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            justifyContent: 'flex-end',
+            alignItems: 'stretch',
+            gap: 1.5,
+            mt: 2,
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/my-submissions')}
+            sx={{
+              borderRadius: 1.5,
+              fontWeight: 700,
+              color: '#334E43',
+              borderColor: '#D3DDD7',
+              textTransform: 'none',
+              px: 3,
+              py: 1,
+              height: 42,
+              '&:hover': { borderColor: '#123B32', backgroundColor: '#E8EFEB' },
+            }}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             variant="contained"
-            size="large"
             disabled={loading}
-            sx={{ px: 4, py: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)' }}
-            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <i className="bi bi-check2-circle"></i>}
+            startIcon={loading ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check2-circle"></i>}
+            sx={{
+              px: 3.5,
+              py: 1,
+              height: 42,
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              textTransform: 'none',
+              borderRadius: 1.5,
+              color: '#FFFFFF',
+              background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
+              boxShadow: '0 2px 8px rgba(18, 59, 50, 0.2)',
+              '&.Mui-disabled': {
+                background: '#123B32',
+                color: '#FFFFFF',
+                opacity: 0.85,
+              },
+              '&:hover': {
+                background: '#0B241E',
+              },
+            }}
           >
-            {loading ? 'Submitting to Cloudflare R2...' : 'Complete Paper Submission'}
+            {loading ? 'Submitting to R2 Storage...' : 'Complete Paper Submission'}
           </Button>
         </Box>
       </Box>

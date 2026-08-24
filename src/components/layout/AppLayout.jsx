@@ -12,7 +12,7 @@ export default function AppLayout() {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F4F7FB' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--brand-bg, #F5F3EC)' }}>
       <Navbar onMobileToggle={handleDrawerToggle} />
       <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
       <Box
@@ -22,7 +22,7 @@ export default function AppLayout() {
           p: { xs: 1.5, sm: 2.5, md: 3.5 },
           width: { xs: '100%', md: `calc(100% - 260px)` },
           minHeight: '100vh',
-          backgroundColor: '#F4F7FB',
+          backgroundColor: 'var(--brand-bg, #F5F3EC)',
           overflowX: 'hidden',
         }}
       >

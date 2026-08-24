@@ -52,17 +52,17 @@ export default function Navbar({ onMobileToggle }) {
         width: '100%',
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between', minHeight: 64, px: { xs: 1.5, sm: 2, md: 3 } }}>
+      <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2, md: 3 } }}>
         {/* Mobile Hamburger & Brand */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.5 } }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={onMobileToggle}
-            sx={{ display: { md: 'none' }, color: '#1565C0', p: 1 }}
+            sx={{ display: { md: 'none' }, color: '#123B32', p: 0.75 }}
           >
-            <i className="bi bi-list" style={{ fontSize: '1.6rem' }}></i>
+            <i className="bi bi-list" style={{ fontSize: '1.45rem' }}></i>
           </IconButton>
 
           <Box
@@ -70,37 +70,37 @@ export default function Navbar({ onMobileToggle }) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1.25,
+              gap: 1,
               cursor: 'pointer',
             }}
           >
             <Box
               sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #1565C0 0%, #0288D1 100%)',
+                width: 32,
+                height: 32,
+                borderRadius: 1.5,
+                background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#FFFFFF',
-                fontSize: '1.15rem',
-                boxShadow: '0 2px 8px rgba(21, 101, 192, 0.25)',
+                fontSize: '1.05rem',
+                boxShadow: '0 2px 6px rgba(18, 59, 50, 0.2)',
               }}
             >
               <i className="bi bi-mortarboard-fill"></i>
             </Box>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#1565C0', letterSpacing: '-0.01em' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.9rem' }}>
                 SHAZU SOFT
               </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#0288D1' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.7rem' }}>
                 CMT PORTAL
               </Typography>
             </Box>
           </Box>
 
-          <Divider orientation="vertical" flexItem sx={{ height: 28, my: 'auto', mx: { xs: 0.5, sm: 1 }, borderColor: '#E2E8F0', display: { xs: 'none', sm: 'block' } }} />
+          <Divider orientation="vertical" flexItem sx={{ height: 24, my: 'auto', mx: { xs: 0.25, sm: 0.75 }, borderColor: '#D3DDD7', display: { xs: 'none', sm: 'block' } }} />
 
           {/* Searchable Active Conference Selector */}
           <Autocomplete
@@ -114,18 +114,19 @@ export default function Navbar({ onMobileToggle }) {
             isOptionEqualToValue={(option, value) => option.id === value.id}
             disableClearable
             sx={{
-              minWidth: { xs: 110, sm: 200, md: 300 },
-              maxWidth: { xs: 150, sm: 260, md: 360 },
-              backgroundColor: '#F8FAFC',
+              minWidth: { xs: 115, sm: 190, md: 280 },
+              maxWidth: { xs: 145, sm: 260, md: 360 },
+              backgroundColor: '#FFFFFF',
               borderRadius: 1.5,
               '& .MuiOutlinedInput-root': {
                 fontSize: { xs: '0.75rem', sm: '0.825rem' },
                 fontWeight: 600,
-                color: '#0F2942',
-                py: '2px',
+                color: '#26322E',
+                py: '1px',
                 px: { xs: '6px', sm: '10px' },
-                '& fieldset': { borderColor: '#CBD5E1' },
-                '&:hover fieldset': { borderColor: '#1565C0' },
+                '& fieldset': { borderColor: '#D3DDD7' },
+                '&:hover fieldset': { borderColor: '#123B32' },
+                '&.Mui-focused fieldset': { borderColor: '#123B32' },
               },
             }}
             renderInput={(params) => (
@@ -136,7 +137,7 @@ export default function Navbar({ onMobileToggle }) {
                   ...params.InputProps,
                   startAdornment: (
                     <>
-                      <i className="bi bi-calendar-check" style={{ color: '#1565C0', marginRight: 6, fontSize: '0.85rem' }}></i>
+                      <i className="bi bi-calendar-check" style={{ color: '#123B32', marginRight: 4, fontSize: '0.8rem' }}></i>
                       {params.InputProps.startAdornment}
                     </>
                   ),
@@ -145,9 +146,9 @@ export default function Navbar({ onMobileToggle }) {
             )}
             renderOption={(props, option) => (
               <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <i className="bi bi-calendar-check" style={{ color: '#1565C0' }}></i>
+                <i className="bi bi-calendar-check" style={{ color: '#123B32' }}></i>
                 <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#0F2942' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
                     {option.short_name}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.75rem' }}>
@@ -160,7 +161,7 @@ export default function Navbar({ onMobileToggle }) {
         </Box>
 
         {/* User Role Badge & Profile Details */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.25 } }}>
           {/* Static Professional Role Badge (Compact on Mobile) */}
           <Chip
             label={currentRoleStyle.label}
@@ -172,7 +173,7 @@ export default function Navbar({ onMobileToggle }) {
               border: `1px solid ${currentRoleStyle.border}`,
               fontWeight: 800,
               fontSize: { xs: '0.725rem', sm: '0.8rem' },
-              height: 30,
+              height: 28,
               px: 0.5,
               borderRadius: 1,
               userSelect: 'none',
@@ -186,19 +187,19 @@ export default function Navbar({ onMobileToggle }) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1,
+              gap: 0.75,
               cursor: 'pointer',
-              p: '3px 6px',
-              borderRadius: 2,
-              '&:hover': { backgroundColor: '#F0F7FF' },
+              p: '2px 4px',
+              borderRadius: 1.5,
+              '&:hover': { backgroundColor: '#E8EFEB' },
             }}
           >
             <Avatar
               sx={{
-                width: 32,
-                height: 32,
-                background: 'linear-gradient(135deg, #1565C0 0%, #0288D1 100%)',
-                fontSize: '0.85rem',
+                width: 30,
+                height: 30,
+                background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
+                fontSize: '0.825rem',
                 fontWeight: 700,
                 color: '#FFFFFF',
               }}
@@ -206,14 +207,14 @@ export default function Navbar({ onMobileToggle }) {
               {user?.first_name?.charAt(0) || 'U'}
             </Avatar>
             <Box sx={{ display: { xs: 'none', lg: 'block' }, textAlign: 'left' }}>
-              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.1, color: '#0F2942' }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.1, color: '#26322E' }}>
                 {user?.first_name} {user?.last_name}
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
                 {user?.institution || user?.email}
               </Typography>
             </Box>
-            <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem', color: '#64748B' }}></i>
+            <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem', color: '#527A68' }}></i>
           </Box>
 
           <Menu
