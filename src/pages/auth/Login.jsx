@@ -38,10 +38,13 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    console.log('[Login] Attempting sign-in for identifier:', email);
     try {
-      await login(email, password);
+      const user = await login(email, password);
+      console.log('[Login] Sign-in successful for user:', user);
       navigate('/dashboard');
     } catch (err) {
+      console.error('[Login] Sign-in error:', err);
       setError(err.response?.data?.error || 'Invalid credentials. Please verify your email/ORCID and password.');
     } finally {
       setLoading(false);
@@ -50,12 +53,26 @@ export default function Login() {
 
   const handleOrcidOAuthLogin = async () => {
     setOrcidLoading(true);
+    setError('');
     try {
       const redirectUri = `${window.location.origin}/auth/orcid/callback`;
+      console.log('[ORCID OAuth] Requesting authorization URL for redirectUri:', redirectUri);
+      
       const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
-      window.location.href = res.data.authUrl;
+      console.log('[ORCID OAuth] Received auth URL response:', res.data);
+
+      const targetUrl = res.data?.authUrl;
+      if (targetUrl && typeof targetUrl === 'string' && targetUrl.startsWith('http')) {
+        console.log('[ORCID OAuth] Navigating to ORCID login page:', targetUrl);
+        window.location.href = targetUrl;
+      } else {
+        console.error('[ORCID OAuth] Invalid or undefined authUrl received:', res.data);
+        setError('Unable to load ORCID authentication URL. Please try standard sign-in or check connection.');
+        setOrcidLoading(false);
+      }
     } catch (err) {
-      setError('Failed to initiate ORCID login. Please use standard login or check credentials.');
+      console.error('[ORCID OAuth] Error fetching authorization URL:', err);
+      setError(err.response?.data?.error || 'Failed to initiate ORCID login. Please try again.');
       setOrcidLoading(false);
     }
   };

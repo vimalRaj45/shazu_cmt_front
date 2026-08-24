@@ -125,8 +125,10 @@ export default function Register() {
     setFetchingOrcid(true);
     setOrcidError('');
     setOrcidSuccess('');
+    console.log('[ORCID Lookup] Fetching profile for input:', orcidInput);
     try {
       const res = await api.post('/auth/orcid/lookup', { orcidId: orcidInput });
+      console.log('[ORCID Lookup] Retrieved profile:', res.data);
       const p = res.data.profile;
       setFormData((prev) => ({
         ...prev,
@@ -143,6 +145,7 @@ export default function Register() {
       }));
       setOrcidSuccess(`Verified & loaded academic profile for ORCID: ${p.orcidId}`);
     } catch (err) {
+      console.error('[ORCID Lookup] Error fetching profile:', err);
       setOrcidError(err.response?.data?.error || 'Failed to fetch public profile from ORCID');
     } finally {
       setFetchingOrcid(false);
@@ -154,10 +157,22 @@ export default function Register() {
     setOrcidError('');
     try {
       const redirectUri = `${window.location.origin}/auth/orcid/callback`;
+      console.log('[ORCID Register OAuth] Requesting authorization URL for redirectUri:', redirectUri);
       const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
-      window.location.href = res.data.authUrl;
+      console.log('[ORCID Register OAuth] Received URL response:', res.data);
+      
+      const targetUrl = res.data?.authUrl;
+      if (targetUrl && typeof targetUrl === 'string' && targetUrl.startsWith('http')) {
+        console.log('[ORCID Register OAuth] Navigating to ORCID register page:', targetUrl);
+        window.location.href = targetUrl;
+      } else {
+        console.error('[ORCID Register OAuth] Invalid or undefined authUrl received:', res.data);
+        setOrcidError('Unable to load ORCID authentication URL. Please use standard registration form.');
+        setOrcidLoading(false);
+      }
     } catch (err) {
-      setOrcidError('Failed to initiate ORCID OAuth. Please use the step form.');
+      console.error('[ORCID Register OAuth] Error initiating OAuth:', err);
+      setOrcidError('Failed to initiate ORCID OAuth: ' + (err.response?.data?.error || err.message));
       setOrcidLoading(false);
     }
   };
