@@ -30,6 +30,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
       title: 'OVERVIEW',
       items: [
         { label: 'Dashboard', path: '/dashboard', icon: 'bi-grid-1x2-fill' },
+        { label: 'My Profile', path: '/profile', icon: 'bi-person-circle' },
         { label: 'Conference Info', path: '/conference/details', icon: 'bi-info-circle' },
         { label: 'Announcements', path: '/announcements', icon: 'bi-megaphone' },
         { label: 'User Guide', path: '/guide', icon: 'bi-book' },

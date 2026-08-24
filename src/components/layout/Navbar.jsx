@@ -231,6 +231,10 @@ export default function Navbar({ onMobileToggle }) {
               </Typography>
             </Box>
             <Divider sx={{ my: 1 }} />
+            <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>
+              <ListItemIcon><i className="bi bi-person-circle" style={{ color: '#1565C0' }}></i></ListItemIcon>
+              My Profile
+            </MenuItem>
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/conferences'); }}>
               <ListItemIcon><i className="bi bi-globe" style={{ color: '#1565C0' }}></i></ListItemIcon>
               All Conferences

@@ -34,6 +34,7 @@ import ReportsPage from './pages/reports/ReportsPage';
 // Common Pages
 import AnnouncementsPage from './pages/announcements/AnnouncementsPage';
 import GuidePage from './pages/guide/GuidePage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 // Admin Pages
 import UserManagementPage from './pages/admin/UserManagementPage';
@@ -85,9 +86,10 @@ export default function App() {
           <Route path="/chair/emails" element={<EmailBroadcastPage />} />
           <Route path="/chair/reports" element={<ReportsPage />} />
 
-          {/* Announcements & User Guide */}
+          {/* Announcements & User Guide & Profile */}
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/guide" element={<GuidePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* Admin */}
           <Route path="/admin/users" element={<UserManagementPage />} />
