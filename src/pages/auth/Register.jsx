@@ -108,48 +108,13 @@ export default function Register() {
   const [error, setError] = useState('');
   const [existingAccount, setExistingAccount] = useState(false);
 
-  // ORCID Auto-Fill & OAuth State
-  const [orcidInput, setOrcidInput] = useState('');
-  const [fetchingOrcid, setFetchingOrcid] = useState(false);
+  // ORCID OAuth State
   const [orcidLoading, setOrcidLoading] = useState(false);
-  const [orcidSuccess, setOrcidSuccess] = useState('');
   const [orcidError, setOrcidError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (existingAccount) setExistingAccount(false);
-  };
-
-  const handleFetchOrcid = async () => {
-    if (!orcidInput.trim()) return;
-    setFetchingOrcid(true);
-    setOrcidError('');
-    setOrcidSuccess('');
-    console.log('[ORCID Lookup] Fetching profile for input:', orcidInput);
-    try {
-      const res = await api.post('/auth/orcid/lookup', { orcidId: orcidInput });
-      console.log('[ORCID Lookup] Retrieved profile:', res.data);
-      const p = res.data.profile;
-      setFormData((prev) => ({
-        ...prev,
-        firstName: p.firstName || prev.firstName,
-        lastName: p.lastName || prev.lastName,
-        institution: p.institution || prev.institution,
-        department: p.department || prev.department,
-        designation: p.designation || prev.designation,
-        qualification: p.qualification || prev.qualification,
-        domain: p.domain || prev.domain,
-        areasOfInterest: p.areasOfInterest?.length > 0 ? Array.from(new Set([...prev.areasOfInterest, ...p.areasOfInterest])) : prev.areasOfInterest,
-        orcidId: p.orcidId,
-        bio: p.bio || prev.bio,
-      }));
-      setOrcidSuccess(`Verified & loaded academic profile for ORCID: ${p.orcidId}`);
-    } catch (err) {
-      console.error('[ORCID Lookup] Error fetching profile:', err);
-      setOrcidError(err.response?.data?.error || 'Failed to fetch public profile from ORCID');
-    } finally {
-      setFetchingOrcid(false);
-    }
   };
 
   const handleOrcidOAuthRegister = async () => {
@@ -404,133 +369,71 @@ export default function Register() {
             </Alert>
           )}
 
-          {/* ORCID Fast Auto-Fill Banner (Visible on Step 1 or 2) */}
+          {/* Two Registration Methods: 1) One-Click ORCID OAuth or 2) Manual Form */}
           {activeStep === 0 && (
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                mb: 3.5,
-                backgroundColor: '#F0FDF4',
-                border: '1.5px solid #86EFAC',
-                borderRadius: 1.5,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-                  <Box
-                    sx={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 1,
-                      backgroundColor: '#A6CE39',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#FFFFFF',
-                      fontWeight: 900,
-                      fontSize: '0.8rem',
-                    }}
-                  >
-                    iD
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#166534', fontSize: '0.9rem' }}>
-                      Fast Track: Auto-Fill All 3 Steps via ORCID iD
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#15803D' }}>
-                      Pull name, university affiliation & research keywords directly from ORCID
-                    </Typography>
-                  </Box>
-                </Box>
-                {formData.orcidId && (
-                  <Chip
-                    icon={<CheckCircleIcon sx={{ fontSize: '0.9rem !important', color: '#166534 !important' }} />}
-                    label={`Verified: ${formData.orcidId}`}
-                    color="success"
-                    size="small"
-                    sx={{ fontWeight: 700, fontSize: '0.75rem', borderRadius: 1 }}
-                  />
-                )}
-              </Box>
-
-              <Grid container spacing={1} alignItems="center">
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Enter ORCID iD (e.g. 0000-0002-1825-0097)"
-                    value={orcidInput}
-                    onChange={(e) => setOrcidInput(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <BadgeIcon sx={{ color: '#16A34A', fontSize: 18 }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ backgroundColor: '#FFFFFF', borderRadius: 1 }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    size="small"
-                    disabled={fetchingOrcid || !orcidInput.trim()}
-                    onClick={handleFetchOrcid}
-                    startIcon={fetchingOrcid ? <CircularProgress size={14} color="inherit" /> : <CloudDownloadIcon />}
-                    sx={{
-                      backgroundColor: '#16A34A',
-                      '&:hover': { backgroundColor: '#15803D' },
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      py: 0.9,
-                      borderRadius: 1,
-                    }}
-                  >
-                    {fetchingOrcid ? 'Fetching...' : 'Fetch from ORCID'}
-                  </Button>
-                </Grid>
-              </Grid>
-
-              {orcidSuccess && (
-                <Alert severity="success" sx={{ mt: 1.5, py: 0.5, borderRadius: 1, fontSize: '0.8rem' }}>
-                  {orcidSuccess}
-                </Alert>
-              )}
-
+            <Box sx={{ mb: 3.5 }}>
               {orcidError && (
-                <Alert severity="warning" sx={{ mt: 1.5, py: 0.5, borderRadius: 1, fontSize: '0.8rem' }}>
+                <Alert severity="warning" sx={{ mb: 2, borderRadius: 1 }}>
                   {orcidError}
                 </Alert>
               )}
 
-              <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px dashed #86EFAC', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-                <Typography variant="caption" sx={{ color: '#166534', fontWeight: 600 }}>
-                  Skip registration form entirely?
+              {/* Way 1: One-Click ORCID OAuth Registration */}
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={handleOrcidOAuthRegister}
+                disabled={orcidLoading || loading}
+                startIcon={
+                  orcidLoading ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    <Box
+                      sx={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: 1,
+                        backgroundColor: '#A6CE39',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#FFFFFF',
+                        fontWeight: 900,
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      iD
+                    </Box>
+                  )
+                }
+                sx={{
+                  py: 1.3,
+                  borderColor: '#86EFAC',
+                  backgroundColor: '#F0FDF4',
+                  color: '#166534',
+                  fontWeight: 800,
+                  textTransform: 'none',
+                  fontSize: '0.95rem',
+                  borderRadius: 1.5,
+                  boxShadow: '0 2px 6px rgba(22, 101, 52, 0.06)',
+                  '&:hover': {
+                    borderColor: '#4ADE80',
+                    backgroundColor: '#DCFCE7',
+                  },
+                }}
+              >
+                {orcidLoading ? 'Connecting to ORCID...' : 'One-Click Sign Up with ORCID iD'}
+              </Button>
+
+              {/* Clean Divider */}
+              <Box sx={{ display: 'flex', alignItems: 'center', my: 2.5 }}>
+                <Divider sx={{ flexGrow: 1 }} />
+                <Typography variant="caption" sx={{ px: 2, color: 'text.secondary', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  OR FILL REGISTRATION FORM MANUALLY
                 </Typography>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={handleOrcidOAuthRegister}
-                  disabled={orcidLoading}
-                  startIcon={orcidLoading ? <CircularProgress size={12} color="inherit" /> : <OpenInNewIcon sx={{ fontSize: 14 }} />}
-                  sx={{
-                    borderColor: '#16A34A',
-                    color: '#166534',
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    fontSize: '0.775rem',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 1,
-                    py: 0.4,
-                  }}
-                >
-                  {orcidLoading ? 'Connecting...' : 'One-Click Sign Up with ORCID OAuth'}
-                </Button>
+                <Divider sx={{ flexGrow: 1 }} />
               </Box>
-            </Paper>
+            </Box>
           )}
 
           <Box component="form" onSubmit={handleSubmit}>
