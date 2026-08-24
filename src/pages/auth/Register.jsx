@@ -157,19 +157,28 @@ export default function Register() {
     setOrcidError('');
     try {
       const redirectUri = `${window.location.origin}/auth/orcid/callback`;
-      console.log('[ORCID Register OAuth] Requesting authorization URL for redirectUri:', redirectUri);
-      const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
-      console.log('[ORCID Register OAuth] Received URL response:', res.data);
+      console.log('[ORCID Register OAuth] Initiating registration with redirectUri:', redirectUri);
       
-      const targetUrl = res.data?.authUrl;
-      if (targetUrl && typeof targetUrl === 'string' && targetUrl.startsWith('http')) {
-        console.log('[ORCID Register OAuth] Navigating to ORCID register page:', targetUrl);
-        window.location.href = targetUrl;
-      } else {
-        console.error('[ORCID Register OAuth] Invalid or undefined authUrl received:', res.data);
-        setOrcidError('Unable to load ORCID authentication URL. Please use standard registration form.');
-        setOrcidLoading(false);
+      let targetUrl = '';
+      try {
+        const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
+        console.log('[ORCID Register OAuth] Received URL response from backend:', res.data);
+        if (res.data?.authUrl && typeof res.data.authUrl === 'string' && res.data.authUrl.startsWith('http')) {
+          targetUrl = res.data.authUrl;
+        }
+      } catch (apiErr) {
+        console.warn('[ORCID Register OAuth] Backend endpoint error, generating direct authorization URL:', apiErr.message);
       }
+
+      // If backend URL generation failed or returned non-JSON, construct direct ORCID OAuth URL
+      if (!targetUrl) {
+        const clientId = 'APP-NZ8CPXKBRG5YOW1S';
+        targetUrl = `https://orcid.org/oauth/authorize?client_id=${encodeURIComponent(clientId)}&response_type=code&scope=/authenticate&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        console.log('[ORCID Register OAuth] Constructed direct ORCID URL:', targetUrl);
+      }
+
+      console.log('[ORCID Register OAuth] Navigating to ORCID register page:', targetUrl);
+      window.location.href = targetUrl;
     } catch (err) {
       console.error('[ORCID Register OAuth] Error initiating OAuth:', err);
       setOrcidError('Failed to initiate ORCID OAuth: ' + (err.response?.data?.error || err.message));

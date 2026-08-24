@@ -56,23 +56,31 @@ export default function Login() {
     setError('');
     try {
       const redirectUri = `${window.location.origin}/auth/orcid/callback`;
-      console.log('[ORCID OAuth] Requesting authorization URL for redirectUri:', redirectUri);
+      console.log('[ORCID OAuth] Initiating login with redirectUri:', redirectUri);
       
-      const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
-      console.log('[ORCID OAuth] Received auth URL response:', res.data);
-
-      const targetUrl = res.data?.authUrl;
-      if (targetUrl && typeof targetUrl === 'string' && targetUrl.startsWith('http')) {
-        console.log('[ORCID OAuth] Navigating to ORCID login page:', targetUrl);
-        window.location.href = targetUrl;
-      } else {
-        console.error('[ORCID OAuth] Invalid or undefined authUrl received:', res.data);
-        setError('Unable to load ORCID authentication URL. Please try standard sign-in or check connection.');
-        setOrcidLoading(false);
+      let targetUrl = '';
+      try {
+        const res = await api.get(`/auth/orcid/url?redirectUri=${encodeURIComponent(redirectUri)}`);
+        console.log('[ORCID OAuth] Received auth URL response from backend:', res.data);
+        if (res.data?.authUrl && typeof res.data.authUrl === 'string' && res.data.authUrl.startsWith('http')) {
+          targetUrl = res.data.authUrl;
+        }
+      } catch (apiErr) {
+        console.warn('[ORCID OAuth] Backend endpoint error, generating direct authorization URL:', apiErr.message);
       }
+
+      // If backend URL generation failed or returned non-JSON, construct direct ORCID OAuth URL
+      if (!targetUrl) {
+        const clientId = 'APP-NZ8CPXKBRG5YOW1S';
+        targetUrl = `https://orcid.org/oauth/authorize?client_id=${encodeURIComponent(clientId)}&response_type=code&scope=/authenticate&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        console.log('[ORCID OAuth] Constructed direct ORCID URL:', targetUrl);
+      }
+
+      console.log('[ORCID OAuth] Navigating to ORCID:', targetUrl);
+      window.location.href = targetUrl;
     } catch (err) {
-      console.error('[ORCID OAuth] Error fetching authorization URL:', err);
-      setError(err.response?.data?.error || 'Failed to initiate ORCID login. Please try again.');
+      console.error('[ORCID OAuth] Error initiating ORCID login:', err);
+      setError('Failed to initiate ORCID login: ' + (err.response?.data?.error || err.message));
       setOrcidLoading(false);
     }
   };
