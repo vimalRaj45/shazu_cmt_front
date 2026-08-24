@@ -8,6 +8,7 @@ import AppLayout from './components/layout/AppLayout';
 // Auth Pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import OrcidCallback from './pages/auth/OrcidCallback';
 
 // Main Pages
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -53,6 +54,7 @@ export default function App() {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/orcid/callback" element={<OrcidCallback />} />
 
         {/* Protected Dashboard & App Routes */}
         <Route

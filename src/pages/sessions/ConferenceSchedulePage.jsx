@@ -15,9 +15,13 @@ import {
   TextField,
   MenuItem,
   Divider,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 export default function ConferenceSchedulePage() {
@@ -28,6 +32,8 @@ export default function ConferenceSchedulePage() {
   const [acceptedPapers, setAcceptedPapers] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const [deletePresModal, setDeletePresModal] = useState({ open: false, sessionId: null, submissionId: null });
 
   // Create Session Modal
   const [openSessionModal, setOpenSessionModal] = useState(false);
@@ -37,7 +43,7 @@ export default function ConferenceSchedulePage() {
     sessionChairName: '',
     venueRoom: '',
     sessionDate: '',
-    startTime: '10:00 AM',
+    startTime: '09:00 AM',
     endTime: '12:00 PM',
   });
 
@@ -87,9 +93,10 @@ export default function ConferenceSchedulePage() {
         ...sessionForm,
       });
       setOpenSessionModal(false);
+      setSnackbar({ open: true, message: 'Technical session scheduled successfully!', severity: 'success' });
       fetchSessions();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to create session');
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to create session', severity: 'error' });
     }
   };
 
@@ -98,32 +105,40 @@ export default function ConferenceSchedulePage() {
     try {
       await api.post(`/sessions/${selectedSessionId}/presentations`, presentationForm);
       setOpenPresentationModal(false);
+      setSnackbar({ open: true, message: 'Paper added to presentation schedule!', severity: 'success' });
       fetchSessions();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to add presentation');
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to add presentation', severity: 'error' });
     }
   };
 
-  const handleRemovePresentation = async (sessionId, submissionId) => {
+  const handleRemovePresentation = async () => {
+    const { sessionId, submissionId } = deletePresModal;
+    setDeletePresModal({ open: false, sessionId: null, submissionId: null });
+    if (!sessionId || !submissionId) return;
     try {
       await api.delete(`/sessions/${sessionId}/presentations/${submissionId}`);
+      setSnackbar({ open: true, message: 'Presentation removed from session.', severity: 'info' });
       fetchSessions();
     } catch (err) {
-      alert('Failed to remove presentation');
+      setSnackbar({ open: true, message: 'Failed to remove presentation', severity: 'error' });
     }
   };
 
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Conference Program Schedule & Sessions
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {selectedConference?.name} ({selectedConference?.short_name})
-          </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton fallbackUrl="/dashboard" />
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+              Conference Program & Session Schedule
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {selectedConference?.name} ({selectedConference?.short_name})
+            </Typography>
+          </Box>
         </Box>
         {(activeRole === 'chair' || activeRole === 'admin') && (
           <Button
@@ -238,12 +253,11 @@ export default function ConferenceSchedulePage() {
                               </Typography>
                             </Box>
                           </Box>
-
                           {(activeRole === 'chair' || activeRole === 'admin') && (
                             <Button
                               size="small"
                               color="error"
-                              onClick={() => handleRemovePresentation(session.id, p.submission_id)}
+                              onClick={() => setDeletePresModal({ open: true, sessionId: session.id, submissionId: p.submission_id })}
                             >
                               Remove
                             </Button>
@@ -263,27 +277,50 @@ export default function ConferenceSchedulePage() {
         </Grid>
       )}
 
+      {/* Confirmation Modal for Removing Presentation */}
+      <ConfirmModal
+        open={deletePresModal.open}
+        title="Remove Presentation"
+        message="Are you sure you want to remove this paper presentation from the session schedule?"
+        confirmText="Remove Paper"
+        confirmColor="error"
+        onCancel={() => setDeletePresModal({ open: false, sessionId: null, submissionId: null })}
+        onConfirm={handleRemovePresentation}
+      />
+
+      {/* Global Toast Feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
       {/* Create Session Dialog */}
       <Dialog open={openSessionModal} onClose={() => setOpenSessionModal(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800 }}>Create New Conference Session</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 800 }}>Schedule Technical Session</DialogTitle>
         <Box component="form" onSubmit={handleCreateSession}>
           <DialogContent>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Session Name"
+                  label="Session Name *"
                   required
                   value={sessionForm.sessionName}
                   onChange={(e) => setSessionForm({ ...sessionForm, sessionName: e.target.value })}
-                  placeholder="e.g. Session A1: High-Performance AI Architectures"
+                  placeholder="e.g. Session A1: Deep Learning Architectures"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   select
-                  label="Conference Track"
+                  label="Track"
                   value={sessionForm.trackId}
                   onChange={(e) => setSessionForm({ ...sessionForm, trackId: e.target.value })}
                 >
@@ -296,10 +333,10 @@ export default function ConferenceSchedulePage() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Session Date"
+                  label="Session Date *"
                   type="date"
-                  InputLabelProps={{ shrink: true }}
                   required
+                  InputLabelProps={{ shrink: true }}
                   value={sessionForm.sessionDate}
                   onChange={(e) => setSessionForm({ ...sessionForm, sessionDate: e.target.value })}
                 />
@@ -308,29 +345,25 @@ export default function ConferenceSchedulePage() {
                 <TextField
                   fullWidth
                   label="Start Time"
-                  required
                   value={sessionForm.startTime}
                   onChange={(e) => setSessionForm({ ...sessionForm, startTime: e.target.value })}
-                  placeholder="e.g. 10:00 AM"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="End Time"
-                  required
                   value={sessionForm.endTime}
                   onChange={(e) => setSessionForm({ ...sessionForm, endTime: e.target.value })}
-                  placeholder="e.g. 12:00 PM"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Venue Room / Hall"
+                  label="Venue / Room / Link"
                   value={sessionForm.venueRoom}
                   onChange={(e) => setSessionForm({ ...sessionForm, venueRoom: e.target.value })}
-                  placeholder="e.g. Main Hall A"
+                  placeholder="e.g. Hall B / Zoom Link"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -346,14 +379,14 @@ export default function ConferenceSchedulePage() {
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={() => setOpenSessionModal(false)}>Cancel</Button>
-            <Button type="submit" variant="contained">Create Session</Button>
+            <Button type="submit" variant="contained">Schedule Session</Button>
           </DialogActions>
         </Box>
       </Dialog>
 
       {/* Add Presentation Dialog */}
       <Dialog open={openPresentationModal} onClose={() => setOpenPresentationModal(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800 }}>Schedule Paper in Session</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 800 }}>Add Paper Presentation to Session</DialogTitle>
         <Box component="form" onSubmit={handleAddPresentation}>
           <DialogContent>
             <Grid container spacing={2}>
@@ -361,14 +394,14 @@ export default function ConferenceSchedulePage() {
                 <TextField
                   fullWidth
                   select
-                  label="Accepted Paper"
+                  label="Select Accepted Paper *"
                   required
                   value={presentationForm.submissionId}
                   onChange={(e) => setPresentationForm({ ...presentationForm, submissionId: e.target.value })}
                 >
                   {acceptedPapers.map((p) => (
                     <MenuItem key={p.id} value={p.id}>
-                      {p.submission_number} - {p.title}
+                      {p.submission_number} — {p.title}
                     </MenuItem>
                   ))}
                 </TextField>

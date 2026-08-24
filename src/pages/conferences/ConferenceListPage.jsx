@@ -14,6 +14,8 @@ import {
   TextField,
   MenuItem,
   Divider,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
@@ -51,6 +53,7 @@ export default function ConferenceListPage() {
     tracksInput: 'Artificial Intelligence, Cloud Computing, Cyber Security, IoT',
   });
   const [saving, setSaving] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -79,8 +82,9 @@ export default function ConferenceListPage() {
       await refreshConferences();
       selectConference(res.data.conference);
       setOpenModal(false);
+      setSnackbar({ open: true, message: 'Conference created successfully!', severity: 'success' });
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to create conference');
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to create conference', severity: 'error' });
     } finally {
       setSaving(false);
     }
@@ -335,6 +339,18 @@ export default function ConferenceListPage() {
           </DialogActions>
         </Box>
       </Dialog>
+
+      {/* Global Toast Feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

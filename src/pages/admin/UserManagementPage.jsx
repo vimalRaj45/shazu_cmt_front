@@ -24,6 +24,7 @@ import {
   Alert,
 } from '@mui/material';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const ROLE_CONFIG = {
@@ -95,13 +96,16 @@ export default function UserManagementPage() {
 
   return (
     <Box sx={{ pb: 4 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-          User Directory & Access Control
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Manage system users, assign institutional roles, and update permissions
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+            User Directory & Access Control
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage system users, assign institutional roles, and update permissions
+          </Typography>
+        </Box>
       </Box>
 
       {/* Filter Bar */}

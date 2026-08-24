@@ -29,26 +29,16 @@ const ROLE_CONFIG = {
 };
 
 export default function Navbar({ onMobileToggle }) {
-  const { user, activeRole, switchActiveRole, logout } = useAuth();
+  const { user, activeRole, logout } = useAuth();
   const { conferences, selectedConference, selectConference } = useConference();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [roleMenuAnchor, setRoleMenuAnchor] = useState(null);
 
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setAnchorEl(null);
 
-  const handleRoleMenuOpen = (event) => setRoleMenuAnchor(event.currentTarget);
-  const handleRoleMenuClose = () => setRoleMenuAnchor(null);
-
-  const handleSwitchRole = (role) => {
-    switchActiveRole(role);
-    handleRoleMenuClose();
-    navigate('/dashboard');
-  };
-
-  const currentRoleStyle = ROLE_CONFIG[activeRole] || ROLE_CONFIG.participant;
+  const currentRoleStyle = ROLE_CONFIG[activeRole || user?.role] || ROLE_CONFIG.author;
 
   return (
     <AppBar
@@ -168,64 +158,25 @@ export default function Navbar({ onMobileToggle }) {
           />
         </Box>
 
-        {/* User Role Switcher & Profile Details */}
+        {/* User Role Badge (Read-Only) & Profile Details */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
-          {/* Professional Role Badge */}
-          <Tooltip title="Switch perspective view">
-            <Chip
-              onClick={handleRoleMenuOpen}
-              label={currentRoleStyle.label}
-              size="small"
-              sx={{
-                backgroundColor: currentRoleStyle.bg,
-                color: currentRoleStyle.text,
-                border: `1px solid ${currentRoleStyle.border}`,
-                fontWeight: 700,
-                cursor: 'pointer',
-                fontSize: { xs: '0.725rem', sm: '0.8rem' },
-                height: 30,
-                px: 0.5,
-                '&:hover': { opacity: 0.9, backgroundColor: '#E3F2FD' },
-              }}
-              icon={<i className={`bi ${currentRoleStyle.icon}`} style={{ marginLeft: 6, color: currentRoleStyle.text, fontSize: '0.85rem' }}></i>}
-            />
-          </Tooltip>
-
-          {/* Role Switching Menu */}
-          <Menu
-            anchorEl={roleMenuAnchor}
-            open={Boolean(roleMenuAnchor)}
-            onClose={handleRoleMenuClose}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            PaperProps={{ sx: { minWidth: 200, p: 0.5, border: '1px solid #E2E8F0', borderRadius: 2 } }}
-          >
-            <Typography variant="caption" sx={{ px: 2, py: 1, fontWeight: 700, color: '#1565C0', display: 'block', letterSpacing: '0.04em' }}>
-              PERSPECTIVE VIEW
-            </Typography>
-            {Object.keys(ROLE_CONFIG).map((roleKey) => {
-              const cfg = ROLE_CONFIG[roleKey];
-              return (
-                <MenuItem
-                  key={roleKey}
-                  onClick={() => handleSwitchRole(roleKey)}
-                  selected={activeRole === roleKey}
-                  sx={{
-                    borderRadius: 1.5,
-                    my: 0.25,
-                    mx: 0.5,
-                    '&.Mui-selected': { backgroundColor: '#E3F2FD', color: '#1565C0', fontWeight: 700 },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 28 }}>
-                    <i className={`bi ${cfg.icon}`} style={{ color: activeRole === roleKey ? '#1565C0' : '#64748B' }}></i>
-                  </ListItemIcon>
-                  <ListItemText primary={cfg.label} primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: activeRole === roleKey ? 700 : 500 }} />
-                  {activeRole === roleKey && <i className="bi bi-check2" style={{ color: '#1565C0', fontWeight: 'bold' }}></i>}
-                </MenuItem>
-              );
-            })}
-          </Menu>
+          {/* Static Professional Role Badge */}
+          <Chip
+            label={currentRoleStyle.label}
+            size="small"
+            sx={{
+              backgroundColor: currentRoleStyle.bg,
+              color: currentRoleStyle.text,
+              border: `1px solid ${currentRoleStyle.border}`,
+              fontWeight: 800,
+              fontSize: { xs: '0.725rem', sm: '0.8rem' },
+              height: 30,
+              px: 0.5,
+              borderRadius: 1,
+              userSelect: 'none',
+            }}
+            icon={<i className={`bi ${currentRoleStyle.icon}`} style={{ marginLeft: 6, color: currentRoleStyle.text, fontSize: '0.85rem' }}></i>}
+          />
 
           {/* User Profile Avatar & Menu */}
           <Box

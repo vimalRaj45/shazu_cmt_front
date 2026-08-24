@@ -18,6 +18,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
+  MenuItem,
+  Grid,
   Alert,
   Snackbar,
   CircularProgress,
@@ -26,6 +29,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const STATUS_CONFIG = {
@@ -149,14 +153,17 @@ export default function AuthorSubmissionsPage() {
 
   return (
     <Box sx={{ pb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-            My Submissions
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage your submitted manuscripts, track review progress, and submit revisions
-          </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton fallbackUrl="/dashboard" />
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+              My Submissions
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Manage your submitted manuscripts, track review progress, and submit revisions
+            </Typography>
+          </Box>
         </Box>
         <Button
           variant="contained"

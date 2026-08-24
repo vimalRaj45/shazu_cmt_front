@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 export default function CameraReadyPage() {
@@ -74,13 +75,16 @@ export default function CameraReadyPage() {
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-          Camera-Ready Papers Approval Desk
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Inspect final publication-ready manuscripts, verify formatting, and approve papers for proceedings
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+            Camera-Ready Papers Approval Desk
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Inspect final publication-ready manuscripts, verify formatting, and approve papers for proceedings
+          </Typography>
+        </Box>
       </Box>
 
       <Card sx={{ p: 1, border: '1px solid #E2E8F0', borderRadius: 3 }}>

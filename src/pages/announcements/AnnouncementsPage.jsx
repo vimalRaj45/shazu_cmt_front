@@ -17,6 +17,9 @@ import {
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import { Snackbar } from '@mui/material';
 import api from '../../services/api';
 
 export default function AnnouncementsPage() {
@@ -34,6 +37,10 @@ export default function AnnouncementsPage() {
     targetRole: 'all',
   });
   const [saving, setSaving] = useState(false);
+
+  // Confirm delete modal state
+  const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const fetchAnnouncements = async () => {
     if (!selectedConference?.id) return;
@@ -62,34 +69,41 @@ export default function AnnouncementsPage() {
       });
       setOpenModal(false);
       setFormData({ title: '', content: '', targetRole: 'all' });
+      setSnackbar({ open: true, message: 'Announcement published successfully!', severity: 'success' });
       fetchAnnouncements();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to post announcement');
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to post announcement', severity: 'error' });
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this announcement?')) return;
+  const handleDelete = async () => {
+    const id = deleteModal.id;
+    setDeleteModal({ open: false, id: null });
+    if (!id) return;
     try {
       await api.delete(`/announcements/${id}`);
+      setSnackbar({ open: true, message: 'Announcement deleted.', severity: 'info' });
       fetchAnnouncements();
     } catch (err) {
-      alert('Failed to delete announcement');
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to delete announcement', severity: 'error' });
     }
   };
 
   return (
     <Box sx={{ pb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Conference Announcements
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Official bulletins, schedule alerts, and deadline updates
-          </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton fallbackUrl="/dashboard" />
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+              Conference Announcements
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Official bulletins, schedule alerts, and deadline updates
+            </Typography>
+          </Box>
         </Box>
         {(activeRole === 'chair' || activeRole === 'admin') && (
           <Button
@@ -130,7 +144,7 @@ export default function AnnouncementsPage() {
                     </Box>
 
                     {(activeRole === 'chair' || activeRole === 'admin') && (
-                      <Button size="small" color="error" onClick={() => handleDelete(ann.id)}>
+                      <Button size="small" color="error" onClick={() => setDeleteModal({ open: true, id: ann.id })}>
                         Delete
                       </Button>
                     )}
@@ -198,6 +212,29 @@ export default function AnnouncementsPage() {
           </DialogActions>
         </Box>
       </Dialog>
+
+      {/* Confirmation Modal for Deleting Announcement */}
+      <ConfirmModal
+        open={deleteModal.open}
+        title="Delete Announcement"
+        message="Are you sure you want to permanently delete this announcement? This action cannot be undone."
+        confirmText="Delete Announcement"
+        confirmColor="error"
+        onCancel={() => setDeleteModal({ open: false, id: null })}
+        onConfirm={handleDelete}
+      />
+
+      {/* Global Toast Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

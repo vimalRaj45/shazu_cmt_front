@@ -13,6 +13,7 @@ import {
   Chip,
 } from '@mui/material';
 import api from '../../services/api';
+import BackButton from '../../components/common/BackButton';
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState([]);
@@ -35,13 +36,16 @@ export default function AuditLogsPage() {
 
   return (
     <Box sx={{ pb: 4 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800 }}>
-          System Activity & Audit Logs
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Chronological record of key conference events, submissions, assignments, reviews, and decisions
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            System Activity & Audit Logs
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Chronological record of key conference events, submissions, assignments, reviews, and decisions
+          </Typography>
+        </Box>
       </Box>
 
       <Card sx={{ p: 1 }}>

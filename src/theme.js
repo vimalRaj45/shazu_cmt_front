@@ -56,13 +56,13 @@ export const theme = createTheme({
     button: { textTransform: 'none', fontWeight: 600 },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 4, // Clean, lightly rounded default
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 4,
           boxShadow: 'none',
           padding: '7px 16px',
           fontWeight: 600,
@@ -70,7 +70,7 @@ export const theme = createTheme({
           fontSize: '0.85rem',
           transition: 'all 0.15s ease-in-out',
           '&:hover': {
-            boxShadow: '0 2px 8px rgba(21, 101, 192, 0.2)',
+            boxShadow: '0 2px 8px rgba(21, 101, 192, 0.15)',
           },
         },
         containedPrimary: {
@@ -101,7 +101,7 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          borderRadius: 6,
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           boxShadow: '0 1px 3px rgba(15, 41, 66, 0.04)',
@@ -111,8 +111,32 @@ export const theme = createTheme({
     },
     MuiPaper: {
       styleOverrides: {
+        root: {
+          borderRadius: 6,
+        },
         rounded: {
-          borderRadius: 10,
+          borderRadius: 6,
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 6,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
         },
       },
     },
@@ -120,7 +144,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontWeight: 600,
-          borderRadius: 6,
+          borderRadius: 4,
         },
       },
     },
@@ -144,7 +168,7 @@ export const theme = createTheme({
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
+          borderRadius: 2,
           backgroundColor: '#E3F2FD',
         },
         bar: {

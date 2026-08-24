@@ -21,6 +21,7 @@ import {
   FormLabel,
 } from '@mui/material';
 import { LoadingSpinner, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const DECISION_OPTIONS = [
@@ -177,13 +178,16 @@ export default function ReviewerWorkspacePage() {
   return (
     <Box sx={{ pb: 6 }}>
       {/* Header */}
-      <Box sx={{ mb: 3.5 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-          Peer Reviewer Evaluation Workspace
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Microsoft CMT standard 9-question evaluation form for double-blind academic review
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3.5 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+            Peer Reviewer Evaluation Workspace
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Microsoft CMT standard 9-question evaluation form for double-blind academic review
+          </Typography>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>

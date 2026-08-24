@@ -17,19 +17,22 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/common/BackButton';
 
 export default function GuidePage() {
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
-  const { switchActiveRole } = useAuth();
 
-  const handleSwitchRoleAndNavigate = (role, path) => {
-    switchActiveRole(role);
+  const handleNavigate = (path) => {
     navigate(path);
   };
 
   return (
     <Box sx={{ pb: 6 }}>
+      <Box sx={{ mb: 2 }}>
+        <BackButton fallbackUrl="/dashboard" />
+      </Box>
+
       {/* Header Banner */}
       <Paper
         elevation={0}
@@ -37,7 +40,7 @@ export default function GuidePage() {
           mb: 3.5,
           background: 'linear-gradient(135deg, #0F2942 0%, #1565C0 100%)',
           color: '#FFFFFF',
-          borderRadius: 3,
+          borderRadius: 1.5,
           p: { xs: 2.5, md: 3.5 },
           border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
@@ -170,7 +173,7 @@ export default function GuidePage() {
                       fullWidth
                       variant="contained"
                       size="small"
-                      onClick={() => handleSwitchRoleAndNavigate(item.roleKey, item.link)}
+                      onClick={() => handleNavigate(item.link)}
                     >
                       {item.btnText} →
                     </Button>

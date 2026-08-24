@@ -16,6 +16,7 @@ import {
 import { useConference } from '../../context/ConferenceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 export default function ConferenceDetailPage() {
@@ -56,6 +57,10 @@ export default function ConferenceDetailPage() {
 
   return (
     <Box sx={{ pb: 4 }}>
+      <Box sx={{ mb: 2 }}>
+        <BackButton fallbackUrl="/conferences" label="Back to Conferences" />
+      </Box>
+
       {/* Header Banner */}
       <Paper
         elevation={0}

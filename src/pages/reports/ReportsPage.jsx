@@ -17,6 +17,7 @@ import {
   Divider,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 export default function ReportsPage() {
@@ -70,14 +71,17 @@ export default function ReportsPage() {
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Conference Analytics & Export Reports
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Comprehensive track distribution, review completion metrics, and paper export data
-          </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton fallbackUrl="/dashboard" />
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+              Conference Analytics & Export Reports
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Comprehensive track distribution, review completion metrics, and paper export data
+            </Typography>
+          </Box>
         </Box>
         <Button
           variant="contained"

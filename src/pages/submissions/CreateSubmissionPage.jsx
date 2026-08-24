@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 export default function CreateSubmissionPage() {
@@ -182,13 +183,16 @@ export default function CreateSubmissionPage() {
 
   return (
     <Box sx={{ pb: 6, maxWidth: 1000, mx: 'auto' }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800 }}>
-          Submit New Manuscript
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Upload your academic research paper to the conference peer review pipeline
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/my-submissions" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            Submit New Manuscript
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Upload your academic research paper to the conference peer review pipeline
+          </Typography>
+        </Box>
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}

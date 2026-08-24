@@ -24,9 +24,11 @@ import {
   Paper,
   Divider,
   Grid,
+  Snackbar,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 export default function DecisionsPage() {
@@ -43,12 +45,13 @@ export default function DecisionsPage() {
     submission: null,
     reviews: [],
   });
-
   const [decisionValue, setDecisionValue] = useState('accept');
   const [decisionNotes, setDecisionNotes] = useState('');
   const [notifyAuthor, setNotifyAuthor] = useState(true);
   const [saving, setSaving] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [modalError, setModalError] = useState('');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
   const fetchSubmissions = async () => {
     if (!selectedConference?.id) return;
@@ -67,15 +70,15 @@ export default function DecisionsPage() {
     fetchSubmissions();
   }, [selectedConference]);
 
-  const handleOpenDecision = async (sub) => {
+  const handleOpenDecisionModal = async (sub) => {
     try {
-      const res = await api.get(`/reviews/submission/${sub.id}`);
+      const revRes = await api.get(`/reviews/submission/${sub.id}`);
       const decRes = await api.get(`/decisions/submission/${sub.id}`);
 
       setDecisionModal({
         open: true,
         submission: sub,
-        reviews: res.data.reviews || [],
+        reviews: revRes.data.reviews || [],
       });
 
       if (decRes.data.decision) {
@@ -86,14 +89,16 @@ export default function DecisionsPage() {
         setDecisionNotes('');
       }
       setFeedbackMsg('');
+      setModalError('');
     } catch (err) {
-      alert('Failed to load submission review details');
+      setSnackbar({ open: true, message: 'Failed to load submission review details', severity: 'error' });
     }
   };
 
   const handleSaveDecision = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setModalError('');
     try {
       await api.post(`/decisions/submission/${decisionModal.submission.id}`, {
         decision: decisionValue,
@@ -107,7 +112,7 @@ export default function DecisionsPage() {
         fetchSubmissions();
       }, 1500);
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to save decision');
+      setModalError(err.response?.data?.error || 'Failed to save decision');
     } finally {
       setSaving(false);
     }
@@ -133,13 +138,16 @@ export default function DecisionsPage() {
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-          Paper Decisions Desk
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Review peer evaluations, calibrate scores, and finalize accept/reject/revision outcomes
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+            Paper Decisions Desk
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Review peer evaluations, calibrate scores, and finalize accept/reject/revision outcomes
+          </Typography>
+        </Box>
       </Box>
 
       {/* Search & Filter Bar */}
@@ -257,7 +265,7 @@ export default function DecisionsPage() {
                       <Button
                         variant="contained"
                         size="small"
-                        onClick={() => handleOpenDecision(sub)}
+                        onClick={() => handleOpenDecisionModal(sub)}
                         startIcon={<i className="bi bi-pencil-square"></i>}
                       >
                         {sub.decision ? 'Edit Decision' : 'Make Decision'}
@@ -279,6 +287,7 @@ export default function DecisionsPage() {
         <Box component="form" onSubmit={handleSaveDecision}>
           <DialogContent sx={{ pt: 3 }}>
             {feedbackMsg && <Alert severity="success" sx={{ mb: 2 }}>{feedbackMsg}</Alert>}
+            {modalError && <Alert severity="error" sx={{ mb: 2 }}>{modalError}</Alert>}
 
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#1565C0' }}>
               {decisionModal.submission?.title}
@@ -307,35 +316,18 @@ export default function DecisionsPage() {
                       size="small"
                       sx={{
                         fontWeight: 800,
-                        backgroundColor: '#E3F2FD',
-                        color: '#1565C0',
+                        backgroundColor: '#DCFCE7',
+                        color: '#166534',
                       }}
                     />
                   </Box>
 
-                  {/* 9 CMT Questions Summary */}
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1, mb: 1.5, backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
-                    <Typography variant="caption">1. Relevance: <strong>{rev.q_relevance || 'Relevant'}</strong></Typography>
-                    <Typography variant="caption">2. Structure: <strong>{rev.q_structure || 'Good'}</strong></Typography>
-                    <Typography variant="caption">3. Language: <strong>{rev.q_language || 'Good'}</strong></Typography>
-                    <Typography variant="caption">4. Figures/Tables: <strong>{rev.q_figures_tables || 'Well Defined'}</strong></Typography>
-                    <Typography variant="caption">5. Conclusions: <strong>{rev.q_discussion_conclusions || 'Good'}</strong></Typography>
-                    <Typography variant="caption">6. References Cited: <strong>{rev.q_references_cited || 'Yes'}</strong></Typography>
-                  </Box>
-
-                  <Typography variant="caption" sx={{ fontWeight: 800, display: 'block', color: '#1565C0' }}>7. Comments to Authors:</Typography>
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334155', mb: 1.5, p: 1, backgroundColor: '#EFF6FF', borderRadius: 1 }}>
-                    {rev.q_comments_authors || rev.comments_for_authors || 'No comments for author.'}
+                  <Typography variant="body2" sx={{ color: '#334155', mb: 1 }}>
+                    <strong>Review Score:</strong> {rev.overall_score} / 5
                   </Typography>
-
-                  {(rev.q_special_comments_editor || rev.confidential_chair_notes) && (
-                    <Paper sx={{ p: 1.5, backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 1.5 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#92400E' }}>🔒 8. Special Comments to Editor / Chair:</Typography>
-                      <Typography variant="body2" sx={{ display: 'block', color: '#78350F', mt: 0.25 }}>
-                        {rev.q_special_comments_editor || rev.confidential_chair_notes}
-                      </Typography>
-                    </Paper>
-                  )}
+                  <Typography variant="body2" sx={{ color: '#475569', fontStyle: 'italic', backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 1.5 }}>
+                    "{rev.comments_for_authors || rev.q_comments_authors || 'No comments provided'}"
+                  </Typography>
                 </Paper>
               ))
             )}
@@ -344,35 +336,30 @@ export default function DecisionsPage() {
 
             {/* Decision Controls */}
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#0F2942' }}>
-              Final Program Committee Decision
+              Final Program Chair Decision
             </Typography>
 
-            <Grid container spacing={2}>
+            <Grid container spacing={2.5}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   select
-                  label="Decision Outcome"
+                  label="Decision Outcome *"
                   value={decisionValue}
                   onChange={(e) => setDecisionValue(e.target.value)}
                   required
                 >
-                  <MenuItem value="accept">Accept Paper</MenuItem>
-                  <MenuItem value="revision_required">Revision Required</MenuItem>
-                  <MenuItem value="reject">Reject Paper</MenuItem>
+                  <MenuItem value="accept">Accept (Proceed to Camera-Ready)</MenuItem>
+                  <MenuItem value="revision_required">Revision Required (Author must re-submit)</MenuItem>
+                  <MenuItem value="reject">Reject</MenuItem>
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid item xs={12} sm={6}>
                 <FormControlLabel
-                  control={
-                    <Switch
-                      checked={notifyAuthor}
-                      onChange={(e) => setNotifyAuthor(e.target.checked)}
-                      color="primary"
-                    />
-                  }
-                  label="Send Automated Brevo Email to Authors"
+                  control={<Switch checked={notifyAuthor} onChange={(e) => setNotifyAuthor(e.target.checked)} color="primary" />}
+                  label="Notify Authors via Email Broadcast"
+                  sx={{ mt: 1 }}
                 />
               </Grid>
 
@@ -399,6 +386,18 @@ export default function DecisionsPage() {
           </DialogActions>
         </Box>
       </Dialog>
+
+      {/* Global Toast Feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

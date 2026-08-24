@@ -18,10 +18,13 @@ import {
   IconButton,
   Tooltip,
   Autocomplete,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const STATUS_CHIPS = {
@@ -44,6 +47,7 @@ export default function ChairSubmissionsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
 
   const fetchSubmissions = async () => {
     if (!selectedConference?.id) return;
@@ -78,21 +82,24 @@ export default function ChairSubmissionsPage() {
       const res = await api.get(`/submissions/files/${file.id}/download`);
       window.open(res.data.downloadUrl || res.data.publicUrl, '_blank');
     } catch (err) {
-      alert('Failed to download file');
+      setSnackbar({ open: true, message: 'Failed to download file', severity: 'error' });
     }
   };
 
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-            Conference Submissions Master Table
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {selectedConference?.name} ({selectedConference?.short_name})
-          </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton fallbackUrl="/dashboard" />
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+              Conference Submissions Master Table
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {selectedConference?.name} ({selectedConference?.short_name})
+            </Typography>
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button variant="outlined" onClick={() => navigate('/chair/reviewers')} startIcon={<i className="bi bi-person-check"></i>}>
@@ -294,6 +301,18 @@ export default function ChairSubmissionsPage() {
           </TableContainer>
         )}
       </Card>
+
+      {/* Global Toast Feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

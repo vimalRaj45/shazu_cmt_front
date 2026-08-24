@@ -25,6 +25,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const STATUS_CHIPS = {
@@ -188,13 +189,17 @@ export default function SubmissionDetailPage() {
         </Button>
       </Box>
 
+      <Box sx={{ mb: 2.5 }}>
+        <BackButton fallbackUrl="/my-submissions" label="Back to Submissions" />
+      </Box>
+
       <Paper
         elevation={0}
         sx={{
           p: 3.5,
           mb: 3.5,
           border: '1px solid #E2E8F0',
-          borderRadius: 3,
+          borderRadius: 1.5,
           backgroundColor: '#FFFFFF',
         }}
       >
@@ -535,7 +540,7 @@ export default function SubmissionDetailPage() {
           </Card>
 
           {/* Authors List */}
-          <Card sx={{ border: '1px solid #E2E8F0', borderRadius: 2.5 }}>
+          <Card sx={{ border: '1px solid #E2E8F0', borderRadius: 2.5, mb: 3 }}>
             <CardContent sx={{ p: 2.5 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 2, color: '#0F2942', display: 'flex', alignItems: 'center', gap: 1 }}>
                 <i className="bi bi-people text-primary"></i> Authors List
@@ -562,6 +567,72 @@ export default function SubmissionDetailPage() {
               </List>
             </CardContent>
           </Card>
+
+          {/* Assigned Reviewers Panel (Visible to Chair & Admin) */}
+          {(user?.role === 'admin' || user?.activeRole === 'chair') && (
+            <Card sx={{ border: '1px solid #E2E8F0', borderRadius: 2.5 }}>
+              <CardContent sx={{ p: 2.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F2942', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <i className="bi bi-person-check-fill text-primary"></i> Assigned Reviewers
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => navigate(`/chair/reviewers?subId=${submission.id}`)}
+                    sx={{ textTransform: 'none', fontSize: '0.75rem', fontWeight: 700, borderRadius: 1 }}
+                  >
+                    Manage
+                  </Button>
+                </Box>
+
+                {reviews.length === 0 ? (
+                  <Box sx={{ p: 2, textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px dashed #CBD5E1' }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                      No reviewers assigned yet
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => navigate(`/chair/reviewers?subId=${submission.id}`)}
+                      sx={{ textTransform: 'none', fontSize: '0.75rem', fontWeight: 700, borderRadius: 1 }}
+                    >
+                      Assign Reviewers Now
+                    </Button>
+                  </Box>
+                ) : (
+                  <List disablePadding>
+                    {reviews.map((rev, idx) => (
+                      <Paper key={rev.id || idx} elevation={0} sx={{ p: 1.5, mb: 1, border: '1.5px solid #BFDBFE', backgroundColor: '#F8FAFC', borderRadius: 1.5 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.25 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1565C0' }}>
+                            {rev.reviewer_first_name} {rev.reviewer_last_name}
+                          </Typography>
+                          <Chip
+                            label={rev.q_reviewer_decision ? 'Evaluated' : 'Pending'}
+                            size="small"
+                            color={rev.q_reviewer_decision ? 'success' : 'default'}
+                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700 }}
+                          />
+                        </Box>
+                        <Typography variant="caption" display="block" color="text.secondary">
+                          {rev.reviewer_email}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="text.secondary">
+                          {rev.reviewer_institution}
+                        </Typography>
+                        {rev.overall_score && (
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: '#166534', mt: 0.5, display: 'block' }}>
+                            Score: {rev.overall_score} / 5
+                          </Typography>
+                        )}
+                      </Paper>
+                    ))}
+                  </List>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </Grid>
       </Grid>
 

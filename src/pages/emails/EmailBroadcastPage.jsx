@@ -20,6 +20,7 @@ import {
   Divider,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
+import BackButton from '../../components/common/BackButton';
 import api from '../../services/api';
 
 const EMAIL_TEMPLATES = [
@@ -113,13 +114,16 @@ export default function EmailBroadcastPage() {
 
   return (
     <Box sx={{ pb: 4 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800 }}>
-          Brevo Email Communication & Broadcast Desk
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Dispatch announcements, reminders, and notifications via Brevo Email API with audit delivery logs
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton fallbackUrl="/dashboard" />
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            Brevo Email Communication & Broadcast Desk
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Dispatch announcements, reminders, and notifications via Brevo Email API with audit delivery logs
+          </Typography>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>
