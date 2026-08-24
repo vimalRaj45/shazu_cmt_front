@@ -245,20 +245,26 @@ export default function Login() {
               variant="contained"
               size="large"
               disabled={loading || orcidLoading}
-              startIcon={!loading && <LoginIcon />}
+              startIcon={loading ? <CircularProgress size={18} sx={{ color: '#FFFFFF' }} /> : <LoginIcon />}
               sx={{
                 py: 1.4,
                 fontSize: '0.95rem',
                 fontWeight: 800,
-                borderRadius: 1,
+                borderRadius: 1.5,
+                color: '#FFFFFF',
                 background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
                 boxShadow: '0 4px 14px rgba(21, 101, 192, 0.25)',
+                '&.Mui-disabled': {
+                  background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
+                  color: '#FFFFFF',
+                  opacity: 0.85,
+                },
                 '&:hover': {
                   background: 'linear-gradient(135deg, #0D47A1 0%, #0A3880 100%)',
                 },
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In to CMT Portal'}
+              {loading ? 'Signing In...' : 'Sign In to CMT Portal'}
             </Button>
           </Box>
 

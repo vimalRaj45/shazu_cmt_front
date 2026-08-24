@@ -899,21 +899,27 @@ export default function Register() {
                   type="submit"
                   variant="contained"
                   disabled={loading}
-                  startIcon={!loading && <CheckCircleIcon />}
+                  startIcon={loading ? <CircularProgress size={18} sx={{ color: '#FFFFFF' }} /> : <CheckCircleIcon />}
                   sx={{
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     textTransform: 'none',
                     fontWeight: 800,
-                    px: 3.5,
+                    px: { xs: 2, sm: 3.5 },
                     py: 1.2,
+                    color: '#FFFFFF',
                     background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
                     boxShadow: '0 4px 14px rgba(21, 101, 192, 0.3)',
+                    '&.Mui-disabled': {
+                      background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)',
+                      color: '#FFFFFF',
+                      opacity: 0.85,
+                    },
                     '&:hover': {
                       background: 'linear-gradient(135deg, #0D47A1 0%, #0A3880 100%)',
                     },
                   }}
                 >
-                  {loading ? <CircularProgress size={20} color="inherit" /> : 'Complete Registration & Enter Portal'}
+                  {loading ? 'Registering Account...' : 'Complete Registration & Enter Portal'}
                 </Button>
               )}
             </Box>

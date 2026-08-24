@@ -114,15 +114,16 @@ export default function Navbar({ onMobileToggle }) {
             isOptionEqualToValue={(option, value) => option.id === value.id}
             disableClearable
             sx={{
-              minWidth: { xs: 150, sm: 220, md: 320 },
-              maxWidth: 360,
+              minWidth: { xs: 110, sm: 200, md: 300 },
+              maxWidth: { xs: 150, sm: 260, md: 360 },
               backgroundColor: '#F8FAFC',
-              borderRadius: 2,
+              borderRadius: 1.5,
               '& .MuiOutlinedInput-root': {
-                fontSize: '0.825rem',
+                fontSize: { xs: '0.75rem', sm: '0.825rem' },
                 fontWeight: 600,
                 color: '#0F2942',
                 py: '2px',
+                px: { xs: '6px', sm: '10px' },
                 '& fieldset': { borderColor: '#CBD5E1' },
                 '&:hover fieldset': { borderColor: '#1565C0' },
               },
@@ -130,12 +131,12 @@ export default function Navbar({ onMobileToggle }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Search Conference..."
+                placeholder="Conference..."
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
                     <>
-                      <i className="bi bi-calendar-check" style={{ color: '#1565C0', marginRight: 6, fontSize: '0.9rem' }}></i>
+                      <i className="bi bi-calendar-check" style={{ color: '#1565C0', marginRight: 6, fontSize: '0.85rem' }}></i>
                       {params.InputProps.startAdornment}
                     </>
                   ),
@@ -158,13 +159,14 @@ export default function Navbar({ onMobileToggle }) {
           />
         </Box>
 
-        {/* User Role Badge (Read-Only) & Profile Details */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
-          {/* Static Professional Role Badge */}
+        {/* User Role Badge & Profile Details */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.5 } }}>
+          {/* Static Professional Role Badge (Compact on Mobile) */}
           <Chip
             label={currentRoleStyle.label}
             size="small"
             sx={{
+              display: { xs: 'none', sm: 'inline-flex' },
               backgroundColor: currentRoleStyle.bg,
               color: currentRoleStyle.text,
               border: `1px solid ${currentRoleStyle.border}`,

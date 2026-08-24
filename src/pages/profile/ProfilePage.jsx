@@ -243,25 +243,26 @@ export default function ProfilePage() {
         {/* Sleek Gradient Header Bar */}
         <Box
           sx={{
-            minHeight: 110,
+            minHeight: { xs: 'auto', sm: 110 },
             background: 'linear-gradient(135deg, #0A3D8F 0%, #1565C0 50%, #0288D1 100%)',
-            px: { xs: 2.5, sm: 4 },
-            pt: 3,
-            pb: 2,
+            px: { xs: 2, sm: 4 },
+            py: { xs: 2, sm: 3 },
             display: 'flex',
-            alignItems: 'flex-start',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'stretch', sm: 'center' },
             justifyContent: 'space-between',
+            gap: { xs: 1.5, sm: 2 },
             position: 'relative',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'rgba(255, 255, 255, 0.85)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'rgba(255, 255, 255, 0.9)' }}>
             <i className="bi bi-person-badge" style={{ fontSize: '1.1rem' }} />
-            <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               Academic Scholar Profile
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, alignSelf: { xs: 'flex-start', sm: 'center' } }}>
             {!editMode ? (
               <Button
                 variant="contained"
@@ -312,7 +313,7 @@ export default function ProfilePage() {
                   variant="contained"
                   onClick={handleSaveProfile}
                   disabled={saving}
-                  startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-check-lg" />}
+                  startIcon={saving ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check-lg" />}
                   sx={{
                     background: '#16A34A',
                     color: '#FFFFFF',
@@ -322,6 +323,11 @@ export default function ProfilePage() {
                     borderRadius: 2,
                     px: 2.5,
                     boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
+                    '&.Mui-disabled': {
+                      background: '#16A34A',
+                      color: '#FFFFFF',
+                      opacity: 0.85,
+                    },
                     '&:hover': { background: '#15803D' },
                   }}
                 >

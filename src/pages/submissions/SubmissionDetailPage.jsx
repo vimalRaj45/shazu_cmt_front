@@ -740,9 +740,19 @@ export default function SubmissionDetailPage() {
             />
           </DialogContent>
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
-            <Button onClick={() => setOpenRevisionModal(false)}>Cancel</Button>
-            <Button type="submit" variant="contained" color="warning" disabled={submittingRevision} sx={{ fontWeight: 700 }}>
-              {submittingRevision ? <CircularProgress size={20} color="inherit" /> : 'Confirm & Submit Revision'}
+            <Button
+              type="submit"
+              variant="contained"
+              color="warning"
+              disabled={submittingRevision}
+              startIcon={submittingRevision ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-cloud-arrow-up" />}
+              sx={{
+                fontWeight: 700,
+                borderRadius: 1.5,
+                '&.Mui-disabled': { backgroundColor: '#D97706', color: '#FFFFFF', opacity: 0.85 },
+              }}
+            >
+              {submittingRevision ? 'Submitting Revision...' : 'Confirm & Submit Revision'}
             </Button>
           </DialogActions>
         </Box>

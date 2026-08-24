@@ -373,9 +373,18 @@ export default function AuthorSubmissionsPage() {
             )}
           </DialogContent>
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
-            <Button onClick={() => setUploadModal({ ...uploadModal, open: false })}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={uploading}>
-              {uploading ? <CircularProgress size={22} color="inherit" /> : 'Confirm Upload'}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={uploading}
+              startIcon={uploading ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-cloud-arrow-up" />}
+              sx={{
+                fontWeight: 700,
+                borderRadius: 1.5,
+                '&.Mui-disabled': { backgroundColor: '#1565C0', color: '#FFFFFF', opacity: 0.85 },
+              }}
+            >
+              {uploading ? 'Uploading File...' : 'Confirm Upload'}
             </Button>
           </DialogActions>
         </Box>

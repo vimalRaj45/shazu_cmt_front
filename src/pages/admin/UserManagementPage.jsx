@@ -253,8 +253,18 @@ export default function UserManagementPage() {
           </DialogContent>
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
             <Button onClick={() => setEditModal({ open: false, user: null, role: '' })}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={savingRole}>
-              {savingRole ? <CircularProgress size={20} color="inherit" /> : 'Save Role'}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={savingRole}
+              startIcon={savingRole ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check2" />}
+              sx={{
+                fontWeight: 700,
+                borderRadius: 1.5,
+                '&.Mui-disabled': { backgroundColor: '#1565C0', color: '#FFFFFF', opacity: 0.85 },
+              }}
+            >
+              {savingRole ? 'Saving Role...' : 'Save Role'}
             </Button>
           </DialogActions>
         </Box>

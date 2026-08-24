@@ -914,8 +914,18 @@ export default function ReviewerAssignmentPage() {
           </DialogContent>
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
             <Button onClick={() => setOpenInviteModal(false)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={inviting}>
-              {inviting ? <CircularProgress size={20} color="inherit" /> : 'Add to Committee'}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={inviting}
+              startIcon={inviting ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-person-plus" />}
+              sx={{
+                fontWeight: 700,
+                borderRadius: 1.5,
+                '&.Mui-disabled': { backgroundColor: '#1565C0', color: '#FFFFFF', opacity: 0.85 },
+              }}
+            >
+              {inviting ? 'Adding to Committee...' : 'Add to Committee'}
             </Button>
           </DialogActions>
         </Box>
