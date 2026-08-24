@@ -67,8 +67,8 @@ export default function ConferenceDetailPage() {
         sx={{
           p: 4,
           mb: 3.5,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 60%, #0D9488 100%)',
+          borderRadius: 2.5,
+          background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 60%, #527A68 100%)',
           color: '#FFFFFF',
         }}
       >

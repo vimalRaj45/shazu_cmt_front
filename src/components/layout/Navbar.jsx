@@ -17,15 +17,16 @@ import {
   ListItemText,
   Autocomplete,
   TextField,
+  Popper,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
 
 const ROLE_CONFIG = {
-  admin: { bg: '#EFF6FF', text: '#1565C0', border: '#BFDBFE', label: 'Administrator', icon: 'bi-shield-lock' },
-  reviewer: { bg: '#F0F9FF', text: '#0284C7', border: '#BAE6FD', label: 'Peer Reviewer', icon: 'bi-journal-check' },
-  author: { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0', label: 'Author', icon: 'bi-file-earmark-text' },
+  admin: { bg: '#E8EFEB', text: '#123B32', border: '#527A68', label: 'Administrator', icon: 'bi-shield-lock' },
+  reviewer: { bg: '#E8EFEB', text: '#2F5B4E', border: '#527A68', label: 'Peer Reviewer', icon: 'bi-journal-check' },
+  author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author', icon: 'bi-file-earmark-text' },
 };
 
 export default function Navbar({ onMobileToggle }) {
@@ -38,7 +39,13 @@ export default function Navbar({ onMobileToggle }) {
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setAnchorEl(null);
 
-  const currentRoleStyle = ROLE_CONFIG[activeRole || user?.role] || ROLE_CONFIG.author;
+  const handleLogout = () => {
+    handleProfileMenuClose();
+    logout();
+    navigate('/login');
+  };
+
+  const currentRoleStyle = ROLE_CONFIG[activeRole] || ROLE_CONFIG.author;
 
   return (
     <AppBar
@@ -46,8 +53,8 @@ export default function Navbar({ onMobileToggle }) {
       elevation={0}
       sx={{
         backgroundColor: '#FFFFFF',
-        color: '#0F2942',
-        borderBottom: '1px solid #E2E8F0',
+        color: '#26322E',
+        borderBottom: '1px solid #D3DDD7',
         zIndex: (theme) => theme.zIndex.drawer + 1,
         width: '100%',
       }}
@@ -113,17 +120,34 @@ export default function Navbar({ onMobileToggle }) {
             }}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             disableClearable
+            PopperComponent={(props) => (
+              <Popper
+                {...props}
+                sx={{
+                  width: { xs: '290px !important', sm: '360px !important' },
+                  boxShadow: '0 8px 24px rgba(18, 59, 50, 0.15)',
+                  borderRadius: 2,
+                  zIndex: (theme) => theme.zIndex.modal + 1,
+                  '& .MuiPaper-root': {
+                    border: '1px solid #D3DDD7',
+                    borderRadius: 2,
+                    mt: 0.5,
+                  },
+                }}
+                placement="bottom-start"
+              />
+            )}
             sx={{
-              minWidth: { xs: 125, sm: 190, md: 280 },
-              maxWidth: { xs: 170, sm: 260, md: 360 },
+              minWidth: { xs: 120, sm: 190, md: 280 },
+              maxWidth: { xs: 160, sm: 260, md: 360 },
               backgroundColor: '#FFFFFF',
               borderRadius: 1.5,
               '& .MuiOutlinedInput-root': {
-                fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                fontSize: { xs: '0.75rem', sm: '0.85rem' },
                 fontWeight: 700,
                 color: '#123B32',
                 py: '2px',
-                px: { xs: '6px', sm: '10px' },
+                px: { xs: '4px', sm: '8px' },
                 '& fieldset': { borderColor: '#D3DDD7' },
                 '&:hover fieldset': { borderColor: '#123B32' },
                 '&.Mui-focused fieldset': { borderColor: '#123B32' },
@@ -145,11 +169,11 @@ export default function Navbar({ onMobileToggle }) {
               />
             )}
             renderOption={(props, option) => (
-              <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1.25, py: 1 }}>
+              <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1.25, py: 1.25, px: 1.5, borderBottom: '1px solid #F5F3EC' }}>
                 <Box
                   sx={{
-                    width: 28,
-                    height: 28,
+                    width: 32,
+                    height: 32,
                     borderRadius: 1,
                     backgroundColor: '#E8EFEB',
                     color: '#123B32',
@@ -159,13 +183,13 @@ export default function Navbar({ onMobileToggle }) {
                     flexShrink: 0,
                   }}
                 >
-                  <i className="bi bi-calendar2-check" style={{ fontSize: '0.85rem' }}></i>
+                  <i className="bi bi-calendar2-check" style={{ fontSize: '0.95rem' }}></i>
                 </Box>
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2, whiteSpace: 'normal' }}>
                     {option.short_name}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#334E43', display: 'block', fontSize: '0.75rem', mt: 0.25 }}>
+                  <Typography variant="caption" sx={{ color: '#334E43', display: 'block', fontSize: '0.75rem', mt: 0.25, whiteSpace: 'normal', lineHeight: 1.4 }}>
                     {option.name}
                   </Typography>
                 </Box>

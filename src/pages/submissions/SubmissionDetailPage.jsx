@@ -183,12 +183,6 @@ export default function SubmissionDetailPage() {
   return (
     <Box sx={{ pb: 6 }}>
       {/* Header Info */}
-      <Box sx={{ mb: 2 }}>
-        <Button variant="outlined" size="small" onClick={() => navigate(-1)} startIcon={<i className="bi bi-arrow-left"></i>}>
-          Back to Submissions
-        </Button>
-      </Box>
-
       <Box sx={{ mb: 2.5 }}>
         <BackButton fallbackUrl="/my-submissions" label="Back to Submissions" />
       </Box>
