@@ -4,46 +4,46 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1565C0', // Royal Blue
-      light: '#42A5F5',
-      dark: '#0D47A1',
+      main: '#123B32', // Brand Primary (Deep Emerald)
+      light: '#2F5B4E',
+      dark: '#0B241E',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#0288D1', // Bright Azure Blue
-      light: '#29B6F6',
-      dark: '#01579B',
+      main: '#2F5B4E', // Brand Secondary
+      light: '#527A68',
+      dark: '#123B32',
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#F4F7FB', // Crisp Light Canvas
-      paper: '#FFFFFF',
+      default: '#F5F3EC', // Brand BG
+      paper: '#FFFFFF', // Brand Surface
     },
     text: {
-      primary: '#0F2942', // Deep Navy Text
-      secondary: '#4A657E',
+      primary: '#26322E', // Brand Text
+      secondary: '#334E43', // Brand Text Secondary
     },
     info: {
-      main: '#1976D2',
-      light: '#E3F2FD',
-      dark: '#0D47A1',
+      main: '#2F5B4E',
+      light: '#E8EFEB',
+      dark: '#123B32',
     },
     success: {
-      main: '#0284C7',
-      light: '#E0F2FE',
-      dark: '#0369A1',
+      main: '#123B32',
+      light: '#E8EFEB',
+      dark: '#0B241E',
     },
     warning: {
-      main: '#D97706',
-      light: '#FEF3C7',
-      dark: '#92400E',
+      main: '#C47D4C', // Brand Copper
+      light: '#FBEFE7',
+      dark: '#9A5B31',
     },
     error: {
       main: '#DC2626',
       light: '#FEE2E2',
       dark: '#991B1B',
     },
-    divider: '#E2E8F0',
+    divider: '#D3DDD7', // Brand Border
   },
   typography: {
     fontFamily: '"Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif',
