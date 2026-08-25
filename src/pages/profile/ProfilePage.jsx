@@ -19,12 +19,13 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 const ROLE_BADGES = {
-  admin: { label: 'Administrator', bg: '#EFF6FF', color: '#1565C0', border: '#BFDBFE', icon: 'bi-shield-lock-fill' },
-  reviewer: { label: 'Peer Reviewer', bg: '#F0F9FF', color: '#0284C7', border: '#BAE6FD', icon: 'bi-journal-check' },
-  author: { label: 'Author', bg: '#F0FDF4', color: '#15803D', border: '#BBF7D0', icon: 'bi-file-earmark-text' },
+  admin: { label: 'Administrator', bg: '#E8EFEB', color: '#123B32', border: '#527A68', icon: 'bi-shield-lock-fill' },
+  reviewer: { label: 'Peer Reviewer', bg: '#E8EFEB', color: '#2F5B4E', border: '#527A68', icon: 'bi-journal-check' },
+  author: { label: 'Author', bg: '#FBEFE7', color: '#C47D4C', border: '#C47D4C', icon: 'bi-file-earmark-text' },
 };
 
 export default function ProfilePage() {
@@ -34,6 +35,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [syncingOrcid, setSyncingOrcid] = useState(false);
   const [connectingOrcid, setConnectingOrcid] = useState(false);
+  const [showCancelEditConfirm, setShowCancelEditConfirm] = useState(false);
   const [newKeyword, setNewKeyword] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -111,6 +113,33 @@ export default function ProfilePage() {
   useEffect(() => {
     fetchUserProfile();
   }, []);
+
+  const handleCancelClick = () => {
+    const isDirty =
+      formData.firstName !== (profile?.first_name || '') ||
+      formData.lastName !== (profile?.last_name || '') ||
+      formData.institution !== (profile?.institution || '') ||
+      formData.department !== (profile?.department || '') ||
+      formData.country !== (profile?.country || '') ||
+      formData.qualification !== (profile?.qualification || '') ||
+      formData.designation !== (profile?.designation || '') ||
+      formData.domain !== (profile?.domain || '') ||
+      formData.bio !== (profile?.bio || '') ||
+      formData.orcidId !== (profile?.orcid_id || '') ||
+      formData.googleScholarUrl !== (profile?.google_scholar_url || '');
+
+    if (isDirty) {
+      setShowCancelEditConfirm(true);
+    } else {
+      setEditMode(false);
+    }
+  };
+
+  const handleConfirmDiscard = () => {
+    setShowCancelEditConfirm(false);
+    setEditMode(false);
+    fetchUserProfile();
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -267,19 +296,19 @@ export default function ProfilePage() {
         sx={{
           borderRadius: 3,
           overflow: 'hidden',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 10px 30px -10px rgba(15, 23, 42, 0.08)',
+          border: '1px solid #D3DDD7',
+          boxShadow: '0 4px 20px rgba(18, 59, 50, 0.08)',
           backgroundColor: '#FFFFFF',
           mb: 3.5,
         }}
       >
-        {/* Sleek Gradient Header Bar */}
+        {/* Sleek Brand Gradient Header Bar */}
         <Box
           sx={{
-            minHeight: { xs: 'auto', sm: 110 },
-            background: 'linear-gradient(135deg, #0A3D8F 0%, #1565C0 50%, #0288D1 100%)',
+            minHeight: { xs: 'auto', sm: 100 },
+            background: 'linear-gradient(135deg, #123B32 0%, #1D4C40 50%, #2F5B4E 100%)',
             px: { xs: 2, sm: 4 },
-            py: { xs: 2, sm: 3 },
+            py: { xs: 2, sm: 2.75 },
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
             alignItems: { xs: 'stretch', sm: 'center' },
@@ -288,9 +317,9 @@ export default function ProfilePage() {
             position: 'relative',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'rgba(255, 255, 255, 0.9)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'rgba(255, 255, 255, 0.95)' }}>
             <i className="bi bi-person-badge" style={{ fontSize: '1.1rem' }} />
-            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#FFFFFF' }}>
               Academic Scholar Profile
             </Typography>
           </Box>
@@ -302,19 +331,19 @@ export default function ProfilePage() {
                 onClick={() => setEditMode(true)}
                 startIcon={<i className="bi bi-pencil-square" />}
                 sx={{
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.18)',
                   backdropFilter: 'blur(8px)',
                   color: '#FFFFFF',
-                  border: '1px solid rgba(255, 255, 255, 0.35)',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
                   fontWeight: 700,
                   fontSize: '0.875rem',
                   textTransform: 'none',
-                  borderRadius: 2,
+                  borderRadius: 1.5,
                   px: 2.5,
                   py: 0.8,
                   '&:hover': {
                     background: '#FFFFFF',
-                    color: '#0A3D8F',
+                    color: '#123B32',
                     borderColor: '#FFFFFF',
                   },
                 }}
@@ -325,19 +354,21 @@ export default function ProfilePage() {
               <Stack direction="row" spacing={1.5}>
                 <Button
                   variant="outlined"
-                  onClick={() => {
-                    setEditMode(false);
-                    fetchUserProfile();
-                  }}
+                  onClick={handleCancelClick}
                   disabled={saving}
                   sx={{
-                    borderRadius: 2,
+                    borderRadius: 1.5,
                     fontWeight: 700,
                     fontSize: '0.85rem',
                     textTransform: 'none',
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                    borderColor: 'rgba(255, 255, 255, 0.6)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
                     color: '#FFFFFF',
-                    '&:hover': { borderColor: '#FFFFFF', backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                    px: 2,
+                    '&:hover': {
+                      borderColor: '#FFFFFF',
+                      backgroundColor: 'rgba(255, 255, 255, 0.28)',
+                    },
                   }}
                 >
                   Cancel
@@ -353,9 +384,9 @@ export default function ProfilePage() {
                     fontWeight: 700,
                     fontSize: '0.85rem',
                     textTransform: 'none',
-                    borderRadius: 2,
+                    borderRadius: 1.5,
                     px: 2.5,
-                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
+                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.35)',
                     '&.Mui-disabled': {
                       background: '#16A34A',
                       color: '#FFFFFF',
@@ -379,13 +410,13 @@ export default function ProfilePage() {
               sx={{
                 width: 76,
                 height: 76,
-                borderRadius: 2.5,
-                background: 'linear-gradient(135deg, #1565C0 0%, #0288D1 100%)',
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
                 fontSize: '2rem',
                 fontWeight: 800,
                 color: '#FFFFFF',
-                boxShadow: '0 6px 16px rgba(21, 101, 192, 0.25)',
-                border: '3px solid #F0F7FF',
+                boxShadow: '0 4px 14px rgba(18, 59, 50, 0.22)',
+                border: '3px solid #E8EFEB',
                 flexShrink: 0,
               }}
             >
@@ -395,7 +426,7 @@ export default function ProfilePage() {
             {/* Scholar Metadata */}
             <Box sx={{ flexGrow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#0F2942', letterSpacing: '-0.01em' }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#123B32', letterSpacing: '-0.01em' }}>
                   {profile?.first_name} {profile?.last_name}
                 </Typography>
                 <Chip
@@ -414,103 +445,118 @@ export default function ProfilePage() {
                 />
               </Box>
 
-              <Typography variant="body2" sx={{ color: '#475569', fontWeight: 600, mt: 0.5 }}>
+              <Typography variant="body2" sx={{ color: '#334E43', fontWeight: 600, mt: 0.5 }}>
                 {profile?.designation || 'Scholar / Researcher'}
                 {profile?.institution ? ` • ${profile.institution}` : ''}
                 {profile?.country ? ` (${profile.country})` : ''}
               </Typography>
 
-              {/* Verified ORCID Badge */}
+              {/* Verified ORCID Badge & Email */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5, flexWrap: 'wrap' }}>
                 {profile?.orcid_id ? (
-                  <Chip
+                  <Box
                     component="a"
                     href={`https://orcid.org/${profile.orcid_id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    clickable
-                    label={`Verified ORCID: ${profile.orcid_id}`}
-                    size="small"
                     sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      px: 1.25,
+                      py: 0.4,
+                      borderRadius: '6px',
                       backgroundColor: '#F0FDF4',
                       color: '#15803D',
                       border: '1px solid #86EFAC',
                       fontWeight: 700,
-                      borderRadius: 1,
-                      height: 26,
+                      fontSize: '0.75rem',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease-in-out',
                       '&:hover': { backgroundColor: '#DCFCE7' },
                     }}
-                    icon={
-                      <Box
-                        sx={{
-                          width: 16,
-                          height: 16,
-                          borderRadius: '50%',
-                          backgroundColor: '#A6CE39',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#FFFFFF',
-                          fontWeight: 900,
-                          fontSize: '0.65rem',
-                          ml: 0.5,
-                        }}
-                      >
-                        iD
-                      </Box>
-                    }
-                  />
+                  >
+                    <Box
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        backgroundColor: '#A6CE39',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#FFFFFF',
+                        fontWeight: 900,
+                        fontSize: '0.65rem',
+                        flexShrink: 0,
+                      }}
+                    >
+                      iD
+                    </Box>
+                    <span>Verified ORCID: {profile.orcid_id}</span>
+                  </Box>
                 ) : (
-                  <Chip
+                  <Box
                     onClick={handleConnectOrcid}
-                    clickable
-                    label={connectingOrcid ? 'Connecting to ORCID...' : 'Connect ORCID iD (Recommended)'}
-                    size="small"
+                    role="button"
+                    tabIndex={0}
                     sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      px: 1.25,
+                      py: 0.4,
+                      borderRadius: '6px',
                       backgroundColor: '#E8EFEB',
                       color: '#123B32',
                       border: '1px solid #527A68',
                       fontWeight: 800,
-                      borderRadius: 1,
-                      height: 26,
                       fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease-in-out',
                       '&:hover': { backgroundColor: '#D3DDD7' },
                     }}
-                    icon={
-                      <Box
-                        sx={{
-                          width: 16,
-                          height: 16,
-                          borderRadius: '50%',
-                          backgroundColor: '#123B32',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#FFFFFF',
-                          fontWeight: 900,
-                          fontSize: '0.65rem',
-                          ml: 0.5,
-                        }}
-                      >
-                        iD
-                      </Box>
-                    }
-                  />
+                  >
+                    <Box
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        backgroundColor: '#A6CE39',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#FFFFFF',
+                        fontWeight: 900,
+                        fontSize: '0.65rem',
+                        flexShrink: 0,
+                      }}
+                    >
+                      iD
+                    </Box>
+                    <span>{connectingOrcid ? 'Connecting to ORCID...' : 'Connect ORCID iD (Recommended)'}</span>
+                  </Box>
                 )}
 
-                <Chip
-                  label={profile?.email || 'No email registered'}
-                  size="small"
+                <Box
                   sx={{
-                    backgroundColor: '#F8FAFC',
-                    color: '#475569',
-                    border: '1px solid #E2E8F0',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    px: 1.25,
+                    py: 0.4,
+                    borderRadius: '6px',
+                    backgroundColor: '#F5F3EC',
+                    color: '#334E43',
+                    border: '1px solid #D3DDD7',
                     fontWeight: 600,
-                    borderRadius: 1,
-                    height: 26,
+                    fontSize: '0.75rem',
                   }}
-                  icon={<i className="bi bi-envelope-check" style={{ color: '#1565C0', marginLeft: 6 }} />}
-                />
+                >
+                  <i className="bi bi-envelope-check" style={{ color: '#123B32' }} />
+                  <span>{profile?.email || 'No email registered'}</span>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -525,8 +571,8 @@ export default function ProfilePage() {
           <Card
             sx={{
               borderRadius: 2.5,
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+              border: '1px solid #D3DDD7',
+              boxShadow: '0 4px 16px rgba(18, 59, 50, 0.04)',
               backgroundColor: '#FFFFFF',
               mb: 3,
             }}
@@ -538,8 +584,8 @@ export default function ProfilePage() {
                     width: 36,
                     height: 36,
                     borderRadius: 1.5,
-                    backgroundColor: '#EFF6FF',
-                    color: '#1565C0',
+                    backgroundColor: '#E8EFEB',
+                    color: '#123B32',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -549,7 +595,7 @@ export default function ProfilePage() {
                   <i className="bi bi-person-lines-fill" />
                 </Box>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F2942', lineHeight: 1.2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
                     Personal & Academic Details
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -696,8 +742,8 @@ export default function ProfilePage() {
           <Card
             sx={{
               borderRadius: 2.5,
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+              border: '1px solid #D3DDD7',
+              boxShadow: '0 4px 16px rgba(18, 59, 50, 0.04)',
               backgroundColor: '#FFFFFF',
             }}
           >
@@ -708,8 +754,8 @@ export default function ProfilePage() {
                     width: 36,
                     height: 36,
                     borderRadius: 1.5,
-                    backgroundColor: '#F0FDF4',
-                    color: '#15803D',
+                    backgroundColor: '#E8EFEB',
+                    color: '#123B32',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -719,7 +765,7 @@ export default function ProfilePage() {
                   <i className="bi bi-tags-fill" />
                 </Box>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F2942', lineHeight: 1.2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
                     Research Expertise & Keywords
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -743,11 +789,13 @@ export default function ProfilePage() {
                     variant="contained"
                     onClick={handleAddInterest}
                     sx={{
-                      background: '#1565C0',
+                      background: '#123B32',
+                      color: '#FFFFFF',
                       fontWeight: 700,
                       borderRadius: 1.5,
                       textTransform: 'none',
                       px: 3,
+                      '&:hover': { background: '#0B241E' },
                     }}
                   >
                     Add
@@ -763,10 +811,10 @@ export default function ProfilePage() {
                       label={tag}
                       onDelete={editMode ? () => handleRemoveInterest(tag) : undefined}
                       sx={{
-                        backgroundColor: '#EFF6FF',
-                        color: '#1565C0',
+                        backgroundColor: '#E8EFEB',
+                        color: '#123B32',
                         fontWeight: 700,
-                        border: '1px solid #BFDBFE',
+                        border: '1px solid #527A68',
                         borderRadius: 1.5,
                         py: 0.5,
                       }}
@@ -788,8 +836,8 @@ export default function ProfilePage() {
           <Card
             sx={{
               borderRadius: 2.5,
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+              border: '1px solid #D3DDD7',
+              boxShadow: '0 4px 16px rgba(18, 59, 50, 0.04)',
               backgroundColor: '#FFFFFF',
               mb: 3,
             }}
@@ -813,7 +861,7 @@ export default function ProfilePage() {
                 >
                   iD
                 </Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F2942' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#123B32' }}>
                   ORCID Integration
                 </Typography>
               </Box>
@@ -832,7 +880,7 @@ export default function ProfilePage() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <i className="bi bi-shield-check" style={{ color: '#166534', fontSize: '1.1rem' }} />
+                      <i className="bi bi-shield-check" style={{ color: '#123B32', fontSize: '1.1rem' }} />
                     </InputAdornment>
                   ),
                 }}
@@ -933,8 +981,8 @@ export default function ProfilePage() {
                               width: 18,
                               height: 18,
                               borderRadius: '50%',
-                              backgroundColor: '#FFFFFF',
-                              color: '#123B32',
+                              backgroundColor: '#A6CE39',
+                              color: '#FFFFFF',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -1000,8 +1048,8 @@ export default function ProfilePage() {
           <Card
             sx={{
               borderRadius: 2.5,
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+              border: '1px solid #D3DDD7',
+              boxShadow: '0 4px 16px rgba(18, 59, 50, 0.04)',
               backgroundColor: '#FFFFFF',
             }}
           >
@@ -1012,8 +1060,8 @@ export default function ProfilePage() {
                     width: 32,
                     height: 32,
                     borderRadius: 1.5,
-                    backgroundColor: '#EFF6FF',
-                    color: '#1565C0',
+                    backgroundColor: '#E8EFEB',
+                    color: '#123B32',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1022,7 +1070,7 @@ export default function ProfilePage() {
                 >
                   <i className="bi bi-sliders" />
                 </Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F2942' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#123B32' }}>
                   Review Capacity & Links
                 </Typography>
               </Box>
@@ -1041,7 +1089,7 @@ export default function ProfilePage() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <i className="bi bi-mortarboard" style={{ color: '#1565C0' }} />
+                      <i className="bi bi-mortarboard" style={{ color: '#123B32' }} />
                     </InputAdornment>
                   ),
                 }}
@@ -1061,10 +1109,10 @@ export default function ProfilePage() {
                 helperText="Maximum number of submissions you can review per conference"
               />
 
-              <Divider sx={{ my: 2.5 }} />
+              <Divider sx={{ my: 2.5, borderColor: '#D3DDD7' }} />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#64748B' }}>
-                <i className="bi bi-calendar-event" style={{ fontSize: '1.1rem', color: '#1565C0' }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#334E43' }}>
+                <i className="bi bi-calendar-event" style={{ fontSize: '1.1rem', color: '#123B32' }} />
                 <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   Account active since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
                 </Typography>
@@ -1085,6 +1133,18 @@ export default function ProfilePage() {
           {notification.message}
         </Alert>
       </Snackbar>
+
+      {/* Discard Unsaved Changes Modal */}
+      <ConfirmModal
+        open={showCancelEditConfirm}
+        title="Discard Unsaved Changes?"
+        message="You have unsaved changes in your scholar profile. If you discard now, any newly typed information will be lost."
+        confirmText="Yes, Discard Changes"
+        cancelText="Keep Editing"
+        severity="warning"
+        onConfirm={handleConfirmDiscard}
+        onCancel={() => setShowCancelEditConfirm(false)}
+      />
     </Box>
   );
 }

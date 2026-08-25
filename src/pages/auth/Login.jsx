@@ -111,8 +111,8 @@ export default function Login() {
         {/* Card Header */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #0D47A1 0%, #1565C0 60%, #1976D2 100%)',
-            p: 4,
+            background: 'linear-gradient(135deg, #123B32 0%, #1D4C40 50%, #2F5B4E 100%)',
+            p: { xs: 3, sm: 3.5 },
             textAlign: 'center',
             color: '#FFFFFF',
           }}
@@ -121,19 +121,27 @@ export default function Login() {
             sx={{
               display: 'inline-flex',
               p: 1.25,
-              borderRadius: 1.5,
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(8px)',
+              borderRadius: 2,
+              backgroundColor: '#FFFFFF',
               mb: 1.5,
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
             }}
           >
-            <SchoolIcon sx={{ fontSize: 32, color: '#FFFFFF' }} />
+            <Box
+              component="img"
+              src="/logo.png"
+              alt="Shazu Soft Logo"
+              sx={{
+                height: 38,
+                width: 'auto',
+                objectFit: 'contain',
+              }}
+            />
           </Box>
           <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.01em', color: '#FFFFFF' }}>
             Shazu Soft CMT
           </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5, color: '#E3F2FD' }}>
+          <Typography variant="body2" sx={{ opacity: 0.92, mt: 0.5, color: 'rgba(255, 255, 255, 0.9)' }}>
             Academic Conference Management Portal
           </Typography>
         </Box>

@@ -18,9 +18,11 @@ import {
   TableRow,
   Paper,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 const EMAIL_TEMPLATES = [
@@ -49,6 +51,7 @@ export default function EmailBroadcastPage() {
   const [content, setContent] = useState('');
   const [customEmails, setCustomEmails] = useState('');
   const [sending, setSending] = useState(false);
+  const [confirmBroadcastOpen, setConfirmBroadcastOpen] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ type: '', text: '' });
 
   const [logs, setLogs] = useState([]);
@@ -77,10 +80,14 @@ export default function EmailBroadcastPage() {
     setContent(tmpl.content);
   };
 
-  const handleSendBroadcast = async (e) => {
+  const handleOpenBroadcastConfirmation = (e) => {
     e.preventDefault();
     if (!selectedConference?.id) return;
+    setConfirmBroadcastOpen(true);
+  };
 
+  const handleExecuteBroadcast = async () => {
+    setConfirmBroadcastOpen(false);
     setSending(true);
     setAlertInfo({ type: '', text: '' });
 
@@ -157,7 +164,7 @@ export default function EmailBroadcastPage() {
                 </Box>
               </Box>
 
-              <Box component="form" onSubmit={handleSendBroadcast}>
+              <Box component="form" onSubmit={handleOpenBroadcastConfirmation}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -226,7 +233,7 @@ export default function EmailBroadcastPage() {
                     variant="contained"
                     disabled={sending}
                     startIcon={sending ? <CircularProgress size={18} color="inherit" /> : <i className="bi bi-send-fill"></i>}
-                    sx={{ px: 3, py: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)' }}
+                    sx={{ px: 3, py: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)', '&:hover': { background: '#0B241E' } }}
                   >
                     {sending ? 'Dispatching via Brevo...' : 'Broadcast Email'}
                   </Button>
@@ -238,22 +245,22 @@ export default function EmailBroadcastPage() {
 
         {/* Right Column: Live HTML Preview */}
         <Grid item xs={12} md={5}>
-          <Card sx={{ height: '100%', p: 1 }}>
+          <Card sx={{ height: '100%', p: 1, border: '1px solid #D3DDD7' }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <i className="bi bi-eye text-primary"></i> Live Email Template Preview
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1, color: '#123B32' }}>
+                <i className="bi bi-eye" style={{ color: '#123B32' }}></i> Live Email Template Preview
               </Typography>
 
               <Paper
                 elevation={0}
                 sx={{
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid #D3DDD7',
                   borderRadius: 2,
                   overflow: 'hidden',
                   backgroundColor: '#FFFFFF',
                 }}
               >
-                <Box sx={{ background: 'linear-gradient(135deg, #1E3A8A 0%, #2A5298 100%)', p: 2.5, color: '#fff', textAlign: 'center' }}>
+                <Box sx={{ background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)', p: 2.5, color: '#fff', textAlign: 'center' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
                     Shazu Soft Technologies CMT
                   </Typography>
@@ -263,11 +270,11 @@ export default function EmailBroadcastPage() {
                 </Box>
 
                 <Box sx={{ p: 2.5 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: '#1E3A8A' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: '#123B32' }}>
                     {subject || 'Subject Preview...'}
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334155', minHeight: 120 }}>
+                  <Divider sx={{ mb: 2, borderColor: '#D3DDD7' }} />
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334E43', minHeight: 120 }}>
                     {content || 'Email content preview will appear here in real-time as you type...'}
                   </Typography>
                 </Box>
@@ -356,6 +363,19 @@ export default function EmailBroadcastPage() {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Broadcast Email Confirmation Modal */}
+      <ConfirmModal
+        open={confirmBroadcastOpen}
+        title="Confirm Mass Email Broadcast"
+        message={`Are you sure you want to dispatch this email broadcast to "${targetGroup === 'authors' ? 'All Paper Authors' : targetGroup === 'reviewers' ? 'All Program Committee Reviewers' : targetGroup === 'all' ? 'All Conference Users' : 'Specified Custom Recipients'}" with subject "${subject}"? This action will immediately send live emails via Brevo SMTP.`}
+        confirmText="Yes, Dispatch Broadcast"
+        cancelText="Review Email"
+        severity="warning"
+        loading={sending}
+        onConfirm={handleExecuteBroadcast}
+        onCancel={() => setConfirmBroadcastOpen(false)}
+      />
     </Box>
   );
 }

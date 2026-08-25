@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
+import ConfirmModal from '../common/ConfirmModal';
 
 const ROLE_CONFIG = {
   admin: { bg: '#E8EFEB', text: '#123B32', border: '#527A68', label: 'Administrator', icon: 'bi-shield-lock' },
@@ -35,12 +36,18 @@ export default function Navbar({ onMobileToggle }) {
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setAnchorEl(null);
 
-  const handleLogout = () => {
+  const handleRequestLogout = () => {
     handleProfileMenuClose();
+    setShowLogoutConfirm(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setShowLogoutConfirm(false);
     logout();
     navigate('/login');
   };
@@ -77,31 +84,27 @@ export default function Navbar({ onMobileToggle }) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1,
+              gap: 1.25,
               cursor: 'pointer',
+              textDecoration: 'none',
             }}
           >
             <Box
+              component="img"
+              src="/logo.png"
+              alt="Shazu Soft Logo"
               sx={{
-                width: 32,
                 height: 32,
-                borderRadius: 1.5,
-                background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontSize: '1.05rem',
-                boxShadow: '0 2px 6px rgba(18, 59, 50, 0.2)',
+                width: 'auto',
+                maxHeight: 32,
+                objectFit: 'contain',
               }}
-            >
-              <i className="bi bi-mortarboard-fill"></i>
-            </Box>
+            />
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.9rem' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.925rem' }}>
                 SHAZU SOFT
               </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.7rem' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.7rem', display: 'block' }}>
                 CMT PORTAL
               </Typography>
             </Box>
@@ -273,20 +276,32 @@ export default function Navbar({ onMobileToggle }) {
             </Box>
             <Divider sx={{ my: 1 }} />
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>
-              <ListItemIcon><i className="bi bi-person-circle" style={{ color: '#1565C0' }}></i></ListItemIcon>
+              <ListItemIcon><i className="bi bi-person-circle" style={{ color: '#123B32' }}></i></ListItemIcon>
               My Profile
             </MenuItem>
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/conferences'); }}>
-              <ListItemIcon><i className="bi bi-globe" style={{ color: '#1565C0' }}></i></ListItemIcon>
+              <ListItemIcon><i className="bi bi-globe" style={{ color: '#123B32' }}></i></ListItemIcon>
               All Conferences
             </MenuItem>
-            <MenuItem onClick={() => { handleProfileMenuClose(); logout(); }} sx={{ color: '#DC2626' }}>
+            <MenuItem onClick={handleRequestLogout} sx={{ color: '#DC2626' }}>
               <ListItemIcon><i className="bi bi-box-arrow-right" style={{ color: '#DC2626' }}></i></ListItemIcon>
               Sign Out
             </MenuItem>
           </Menu>
         </Box>
       </Toolbar>
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmModal
+        open={showLogoutConfirm}
+        title="Sign Out Confirmation"
+        message="Are you sure you want to sign out of Shazu Soft CMT? You will need to log in again to access your submissions and review workspaces."
+        confirmText="Yes, Sign Out"
+        cancelText="Stay Logged In"
+        severity="logout"
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </AppBar>
   );
 }

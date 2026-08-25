@@ -30,16 +30,17 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 const STATUS_CONFIG = {
-  submitted: { label: 'Submitted', color: '#1565C0', bg: '#E3F2FD' },
-  under_review: { label: 'Under Review', color: '#0288D1', bg: '#E1F5FE' },
-  revision_required: { label: 'Revision Required', color: '#0284C7', bg: '#F0F9FF' },
-  accepted: { label: 'Accepted', color: '#0D47A1', bg: '#E3F2FD' },
-  rejected: { label: 'Rejected', color: '#64748B', bg: '#F1F5F9' },
-  camera_ready_pending: { label: 'Camera-Ready Under Review', color: '#1976D2', bg: '#E8F4FD' },
-  camera_ready_approved: { label: 'Camera-Ready Approved', color: '#0D47A1', bg: '#BBDEFB' },
+  submitted: { label: 'Submitted', color: '#123B32', bg: '#E8EFEB' },
+  under_review: { label: 'Under Review', color: '#2F5B4E', bg: '#E8EFEB' },
+  revision_required: { label: 'Revision Required', color: '#C47D4C', bg: '#FBEFE7' },
+  accepted: { label: 'Accepted', color: '#15803D', bg: '#DCFCE7' },
+  rejected: { label: 'Rejected', color: '#DC2626', bg: '#FEE2E2' },
+  camera_ready_pending: { label: 'Camera-Ready Under Review', color: '#2F5B4E', bg: '#E8EFEB' },
+  camera_ready_approved: { label: 'Camera-Ready Approved', color: '#15803D', bg: '#DCFCE7' },
 };
 
 export default function AuthorSubmissionsPage() {
@@ -58,6 +59,7 @@ export default function AuthorSubmissionsPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [modalRebuttalNotes, setModalRebuttalNotes] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [confirmUploadOpen, setConfirmUploadOpen] = useState(false);
   const [error, setError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
@@ -94,12 +96,17 @@ export default function AuthorSubmissionsPage() {
     setError('');
   };
 
-  const handleFileUpload = async (e) => {
+  const handleUploadSubmit = (e) => {
     e.preventDefault();
     if (!selectedFile) {
       setError('Please select a PDF file');
       return;
     }
+    setConfirmUploadOpen(true);
+  };
+
+  const handleExecuteFileUpload = async () => {
+    setConfirmUploadOpen(false);
     setUploading(true);
     setError('');
     try {
@@ -311,14 +318,14 @@ export default function AuthorSubmissionsPage() {
 
       {/* Upload Revision / Camera-Ready Modal */}
       <Dialog open={uploadModal.open} onClose={() => setUploadModal({ ...uploadModal, open: false })} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #D3DDD7', color: '#123B32' }}>
           {uploadModal.fileType === 'camera_ready' ? 'Upload Final Camera-Ready Paper' : 'Upload Revised Manuscript'}
         </DialogTitle>
-        <Box component="form" onSubmit={handleFileUpload}>
+        <Box component="form" onSubmit={handleUploadSubmit}>
           <DialogContent sx={{ pt: 3 }}>
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" sx={{ mb: 2, color: '#334E43' }}>
               <strong>Paper:</strong> {uploadModal.submission?.submission_number} - {uploadModal.submission?.title}
             </Typography>
 
@@ -327,13 +334,13 @@ export default function AuthorSubmissionsPage() {
               sx={{
                 p: 3,
                 textAlign: 'center',
-                border: '2px dashed #90CAF9',
-                backgroundColor: '#F8FAFC',
+                border: '2px dashed #527A68',
+                backgroundColor: '#F5F3EC',
                 borderRadius: 2,
               }}
             >
-              <i className="bi bi-cloud-arrow-up" style={{ fontSize: '2.5rem', color: '#1565C0' }}></i>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mt: 1, color: '#0F2942' }}>
+              <i className="bi bi-cloud-arrow-up" style={{ fontSize: '2.5rem', color: '#123B32' }}></i>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mt: 1, color: '#123B32' }}>
                 Select {uploadModal.fileType === 'camera_ready' ? 'Camera-Ready PDF' : 'Revised PDF'}
               </Typography>
               <input
@@ -344,12 +351,12 @@ export default function AuthorSubmissionsPage() {
                 onChange={(e) => setSelectedFile(e.target.files[0])}
               />
               <label htmlFor="modal-file-upload">
-                <Button variant="outlined" component="span" sx={{ mt: 1.5 }}>
+                <Button variant="outlined" component="span" sx={{ mt: 1.5, borderColor: '#527A68', color: '#123B32' }}>
                   {selectedFile ? 'Change PDF File' : 'Browse File'}
                 </Button>
               </label>
               {selectedFile && (
-                <Typography variant="body2" sx={{ mt: 1.5, fontWeight: 600, color: '#1565C0' }}>
+                <Typography variant="body2" sx={{ mt: 1.5, fontWeight: 700, color: '#123B32' }}>
                   ✓ {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                 </Typography>
               )}
@@ -357,7 +364,7 @@ export default function AuthorSubmissionsPage() {
 
             {uploadModal.fileType === 'revision' && (
               <Box sx={{ mt: 2.5 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: '#1565C0' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: '#123B32' }}>
                   Response to Reviewers / Rebuttal Notes (Optional)
                 </Typography>
                 <TextField
@@ -372,27 +379,45 @@ export default function AuthorSubmissionsPage() {
               </Box>
             )}
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #D3DDD7' }}>
+            <Button onClick={() => setUploadModal({ ...uploadModal, open: false })}>
+              Cancel
+            </Button>
             <Button
               type="submit"
               variant="contained"
-              disabled={uploading}
+              disabled={uploading || !selectedFile}
               startIcon={uploading ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-cloud-arrow-up" />}
               sx={{
                 fontWeight: 700,
                 borderRadius: 1.5,
-                '&.Mui-disabled': { backgroundColor: '#1565C0', color: '#FFFFFF', opacity: 0.85 },
+                backgroundColor: '#123B32',
+                color: '#FFFFFF',
+                '&:hover': { backgroundColor: '#0B241E' },
               }}
             >
-              {uploading ? 'Uploading File...' : 'Confirm Upload'}
+              {uploading ? 'Uploading File...' : 'Upload File'}
             </Button>
           </DialogActions>
         </Box>
       </Dialog>
 
+      {/* Upload Confirmation Modal */}
+      <ConfirmModal
+        open={confirmUploadOpen}
+        title="Confirm Manuscript Upload"
+        message={`Are you sure you want to upload "${selectedFile?.name}" as the official ${uploadModal.fileType === 'camera_ready' ? 'Final Camera-Ready Paper' : 'Revised Manuscript'} for submission #${uploadModal.submission?.submission_number}?`}
+        confirmText="Yes, Upload File"
+        cancelText="Review Selection"
+        severity="info"
+        loading={uploading}
+        onConfirm={handleExecuteFileUpload}
+        onCancel={() => setConfirmUploadOpen(false)}
+      />
+
       {/* Peer Reviews Viewer Modal */}
       <Dialog open={reviewsModal.open} onClose={() => setReviewsModal({ ...reviewsModal, open: false })} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #D3DDD7', color: '#123B32' }}>
           Peer Review Evaluation Feedback: {reviewsModal.submission?.submission_number}
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
@@ -400,35 +425,35 @@ export default function AuthorSubmissionsPage() {
             <Typography color="text.secondary">No finalized review comments available yet.</Typography>
           ) : (
             reviewsModal.reviews.map((rev, idx) => (
-              <Paper key={idx} elevation={0} sx={{ p: 2.5, mb: 2, border: '1px solid #E2E8F0', borderRadius: 2 }}>
+              <Paper key={idx} elevation={0} sx={{ p: 2.5, mb: 2, border: '1px solid #D3DDD7', borderRadius: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#123B32' }}>
                     Reviewer #{idx + 1}
                   </Typography>
                   <Chip
                     label={`Recommendation: ${rev.recommendation?.toUpperCase() || 'N/A'}`}
                     size="small"
-                    sx={{ fontWeight: 700, backgroundColor: '#E3F2FD', color: '#1565C0' }}
+                    sx={{ fontWeight: 700, backgroundColor: '#E8EFEB', color: '#123B32' }}
                   />
                 </Box>
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 2 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, backgroundColor: '#F5F3EC', p: 1.5, borderRadius: 2 }}>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Technical: {rev.technical_quality || '-'}/5</Typography>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Originality: {rev.originality || '-'}/5</Typography>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Relevance: {rev.relevance || '-'}/5</Typography>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Presentation: {rev.presentation_quality || '-'}/5</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#1565C0' }}>Overall: {rev.overall_score || '-'}/5</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#123B32' }}>Overall: {rev.overall_score || '-'}/5</Typography>
                 </Box>
 
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5, color: '#0F2942' }}>Comments for Authors:</Typography>
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334155' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5, color: '#123B32' }}>Comments for Authors:</Typography>
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334E43' }}>
                   {rev.comments_for_authors || 'No detailed comments provided.'}
                 </Typography>
               </Paper>
             ))
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: '1px solid #E2E8F0' }}>
+        <DialogActions sx={{ p: 2, borderTop: '1px solid #D3DDD7' }}>
           <Button onClick={() => setReviewsModal({ ...reviewsModal, open: false })}>Close</Button>
         </DialogActions>
       </Dialog>

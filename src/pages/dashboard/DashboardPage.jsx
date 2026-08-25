@@ -50,11 +50,11 @@ export default function DashboardPage() {
         elevation={0}
         sx={{
           mb: 3.5,
-          background: 'linear-gradient(135deg, #0F2942 0%, #1565C0 100%)',
+          background: 'linear-gradient(135deg, #123B32 0%, #1D4C40 50%, #2F5B4E 100%)',
           color: '#FFFFFF',
           borderRadius: 3,
           p: { xs: 2.5, md: 3.5 },
-          boxShadow: '0 8px 24px rgba(15, 41, 66, 0.12)',
+          boxShadow: '0 8px 24px rgba(18, 59, 50, 0.15)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                   size="small"
                   sx={{
                     backgroundColor: '#FFFFFF',
-                    color: '#0F2942',
+                    color: '#123B32',
                     fontWeight: 700,
                     fontSize: '0.725rem',
                   }}
@@ -89,7 +89,7 @@ export default function DashboardPage() {
             <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
               Welcome back, {user?.first_name} {user?.last_name}
             </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9, maxWidth: 640, color: '#E3F2FD', lineHeight: 1.6 }}>
+            <Typography variant="body2" sx={{ opacity: 0.92, maxWidth: 640, color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.6 }}>
               {selectedConference
                 ? `Managing operations for ${selectedConference.name}.`
                 : 'Select a conference from the topbar to inspect submissions and peer review workflows.'}
@@ -105,14 +105,14 @@ export default function DashboardPage() {
               }}
               sx={{
                 backgroundColor: '#FFFFFF',
-                color: '#0F2942',
+                color: '#123B32',
                 fontWeight: 700,
                 px: 2.5,
                 py: 1,
                 borderRadius: 1.5,
-                border: '1px solid #CBD5E1',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                '&:hover': { backgroundColor: '#F8FAFC', color: '#1565C0', borderColor: '#90CAF9' },
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                '&:hover': { backgroundColor: '#F5F3EC', color: '#0B241E' },
               }}
               endIcon={<i className="bi bi-arrow-right"></i>}
             >

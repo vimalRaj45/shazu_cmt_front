@@ -29,6 +29,7 @@ import {
 import { useConference } from '../../context/ConferenceContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 export default function DecisionsPage() {
@@ -38,6 +39,7 @@ export default function DecisionsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [confirmDecisionOpen, setConfirmDecisionOpen] = useState(false);
 
   // Decision Modal State
   const [decisionModal, setDecisionModal] = useState({
@@ -95,8 +97,13 @@ export default function DecisionsPage() {
     }
   };
 
-  const handleSaveDecision = async (e) => {
+  const handleOpenDecisionConfirmation = (e) => {
     e.preventDefault();
+    setConfirmDecisionOpen(true);
+  };
+
+  const handleExecuteSaveDecision = async () => {
+    setConfirmDecisionOpen(false);
     setSaving(true);
     setModalError('');
     try {
@@ -106,7 +113,7 @@ export default function DecisionsPage() {
         notifyAuthor,
       });
 
-      setFeedbackMsg(`Decision successfully saved! ${notifyAuthor ? 'Author notification email sent via Brevo.' : ''}`);
+      setFeedbackMsg(`Decision successfully recorded! ${notifyAuthor ? 'Official decision email dispatched to authors via Brevo.' : ''}`);
       setTimeout(() => {
         setDecisionModal({ open: false, submission: null, reviews: [] });
         fetchSubmissions();
@@ -281,23 +288,23 @@ export default function DecisionsPage() {
 
       {/* Make Decision Dialog */}
       <Dialog open={decisionModal.open} onClose={() => setDecisionModal({ open: false, submission: null, reviews: [] })} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #D3DDD7', color: '#123B32' }}>
           Paper Decision: {decisionModal.submission?.submission_number}
         </DialogTitle>
-        <Box component="form" onSubmit={handleSaveDecision}>
+        <Box component="form" onSubmit={handleOpenDecisionConfirmation}>
           <DialogContent sx={{ pt: 3 }}>
             {feedbackMsg && <Alert severity="success" sx={{ mb: 2 }}>{feedbackMsg}</Alert>}
             {modalError && <Alert severity="error" sx={{ mb: 2 }}>{modalError}</Alert>}
 
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#1565C0' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#123B32' }}>
               {decisionModal.submission?.title}
             </Typography>
 
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2, borderColor: '#D3DDD7' }} />
 
             {/* Peer Reviews List */}
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, color: '#0F2942' }}>
-              <i className="bi bi-journal-check" style={{ color: '#1565C0' }}></i> Peer Review Scorecards ({decisionModal.reviews.length})
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, color: '#123B32' }}>
+              <i className="bi bi-journal-check" style={{ color: '#123B32' }}></i> Peer Review Scorecards ({decisionModal.reviews.length})
             </Typography>
 
             {decisionModal.reviews.length === 0 ? (
@@ -306,9 +313,9 @@ export default function DecisionsPage() {
               </Alert>
             ) : (
               decisionModal.reviews.map((rev, idx) => (
-                <Paper key={rev.id || idx} elevation={0} sx={{ p: 2.5, mb: 2.5, border: '1px solid #CBD5E1', borderRadius: 2 }}>
+                <Paper key={rev.id || idx} elevation={0} sx={{ p: 2.5, mb: 2.5, border: '1px solid #D3DDD7', borderRadius: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1565C0' }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32' }}>
                       Reviewer #{idx + 1}: {rev.reviewer_first_name} {rev.reviewer_last_name} ({rev.reviewer_institution || 'PC Member'})
                     </Typography>
                     <Chip
@@ -316,26 +323,26 @@ export default function DecisionsPage() {
                       size="small"
                       sx={{
                         fontWeight: 800,
-                        backgroundColor: '#DCFCE7',
-                        color: '#166534',
+                        backgroundColor: '#E8EFEB',
+                        color: '#123B32',
                       }}
                     />
                   </Box>
 
-                  <Typography variant="body2" sx={{ color: '#334155', mb: 1 }}>
+                  <Typography variant="body2" sx={{ color: '#334E43', mb: 1 }}>
                     <strong>Review Score:</strong> {rev.overall_score} / 5
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#475569', fontStyle: 'italic', backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 1.5 }}>
+                  <Typography variant="body2" sx={{ color: '#334E43', fontStyle: 'italic', backgroundColor: '#F5F3EC', p: 1.5, borderRadius: 1.5 }}>
                     "{rev.comments_for_authors || rev.q_comments_authors || 'No comments provided'}"
                   </Typography>
                 </Paper>
               ))
             )}
 
-            <Divider sx={{ my: 2.5 }} />
+            <Divider sx={{ my: 2.5, borderColor: '#D3DDD7' }} />
 
             {/* Decision Controls */}
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#0F2942' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#123B32' }}>
               Final Program Chair Decision
             </Typography>
 
@@ -376,7 +383,7 @@ export default function DecisionsPage() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #D3DDD7' }}>
             <Button onClick={() => setDecisionModal({ open: false, submission: null, reviews: [] })}>
               Cancel
             </Button>
@@ -386,6 +393,19 @@ export default function DecisionsPage() {
           </DialogActions>
         </Box>
       </Dialog>
+
+      {/* Decision Confirmation Modal */}
+      <ConfirmModal
+        open={confirmDecisionOpen}
+        title="Confirm Manuscript Decision"
+        message={`Are you sure you want to finalize paper #${decisionModal.submission?.submission_number} as "${decisionValue.toUpperCase().replace('_', ' ')}"? ${notifyAuthor ? 'An official decision email will be dispatched to the corresponding author via Brevo immediately.' : 'Authors will not be notified by email.'}`}
+        confirmText={`Yes, ${decisionValue === 'accept' ? 'Accept Paper' : decisionValue === 'reject' ? 'Reject Paper' : 'Request Revision'}`}
+        cancelText="Review Again"
+        severity={decisionValue === 'accept' ? 'success' : decisionValue === 'reject' ? 'danger' : 'warning'}
+        loading={saving}
+        onConfirm={handleExecuteSaveDecision}
+        onCancel={() => setConfirmDecisionOpen(false)}
+      />
 
       {/* Global Toast Feedback */}
       <Snackbar

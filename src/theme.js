@@ -47,12 +47,12 @@ let baseTheme = createTheme({
   },
   typography: {
     fontFamily: '"Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif',
-    h1: { fontWeight: 800, letterSpacing: '-0.025em', color: '#123B32' },
-    h2: { fontWeight: 700, letterSpacing: '-0.02em', color: '#123B32' },
-    h3: { fontWeight: 700, letterSpacing: '-0.015em', color: '#123B32' },
-    h4: { fontWeight: 700, letterSpacing: '-0.01em', color: '#123B32' },
-    h5: { fontWeight: 600, color: '#123B32' },
-    h6: { fontWeight: 600, color: '#123B32' },
+    h1: { fontWeight: 800, letterSpacing: '-0.025em' },
+    h2: { fontWeight: 700, letterSpacing: '-0.02em' },
+    h3: { fontWeight: 700, letterSpacing: '-0.015em' },
+    h4: { fontWeight: 700, letterSpacing: '-0.01em' },
+    h5: { fontWeight: 600 },
+    h6: { fontWeight: 600 },
     button: { textTransform: 'none', fontWeight: 600 },
   },
   shape: {
@@ -93,7 +93,6 @@ let baseTheme = createTheme({
         outlinedPrimary: {
           borderColor: '#2F5B4E',
           color: '#123B32',
-          backgroundColor: '#FFFFFF',
           '&:hover': {
             borderColor: '#123B32',
             backgroundColor: '#E8EFEB',
