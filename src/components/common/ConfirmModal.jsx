@@ -97,8 +97,11 @@ export default function ConfirmModal({
           borderRadius: 2.5,
           p: 1.5,
           border: '1px solid #D3DDD7',
-          boxShadow: '0 12px 36px rgba(18, 59, 50, 0.16)',
+          boxShadow: '0 16px 40px rgba(18, 59, 50, 0.2)',
           backgroundColor: '#FFFFFF',
+          maxWidth: '440px !important',
+          width: '100%',
+          m: 2,
         },
       }}
     >

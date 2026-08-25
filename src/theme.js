@@ -131,9 +131,8 @@ let baseTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 8,
+          borderRadius: 12,
           margin: 16,
-          maxWidth: 'calc(100% - 32px)',
         },
       },
     },

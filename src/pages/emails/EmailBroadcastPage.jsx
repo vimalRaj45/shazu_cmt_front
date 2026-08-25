@@ -261,10 +261,31 @@ export default function EmailBroadcastPage() {
                 }}
               >
                 <Box sx={{ background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)', p: 2.5, color: '#fff', textAlign: 'center' }}>
+                  <Box
+                    sx={{
+                      display: 'inline-flex',
+                      p: 0.75,
+                      borderRadius: 2,
+                      backgroundColor: '#FFFFFF',
+                      mb: 1,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src="/logo.png"
+                      alt="Shazu Soft Logo"
+                      sx={{
+                        height: 38,
+                        width: 38,
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
                     Shazu Soft Technologies CMT
                   </Typography>
-                  <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                  <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }}>
                     {selectedConference?.name || 'Conference Management System'}
                   </Typography>
                 </Box>

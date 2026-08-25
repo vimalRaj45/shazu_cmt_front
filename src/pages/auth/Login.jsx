@@ -120,11 +120,14 @@ export default function Login() {
           <Box
             sx={{
               display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               p: 1.25,
-              borderRadius: 2,
+              borderRadius: 3,
               backgroundColor: '#FFFFFF',
-              mb: 1.5,
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+              mb: 2,
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.18)',
+              border: '2px solid rgba(255, 255, 255, 0.8)',
             }}
           >
             <Box
@@ -132,8 +135,10 @@ export default function Login() {
               src="/logo.png"
               alt="Shazu Soft Logo"
               sx={{
-                height: 38,
-                width: 'auto',
+                height: 72,
+                width: 72,
+                maxHeight: 72,
+                maxWidth: 72,
                 objectFit: 'contain',
               }}
             />

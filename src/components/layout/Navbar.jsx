@@ -84,7 +84,7 @@ export default function Navbar({ onMobileToggle }) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1.25,
+              gap: 1.5,
               cursor: 'pointer',
               textDecoration: 'none',
             }}
@@ -94,17 +94,19 @@ export default function Navbar({ onMobileToggle }) {
               src="/logo.png"
               alt="Shazu Soft Logo"
               sx={{
-                height: 32,
-                width: 'auto',
-                maxHeight: 32,
+                height: 42,
+                width: 42,
+                maxHeight: 42,
+                maxWidth: 42,
                 objectFit: 'contain',
+                flexShrink: 0,
               }}
             />
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.925rem' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.95rem' }}>
                 SHAZU SOFT
               </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.7rem', display: 'block' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.72rem', display: 'block' }}>
                 CMT PORTAL
               </Typography>
             </Box>
