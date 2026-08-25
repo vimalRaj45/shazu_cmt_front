@@ -67,7 +67,7 @@ export default function ReviewerAssignmentPage() {
   // AI Auto-Assign Modal states
   const [openAiModal, setOpenAiModal] = useState(false);
   const [aiConfig, setAiConfig] = useState({
-    targetReviewsPerPaper: 2,
+    targetReviewsPerPaper: 1,
     maxReviewsPerReviewer: 3,
     onlyUnassigned: true,
   });
@@ -707,8 +707,8 @@ export default function ReviewerAssignmentPage() {
                   value={aiConfig.targetReviewsPerPaper}
                   onChange={(e) => setAiConfig({ ...aiConfig, targetReviewsPerPaper: parseInt(e.target.value, 10) })}
                 >
-                  <MenuItem value={1}>1 Reviewer</MenuItem>
-                  <MenuItem value={2}>2 Reviewers (Standard)</MenuItem>
+                  <MenuItem value={1}>1 Reviewer (Default)</MenuItem>
+                  <MenuItem value={2}>2 Reviewers</MenuItem>
                   <MenuItem value={3}>3 Reviewers (Rigorous)</MenuItem>
                 </TextField>
               </Grid>
