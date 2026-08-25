@@ -154,6 +154,19 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
           {idx < navSections.length - 1 && <Divider sx={{ my: 1.5, borderColor: '#D3DDD7' }} />}
         </Box>
       ))}
+
+      {/* COI Integrity Status Pill */}
+      <Box sx={{ mt: 3, p: 1.5, mx: 1.5, borderRadius: 2, backgroundColor: '#E8EFEB', border: '1px solid #D3DDD7', textAlign: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, color: '#123B32', mb: 0.5 }}>
+          <i className="bi bi-shield-check" style={{ fontSize: '1rem', color: '#123B32' }}></i>
+          <Typography variant="caption" sx={{ fontWeight: 800, color: '#123B32' }}>
+            COI Protection Active
+          </Typography>
+        </Box>
+        <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.68rem', display: 'block', lineHeight: 1.3 }}>
+          Authors & Reviewers can co-exist. Self-review & institutional conflicts are blocked.
+        </Typography>
+      </Box>
     </Box>
   );
 
@@ -187,7 +200,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: DRAWER_WIDTH,
-            borderRight: '1px solid #E2E8F0',
+            borderRight: '1px solid #D3DDD7',
             backgroundColor: '#FFFFFF',
           },
         }}

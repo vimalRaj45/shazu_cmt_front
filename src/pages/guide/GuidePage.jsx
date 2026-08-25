@@ -195,6 +195,58 @@ export default function GuidePage() {
             ))}
           </Grid>
 
+          {/* Dual-Role & COI Integrity Card */}
+          <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3.5 }, border: '1px solid #527A68', borderRadius: 2.5, backgroundColor: '#E8EFEB' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+              <Box sx={{ width: 36, height: 36, borderRadius: 2, backgroundColor: '#123B32', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                <i className="bi bi-shield-check" />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
+                  Dual-Role (Author & Reviewer) Support & Conflict of Interest (COI) Guarantee
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#2F5B4E', fontWeight: 600 }}>
+                  Standard Academic Practice • Double-Blind Integrity Guaranteed
+                </Typography>
+              </Box>
+            </Box>
+
+            <Grid container spacing={2.5} sx={{ mt: 0.5 }}>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ p: 2, backgroundColor: '#FFFFFF', borderRadius: 2, border: '1px solid #D3DDD7', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <i className="bi bi-person-badge text-success"></i> 1. Dual Participation
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#334E43', fontSize: '0.825rem', lineHeight: 1.55 }}>
+                    In research conferences, scholars frequently submit papers as <strong>Authors</strong> while reviewing manuscripts in their field as <strong>Reviewers</strong>. Shazu Soft CMT fully supports holding both roles simultaneously.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Box sx={{ p: 2, backgroundColor: '#FFFFFF', borderRadius: 2, border: '1px solid #D3DDD7', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <i className="bi bi-shield-lock text-success"></i> 2. Automated COI Shield
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#334E43', fontSize: '0.825rem', lineHeight: 1.55 }}>
+                    Reviewers are <strong>strictly blocked</strong> from evaluating their own papers, co-authored manuscripts, or papers from researchers at the same university or research department.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <Box sx={{ p: 2, backgroundColor: '#FFFFFF', borderRadius: 2, border: '1px solid #D3DDD7', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <i className="bi bi-arrow-left-right text-success"></i> 3. Perspective Switcher
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#334E43', fontSize: '0.825rem', lineHeight: 1.55 }}>
+                    Click your <strong>Role Badge</strong> in the top navigation bar anytime to toggle between the Author Portal and Reviewer Portal seamlessly.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+
           {/* Workflow Pipeline */}
           <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3.5 }, border: '1px solid #D3DDD7', borderRadius: 2.5, backgroundColor: '#FFFFFF', mt: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', mb: 0.5 }}>

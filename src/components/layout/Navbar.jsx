@@ -26,20 +26,32 @@ import ConfirmModal from '../common/ConfirmModal';
 
 const ROLE_CONFIG = {
   admin: { bg: '#E8EFEB', text: '#123B32', border: '#527A68', label: 'Administrator', icon: 'bi-shield-lock' },
-  reviewer: { bg: '#E8EFEB', text: '#2F5B4E', border: '#527A68', label: 'Peer Reviewer', icon: 'bi-journal-check' },
-  author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author', icon: 'bi-file-earmark-text' },
+  reviewer: { bg: '#E8EFEB', text: '#2F5B4E', border: '#527A68', label: 'Reviewer View', icon: 'bi-journal-check' },
+  author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author View', icon: 'bi-file-earmark-text' },
 };
 
 export default function Navbar({ onMobileToggle }) {
-  const { user, activeRole, logout } = useAuth();
+  const { user, activeRole, switchActiveRole, logout } = useAuth();
   const { conferences, selectedConference, selectConference } = useConference();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [roleMenuAnchor, setRoleMenuAnchor] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setAnchorEl(null);
+
+  const handleRoleMenuOpen = (event) => setRoleMenuAnchor(event.currentTarget);
+  const handleRoleMenuClose = () => setRoleMenuAnchor(null);
+
+  const handleSwitchPerspective = (newRole) => {
+    switchActiveRole(newRole);
+    handleRoleMenuClose();
+    if (newRole === 'author') navigate('/my-submissions');
+    else if (newRole === 'reviewer') navigate('/reviewer/workspace');
+    else if (newRole === 'admin') navigate('/dashboard');
+  };
 
   const handleRequestLogout = () => {
     handleProfileMenuClose();
@@ -203,12 +215,13 @@ export default function Navbar({ onMobileToggle }) {
           />
         </Box>
 
-        {/* User Role Badge & Profile Details */}
+        {/* User Role Badge & Perspective Switcher */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.25 } }}>
-          {/* Static Professional Role Badge (Compact on Mobile) */}
+          {/* Interactive Role Perspective Chip */}
           <Chip
             label={currentRoleStyle.label}
             size="small"
+            onClick={handleRoleMenuOpen}
             sx={{
               display: { xs: 'none', sm: 'inline-flex' },
               backgroundColor: currentRoleStyle.bg,
@@ -218,11 +231,123 @@ export default function Navbar({ onMobileToggle }) {
               fontSize: { xs: '0.725rem', sm: '0.8rem' },
               height: 28,
               px: 0.5,
-              borderRadius: 1,
+              borderRadius: 1.5,
+              cursor: 'pointer',
               userSelect: 'none',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                filter: 'brightness(0.95)',
+                transform: 'translateY(-1px)',
+              },
             }}
             icon={<i className={`bi ${currentRoleStyle.icon}`} style={{ marginLeft: 6, color: currentRoleStyle.text, fontSize: '0.85rem' }}></i>}
+            deleteIcon={<i className="bi bi-chevron-down" style={{ marginRight: 6, color: currentRoleStyle.text, fontSize: '0.7rem' }}></i>}
+            onDelete={handleRoleMenuOpen}
           />
+
+          {/* Perspective Switcher Popover Menu */}
+          <Menu
+            anchorEl={roleMenuAnchor}
+            open={Boolean(roleMenuAnchor)}
+            onClose={handleRoleMenuClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              sx: {
+                width: 290,
+                p: 1,
+                border: '1px solid #D3DDD7',
+                borderRadius: 2,
+                boxShadow: '0 10px 30px rgba(18, 59, 50, 0.12)',
+              },
+            }}
+          >
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32' }}>
+                Switch Perspective
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#527A68', display: 'block', fontSize: '0.72rem', mt: 0.25 }}>
+                Switch between active conference roles. Conflict of Interest (COI) isolation is strictly enforced.
+              </Typography>
+            </Box>
+            <Divider sx={{ my: 1, borderColor: '#D3DDD7' }} />
+
+            {/* Author Option */}
+            <MenuItem
+              selected={activeRole === 'author'}
+              onClick={() => handleSwitchPerspective('author')}
+              sx={{
+                borderRadius: 1.5,
+                py: 1,
+                mb: 0.5,
+                '&.Mui-selected': { backgroundColor: '#FBEFE7', color: '#C47D4C', fontWeight: 700 },
+              }}
+            >
+              <ListItemIcon>
+                <i className="bi bi-file-earmark-text" style={{ color: '#C47D4C', fontSize: '1.1rem' }}></i>
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  Author Portal
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  Submit papers, revisions & camera-ready
+                </Typography>
+              </Box>
+              {activeRole === 'author' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+            </MenuItem>
+
+            {/* Reviewer Option */}
+            <MenuItem
+              selected={activeRole === 'reviewer'}
+              onClick={() => handleSwitchPerspective('reviewer')}
+              sx={{
+                borderRadius: 1.5,
+                py: 1,
+                mb: 0.5,
+                '&.Mui-selected': { backgroundColor: '#E8EFEB', color: '#2F5B4E', fontWeight: 700 },
+              }}
+            >
+              <ListItemIcon>
+                <i className="bi bi-journal-check" style={{ color: '#2F5B4E', fontSize: '1.1rem' }}></i>
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  Reviewer Portal
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  Evaluate assigned papers & submit scorecards
+                </Typography>
+              </Box>
+              {activeRole === 'reviewer' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+            </MenuItem>
+
+            {/* Chair/Admin Option (If user is admin) */}
+            {user?.role === 'admin' && (
+              <MenuItem
+                selected={activeRole === 'admin'}
+                onClick={() => handleSwitchPerspective('admin')}
+                sx={{
+                  borderRadius: 1.5,
+                  py: 1,
+                  '&.Mui-selected': { backgroundColor: '#E8EFEB', color: '#123B32', fontWeight: 700 },
+                }}
+              >
+                <ListItemIcon>
+                  <i className="bi bi-shield-lock" style={{ color: '#123B32', fontSize: '1.1rem' }}></i>
+                </ListItemIcon>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    Chair & Admin Portal
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                    Full conference management & reviewer assignment
+                  </Typography>
+                </Box>
+                {activeRole === 'admin' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+              </MenuItem>
+            )}
+          </Menu>
 
           {/* User Profile Avatar & Menu */}
           <Box
@@ -266,25 +391,30 @@ export default function Navbar({ onMobileToggle }) {
             onClose={handleProfileMenuClose}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            PaperProps={{ sx: { minWidth: 190, p: 1, border: '1px solid #E2E8F0' } }}
+            PaperProps={{ sx: { minWidth: 210, p: 1, border: '1px solid #D3DDD7', borderRadius: 2 } }}
           >
             <Box sx={{ px: 2, py: 1 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F2942' }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#123B32' }}>
                 {user?.first_name} {user?.last_name}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 {user?.email}
               </Typography>
             </Box>
-            <Divider sx={{ my: 1 }} />
+            <Divider sx={{ my: 1, borderColor: '#D3DDD7' }} />
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>
               <ListItemIcon><i className="bi bi-person-circle" style={{ color: '#123B32' }}></i></ListItemIcon>
               My Profile
+            </MenuItem>
+            <MenuItem onClick={() => { handleProfileMenuClose(); handleRoleMenuOpen({ currentTarget: anchorEl }); }}>
+              <ListItemIcon><i className="bi bi-arrow-left-right" style={{ color: '#123B32' }}></i></ListItemIcon>
+              Switch Role View
             </MenuItem>
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/conferences'); }}>
               <ListItemIcon><i className="bi bi-globe" style={{ color: '#123B32' }}></i></ListItemIcon>
               All Conferences
             </MenuItem>
+            <Divider sx={{ my: 1, borderColor: '#D3DDD7' }} />
             <MenuItem onClick={handleRequestLogout} sx={{ color: '#DC2626' }}>
               <ListItemIcon><i className="bi bi-box-arrow-right" style={{ color: '#DC2626' }}></i></ListItemIcon>
               Sign Out
