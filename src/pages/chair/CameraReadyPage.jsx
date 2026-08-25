@@ -19,6 +19,7 @@ import {
 import { useConference } from '../../context/ConferenceContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 export default function CameraReadyPage() {
@@ -27,6 +28,7 @@ export default function CameraReadyPage() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ open: false, submissionId: null, subNumber: '', status: '', title: '', message: '', confirmText: '', severity: 'info' });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const fetchCameraReadyList = async () => {
@@ -46,13 +48,41 @@ export default function CameraReadyPage() {
     fetchCameraReadyList();
   }, [selectedConference]);
 
-  const handleUpdateStatus = async (submissionId, status) => {
+  const handleOpenConfirmModal = (sub, status) => {
+    if (status === 'camera_ready_approved') {
+      setConfirmModal({
+        open: true,
+        submissionId: sub.id,
+        subNumber: sub.submission_number,
+        status,
+        title: 'Approve Camera-Ready Manuscript',
+        message: `Are you sure you want to approve manuscript #${sub.submission_number} ("${sub.title}") for final publication and session proceedings?`,
+        confirmText: 'Yes, Approve Camera-Ready',
+        severity: 'success',
+      });
+    } else {
+      setConfirmModal({
+        open: true,
+        submissionId: sub.id,
+        subNumber: sub.submission_number,
+        status,
+        title: 'Request Camera-Ready Correction',
+        message: `Request authors of manuscript #${sub.submission_number} to fix formatting issues and upload a corrected camera-ready PDF?`,
+        confirmText: 'Request Fix from Author',
+        severity: 'warning',
+      });
+    }
+  };
+
+  const handleExecuteStatusUpdate = async () => {
+    const { submissionId, status } = confirmModal;
+    setConfirmModal({ ...confirmModal, open: false });
     setActionId(`${submissionId}-${status}`);
     try {
       await api.post(`/camera-ready/${submissionId}/status`, { status });
       setSnackbar({
         open: true,
-        message: status === 'camera_ready_approved' ? 'Camera-Ready approved and locked for proceedings!' : 'Revision requested from authors.',
+        message: status === 'camera_ready_approved' ? 'Camera-Ready approved and locked for proceedings!' : 'Correction requested from authors.',
         severity: 'success',
       });
       fetchCameraReadyList();
@@ -78,7 +108,7 @@ export default function CameraReadyPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <BackButton fallbackUrl="/dashboard" />
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#123B32' }}>
             Camera-Ready Papers Approval Desk
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -87,7 +117,7 @@ export default function CameraReadyPage() {
         </Box>
       </Box>
 
-      <Card sx={{ p: 1, border: '1px solid #E2E8F0', borderRadius: 3 }}>
+      <Card sx={{ p: 1, border: '1px solid #D3DDD7', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
         {loading ? (
           <TableSkeleton rows={4} columns={6} />
         ) : submissions.length === 0 ? (
@@ -111,29 +141,33 @@ export default function CameraReadyPage() {
               </TableHead>
               <TableBody>
                 {submissions.map((sub) => {
-                  const cameraFile = sub.files?.find((f) => f.file_type === 'camera_ready');
+                  const cameraFile =
+                    sub.camera_ready_files?.[0] ||
+                    sub.files?.find((f) => f.file_type === 'camera_ready') ||
+                    (sub.files && sub.files.length > 0 ? sub.files[0] : null);
+
                   const isApproving = actionId === `${sub.id}-camera_ready_approved`;
                   const isRejecting = actionId === `${sub.id}-revision_required`;
 
                   return (
                     <TableRow key={sub.id} hover>
                       <TableCell>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#1565C0' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#123B32' }}>
                           {sub.submission_number}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ maxWidth: 300 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F2942' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#123B32' }}>
                           {sub.title}
                         </Typography>
                         <Chip
                           label={sub.track_name || 'General Track'}
                           size="small"
-                          sx={{ mt: 0.5, fontSize: '0.7rem', backgroundColor: '#F0F6FC', color: '#1565C0' }}
+                          sx={{ mt: 0.5, fontSize: '0.7rem', backgroundColor: '#E8EFEB', color: '#123B32', fontWeight: 700 }}
                         />
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">{sub.author_first_name} {sub.author_last_name}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#26322E' }}>{sub.author_first_name} {sub.author_last_name}</Typography>
                         <Typography variant="caption" color="text.secondary">{sub.author_email}</Typography>
                       </TableCell>
                       <TableCell>
@@ -143,12 +177,12 @@ export default function CameraReadyPage() {
                             variant="outlined"
                             onClick={() => handleDownload(cameraFile)}
                             startIcon={<i className="bi bi-file-earmark-pdf"></i>}
-                            sx={{ textTransform: 'none' }}
+                            sx={{ textTransform: 'none', borderColor: '#527A68', color: '#123B32', fontWeight: 700, '&:hover': { backgroundColor: '#E8EFEB' } }}
                           >
-                            PDF (v{cameraFile.version})
+                            PDF ({cameraFile.file_type === 'camera_ready' ? `Camera-Ready v${cameraFile.version || 1}` : `v${cameraFile.version || 1}`})
                           </Button>
                         ) : (
-                          <Chip label="Awaiting Author Upload" size="small" sx={{ backgroundColor: '#FEF3C7', color: '#92400E', fontWeight: 600 }} />
+                          <Chip label="Awaiting Author Upload" size="small" sx={{ backgroundColor: '#FBEFE7', color: '#C47D4C', fontWeight: 700 }} />
                         )}
                       </TableCell>
                       <TableCell>
@@ -157,9 +191,9 @@ export default function CameraReadyPage() {
                           size="small"
                           sx={{
                             fontWeight: 700,
-                            backgroundColor: sub.status === 'camera_ready_approved' ? '#E3F2FD' : '#FEF3C7',
-                            color: sub.status === 'camera_ready_approved' ? '#1565C0' : '#92400E',
-                            border: `1px solid ${sub.status === 'camera_ready_approved' ? '#BBDEFB' : '#FDE68A'}`,
+                            backgroundColor: sub.status === 'camera_ready_approved' ? '#E8EFEB' : sub.status === 'camera_ready_pending' ? '#E0F2FE' : '#FEF3C7',
+                            color: sub.status === 'camera_ready_approved' ? '#123B32' : sub.status === 'camera_ready_pending' ? '#0369A1' : '#92400E',
+                            border: `1px solid ${sub.status === 'camera_ready_approved' ? '#527A68' : '#BAE6FD'}`,
                           }}
                         />
                       </TableCell>
@@ -171,8 +205,9 @@ export default function CameraReadyPage() {
                                 size="small"
                                 variant="contained"
                                 disabled={isApproving || isRejecting}
-                                onClick={() => handleUpdateStatus(sub.id, 'camera_ready_approved')}
+                                onClick={() => handleOpenConfirmModal(sub, 'camera_ready_approved')}
                                 startIcon={isApproving ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-check2-circle"></i>}
+                                sx={{ backgroundColor: '#123B32', fontWeight: 700, '&:hover': { backgroundColor: '#0B241E' } }}
                               >
                                 {isApproving ? 'Approving...' : 'Approve'}
                               </Button>
@@ -181,8 +216,9 @@ export default function CameraReadyPage() {
                                 variant="outlined"
                                 color="error"
                                 disabled={isApproving || isRejecting}
-                                onClick={() => handleUpdateStatus(sub.id, 'revision_required')}
+                                onClick={() => handleOpenConfirmModal(sub, 'revision_required')}
                                 startIcon={isRejecting ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-arrow-counterclockwise"></i>}
+                                sx={{ fontWeight: 700 }}
                               >
                                 {isRejecting ? 'Rejecting...' : 'Request Fix'}
                               </Button>
@@ -192,7 +228,7 @@ export default function CameraReadyPage() {
                             <Chip
                               label="✔ Ready for Proceedings"
                               size="small"
-                              sx={{ fontWeight: 700, backgroundColor: '#E0F2FE', color: '#0369A1' }}
+                              sx={{ fontWeight: 700, backgroundColor: '#E8EFEB', color: '#123B32', border: '1px solid #527A68' }}
                             />
                           )}
                         </Box>
@@ -205,6 +241,17 @@ export default function CameraReadyPage() {
           </TableContainer>
         )}
       </Card>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        severity={confirmModal.severity}
+        onConfirm={handleExecuteStatusUpdate}
+        onCancel={() => setConfirmModal({ ...confirmModal, open: false })}
+      />
 
       {/* Global Snackbar */}
       <Snackbar

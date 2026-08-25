@@ -111,13 +111,13 @@ export default function AuthorSubmissionsPage() {
     setError('');
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
       formData.append('fileType', uploadModal.fileType);
       if (uploadModal.fileType === 'revision' && modalRebuttalNotes) {
         formData.append('rebuttalNotes', modalRebuttalNotes);
       }
+      formData.append('file', selectedFile);
 
-      await api.post(`/submissions/${uploadModal.submission.id}/upload-file`, formData, {
+      await api.post(`/submissions/${uploadModal.submission.id}/upload-file?fileType=${uploadModal.fileType}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
