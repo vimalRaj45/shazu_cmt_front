@@ -612,9 +612,13 @@ export default function ProfilePage() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -624,9 +628,13 @@ export default function ProfilePage() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
 
@@ -635,10 +643,14 @@ export default function ProfilePage() {
                     fullWidth
                     label="Registered Email Address"
                     value={profile?.email || ''}
-                    disabled
+                    InputProps={{ readOnly: true }}
                     variant="outlined"
                     size="small"
                     helperText="Primary email is locked for security"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: '#FAFCFB' },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -648,9 +660,13 @@ export default function ProfilePage() {
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
 
@@ -661,9 +677,13 @@ export default function ProfilePage() {
                     name="institution"
                     value={formData.institution}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -673,9 +693,13 @@ export default function ProfilePage() {
                     name="department"
                     value={formData.department}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
 
@@ -686,10 +710,14 @@ export default function ProfilePage() {
                     name="designation"
                     value={formData.designation}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
                     placeholder="e.g. Professor, Assistant Professor, Researcher"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -699,10 +727,14 @@ export default function ProfilePage() {
                     name="qualification"
                     value={formData.qualification}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
                     placeholder="e.g. Ph.D., Doctorate, M.Tech, M.S."
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
 
@@ -713,10 +745,14 @@ export default function ProfilePage() {
                     name="domain"
                     value={formData.domain}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     size="small"
                     placeholder="e.g. Computer Science, Artificial Intelligence, Mechanical Engineering"
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
 
@@ -729,9 +765,13 @@ export default function ProfilePage() {
                     name="bio"
                     value={formData.bio}
                     onChange={handleInputChange}
-                    disabled={!editMode}
+                    InputProps={{ readOnly: !editMode }}
                     variant="outlined"
                     placeholder="Brief description of research background, expertise, teaching, and publications..."
+                    sx={{
+                      '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600, lineHeight: 1.6 },
+                      '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                    }}
                   />
                 </Grid>
               </Grid>
@@ -872,17 +912,21 @@ export default function ProfilePage() {
                 name="orcidId"
                 value={formData.orcidId}
                 onChange={handleInputChange}
-                disabled={!editMode}
-                variant="outlined"
-                size="small"
-                placeholder="0000-0002-1825-0097"
-                sx={{ mb: 2 }}
                 InputProps={{
+                  readOnly: !editMode,
                   startAdornment: (
                     <InputAdornment position="start">
                       <i className="bi bi-shield-check" style={{ color: '#123B32', fontSize: '1.1rem' }} />
                     </InputAdornment>
                   ),
+                }}
+                variant="outlined"
+                size="small"
+                placeholder="0000-0002-1825-0097"
+                sx={{
+                  mb: 2,
+                  '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                  '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
                 }}
               />
 
@@ -1081,17 +1125,21 @@ export default function ProfilePage() {
                 name="googleScholarUrl"
                 value={formData.googleScholarUrl}
                 onChange={handleInputChange}
-                disabled={!editMode}
-                variant="outlined"
-                size="small"
-                placeholder="https://scholar.google.com/citations?user=..."
-                sx={{ mb: 2.5 }}
                 InputProps={{
+                  readOnly: !editMode,
                   startAdornment: (
                     <InputAdornment position="start">
                       <i className="bi bi-mortarboard" style={{ color: '#123B32' }} />
                     </InputAdornment>
                   ),
+                }}
+                variant="outlined"
+                size="small"
+                placeholder="https://scholar.google.com/citations?user=..."
+                sx={{
+                  mb: 2.5,
+                  '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                  '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
                 }}
               />
 
@@ -1102,11 +1150,15 @@ export default function ProfilePage() {
                 type="number"
                 value={formData.maxReviewLimit}
                 onChange={handleInputChange}
-                disabled={!editMode}
+                InputProps={{ readOnly: !editMode }}
                 variant="outlined"
                 size="small"
                 inputProps={{ min: 1, max: 20 }}
                 helperText="Maximum number of submissions you can review per conference"
+                sx={{
+                  '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
+                  '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },
+                }}
               />
 
               <Divider sx={{ my: 2.5, borderColor: '#D3DDD7' }} />

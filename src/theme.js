@@ -125,6 +125,49 @@ let baseTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 6,
+          backgroundColor: '#FFFFFF',
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#D3DDD7',
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#527A68',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#123B32',
+            borderWidth: '2px',
+          },
+          '&.Mui-disabled': {
+            backgroundColor: '#F8FAF9',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#CBD5E1',
+            },
+          },
+        },
+        input: {
+          color: '#1E293B',
+          fontWeight: 600,
+          '&.Mui-disabled': {
+            WebkitTextFillColor: '#123B32 !important', // High-contrast, crystal clear dark brand text!
+            color: '#123B32 !important',
+            fontWeight: 600,
+            cursor: 'default',
+          },
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: '#475569',
+          fontWeight: 600,
+          '&.Mui-disabled': {
+            color: '#2F5B4E !important',
+            fontWeight: 700,
+          },
+          '&.Mui-focused': {
+            color: '#123B32',
+            fontWeight: 700,
+          },
         },
       },
     },
