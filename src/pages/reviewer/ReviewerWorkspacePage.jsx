@@ -22,12 +22,13 @@ import {
 } from '@mui/material';
 import { LoadingSpinner, EmptyState } from '../../components/common/LoadingState';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 const DECISION_OPTIONS = [
   { value: 'Strongly Accepted', label: 'Strongly Accepted', color: '#15803D' },
   { value: 'Accepted without Revision', label: 'Accepted without Revision', color: '#16A34A' },
-  { value: 'Accepted with Minor Revision', label: 'Accepted with Minor Revision', color: '#D97706' },
+  { value: 'Accepted with Minor Revision', label: 'Accepted with Minor Revision', color: '#C47D4C' },
   { value: 'Rejected', label: 'Rejected', color: '#DC2626' },
 ];
 
@@ -36,6 +37,7 @@ export default function ReviewerWorkspacePage() {
   const [selectedSubId, setSelectedSubId] = useState(null);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmLockOpen, setConfirmLockOpen] = useState(false);
 
   // 9 Microsoft CMT Standard Questions state
   const [qRelevance, setQRelevance] = useState('Relevant');
@@ -109,12 +111,21 @@ export default function ReviewerWorkspacePage() {
     }
   };
 
+  const handleOpenFinalSubmitConfirmation = () => {
+    if (!qCommentsAuthors.trim()) {
+      setSnackbar({ open: true, message: 'Please provide reviewer comments to the authors (Question 7)', severity: 'warning' });
+      return;
+    }
+    setConfirmLockOpen(true);
+  };
+
   const handleSaveReview = async (asDraft = false) => {
     if (!asDraft && !qCommentsAuthors.trim()) {
       setSnackbar({ open: true, message: 'Please provide reviewer comments to the authors (Question 7)', severity: 'warning' });
       return;
     }
 
+    setConfirmLockOpen(false);
     setSaving(true);
     try {
       await api.post(`/reviews/submission/${selectedSubId}`, {
@@ -492,22 +503,36 @@ export default function ReviewerWorkspacePage() {
 
                     {/* Action Buttons */}
                     {!isLocked && (
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                         <Button
                           variant="outlined"
                           disabled={saving}
                           onClick={() => handleSaveReview(true)}
                           startIcon={<i className="bi bi-save"></i>}
-                          sx={{ px: 3, py: 1.25, fontWeight: 700 }}
+                          sx={{
+                            px: 3,
+                            py: 1.25,
+                            fontWeight: 700,
+                            borderColor: '#527A68',
+                            color: '#123B32',
+                            '&:hover': { backgroundColor: '#F5F3EC', borderColor: '#123B32' },
+                          }}
                         >
                           Save as Draft
                         </Button>
                         <Button
                           variant="contained"
                           disabled={saving}
-                          onClick={() => handleSaveReview(false)}
+                          onClick={handleOpenFinalSubmitConfirmation}
                           startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <i className="bi bi-lock-fill"></i>}
-                          sx={{ px: 4, py: 1.25, fontWeight: 700 }}
+                          sx={{
+                            px: 4,
+                            py: 1.25,
+                            fontWeight: 700,
+                            backgroundColor: '#123B32',
+                            color: '#FFFFFF',
+                            '&:hover': { backgroundColor: '#0B241E' },
+                          }}
                         >
                           Submit Final Review
                         </Button>
@@ -522,6 +547,19 @@ export default function ReviewerWorkspacePage() {
           )}
         </Grid>
       </Grid>
+
+      {/* Final Review Submission Confirmation Modal */}
+      <ConfirmModal
+        open={confirmLockOpen}
+        title="Finalize & Submit Peer Review"
+        message={`Are you sure you want to submit your finalized evaluation scorecard for manuscript #${selectedAssignment?.submission_number}? Once locked, your review and recommendation ("${qReviewerDecision}") will be submitted to the Program Chair and cannot be edited.`}
+        confirmText="Yes, Submit Final Review"
+        cancelText="Review Evaluation Again"
+        severity="info"
+        loading={saving}
+        onConfirm={() => handleSaveReview(false)}
+        onCancel={() => setConfirmLockOpen(false)}
+      />
 
       {/* Toast Feedback */}
       <Snackbar
