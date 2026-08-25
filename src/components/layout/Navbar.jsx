@@ -217,20 +217,20 @@ export default function Navbar({ onMobileToggle }) {
 
         {/* User Role Badge & Perspective Switcher */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.25 } }}>
-          {/* Interactive Role Perspective Chip */}
+          {/* Interactive Role Perspective Chip (Visible and Responsive on all screens) */}
           <Chip
             label={currentRoleStyle.label}
             size="small"
             onClick={handleRoleMenuOpen}
             sx={{
-              display: { xs: 'none', sm: 'inline-flex' },
+              display: 'inline-flex',
               backgroundColor: currentRoleStyle.bg,
               color: currentRoleStyle.text,
               border: `1px solid ${currentRoleStyle.border}`,
               fontWeight: 800,
-              fontSize: { xs: '0.725rem', sm: '0.8rem' },
-              height: 28,
-              px: 0.5,
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+              height: { xs: 26, sm: 28 },
+              px: { xs: 0.25, sm: 0.5 },
               borderRadius: 1.5,
               cursor: 'pointer',
               userSelect: 'none',
@@ -254,19 +254,20 @@ export default function Navbar({ onMobileToggle }) {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             PaperProps={{
               sx: {
-                width: 290,
-                p: 1,
+                width: { xs: 'calc(100vw - 32px)', sm: 340 },
+                maxWidth: 350,
+                p: 1.25,
                 border: '1px solid #D3DDD7',
-                borderRadius: 2,
-                boxShadow: '0 10px 30px rgba(18, 59, 50, 0.12)',
+                borderRadius: 2.5,
+                boxShadow: '0 12px 36px rgba(18, 59, 50, 0.16)',
               },
             }}
           >
-            <Box sx={{ px: 2, py: 1 }}>
+            <Box sx={{ px: 1.5, py: 1 }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32' }}>
                 Switch Perspective
               </Typography>
-              <Typography variant="caption" sx={{ color: '#527A68', display: 'block', fontSize: '0.72rem', mt: 0.25 }}>
+              <Typography variant="caption" sx={{ color: '#527A68', display: 'block', fontSize: '0.74rem', mt: 0.25, lineHeight: 1.4 }}>
                 Switch between active conference roles. Conflict of Interest (COI) isolation is strictly enforced.
               </Typography>
             </Box>
@@ -278,23 +279,26 @@ export default function Navbar({ onMobileToggle }) {
               onClick={() => handleSwitchPerspective('author')}
               sx={{
                 borderRadius: 1.5,
-                py: 1,
+                py: 1.25,
+                px: 1.5,
                 mb: 0.5,
+                display: 'flex',
+                alignItems: 'center',
                 '&.Mui-selected': { backgroundColor: '#FBEFE7', color: '#C47D4C', fontWeight: 700 },
               }}
             >
-              <ListItemIcon>
-                <i className="bi bi-file-earmark-text" style={{ color: '#C47D4C', fontSize: '1.1rem' }}></i>
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <i className="bi bi-file-earmark-text" style={{ color: '#C47D4C', fontSize: '1.15rem' }}></i>
               </ListItemIcon>
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+              <Box sx={{ flexGrow: 1, minWidth: 0, pr: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
                   Author Portal
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.72rem', display: 'block', whiteSpace: 'normal', lineHeight: 1.35 }}>
                   Submit papers, revisions & camera-ready
                 </Typography>
               </Box>
-              {activeRole === 'author' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+              {activeRole === 'author' && <i className="bi bi-check2 text-success" style={{ flexShrink: 0, fontWeight: 800, fontSize: '1.1rem' }}></i>}
             </MenuItem>
 
             {/* Reviewer Option */}
@@ -303,23 +307,26 @@ export default function Navbar({ onMobileToggle }) {
               onClick={() => handleSwitchPerspective('reviewer')}
               sx={{
                 borderRadius: 1.5,
-                py: 1,
+                py: 1.25,
+                px: 1.5,
                 mb: 0.5,
+                display: 'flex',
+                alignItems: 'center',
                 '&.Mui-selected': { backgroundColor: '#E8EFEB', color: '#2F5B4E', fontWeight: 700 },
               }}
             >
-              <ListItemIcon>
-                <i className="bi bi-journal-check" style={{ color: '#2F5B4E', fontSize: '1.1rem' }}></i>
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <i className="bi bi-journal-check" style={{ color: '#2F5B4E', fontSize: '1.15rem' }}></i>
               </ListItemIcon>
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+              <Box sx={{ flexGrow: 1, minWidth: 0, pr: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
                   Reviewer Portal
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.72rem', display: 'block', whiteSpace: 'normal', lineHeight: 1.35 }}>
                   Evaluate assigned papers & submit scorecards
                 </Typography>
               </Box>
-              {activeRole === 'reviewer' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+              {activeRole === 'reviewer' && <i className="bi bi-check2 text-success" style={{ flexShrink: 0, fontWeight: 800, fontSize: '1.1rem' }}></i>}
             </MenuItem>
 
             {/* Chair/Admin Option (If user is admin) */}
@@ -329,22 +336,25 @@ export default function Navbar({ onMobileToggle }) {
                 onClick={() => handleSwitchPerspective('admin')}
                 sx={{
                   borderRadius: 1.5,
-                  py: 1,
+                  py: 1.25,
+                  px: 1.5,
+                  display: 'flex',
+                  alignItems: 'center',
                   '&.Mui-selected': { backgroundColor: '#E8EFEB', color: '#123B32', fontWeight: 700 },
                 }}
               >
-                <ListItemIcon>
-                  <i className="bi bi-shield-lock" style={{ color: '#123B32', fontSize: '1.1rem' }}></i>
+                <ListItemIcon sx={{ minWidth: 32 }}>
+                  <i className="bi bi-shield-lock" style={{ color: '#123B32', fontSize: '1.15rem' }}></i>
                 </ListItemIcon>
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                <Box sx={{ flexGrow: 1, minWidth: 0, pr: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
                     Chair & Admin Portal
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.72rem', display: 'block', whiteSpace: 'normal', lineHeight: 1.35 }}>
                     Full conference management & reviewer assignment
                   </Typography>
                 </Box>
-                {activeRole === 'admin' && <i className="bi bi-check2 text-success" style={{ marginLeft: 'auto', fontWeight: 800 }}></i>}
+                {activeRole === 'admin' && <i className="bi bi-check2 text-success" style={{ flexShrink: 0, fontWeight: 800, fontSize: '1.1rem' }}></i>}
               </MenuItem>
             )}
           </Menu>
