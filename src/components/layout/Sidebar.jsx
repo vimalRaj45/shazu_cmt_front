@@ -58,10 +58,10 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
       });
     }
 
-    // Admin & Conference Management Section (Admin)
+    // Admin & Publication Management Section (Admin)
     if (activeRole === 'admin') {
       sections.push({
-        title: 'ADMIN & CONFERENCE MANAGEMENT',
+        title: 'ADMIN & PUBLICATION MANAGEMENT',
         items: [
           { label: 'All Submissions', path: '/chair/submissions', icon: 'bi-folder2-open' },
           { label: 'Assign Reviewers', path: '/chair/reviewers', icon: 'bi-person-check' },

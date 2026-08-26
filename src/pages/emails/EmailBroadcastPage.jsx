@@ -34,7 +34,7 @@ const EMAIL_TEMPLATES = [
   {
     name: 'Reviewer Evaluation Reminder',
     subject: 'Friendly Reminder: Peer Review Due Soon',
-    content: 'Dear Reviewer,\n\nThis is a gentle reminder that the peer review deadline is approaching. Please log in to your Reviewer Workspace on the CMT portal to review your assigned manuscripts and submit your evaluations.\n\nThank you for your valuable contribution to the conference peer review process.\n\nBest regards,\nProgram Chairs',
+    content: 'Dear Reviewer,\n\nThis is a gentle reminder that the peer review deadline is approaching. Please log in to your Reviewer Workspace on the CJMS portal to review your assigned manuscripts and submit your evaluations.\n\nThank you for your valuable contribution to the peer review process.\n\nBest regards,\nProgram Chairs',
   },
   {
     name: 'Camera-Ready Preparation Instructions',
@@ -283,10 +283,10 @@ export default function EmailBroadcastPage() {
                     />
                   </Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                    Shazu Soft Technologies CMT
+                    Shazu Soft Technologies CJMS
                   </Typography>
                   <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }}>
-                    {selectedConference?.name || 'Conference Management System'}
+                    {selectedConference?.name || 'Conference & Journal Management System'}
                   </Typography>
                 </Box>
 

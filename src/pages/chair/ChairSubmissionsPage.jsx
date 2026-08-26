@@ -119,7 +119,7 @@ export default function ChairSubmissionsPage() {
               <TextField
                 fullWidth
                 size="small"
-                placeholder="Search Title or ID (e.g. CMT-2026-00101)..."
+                placeholder="Search Title or ID (e.g. CJMS-2026-00101)..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && fetchSubmissions()}

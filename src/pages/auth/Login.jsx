@@ -144,10 +144,10 @@ export default function Login() {
             />
           </Box>
           <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.01em', color: '#FFFFFF' }}>
-            Shazu Soft CMT
+            Shazu Soft CJMS
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.92, mt: 0.5, color: 'rgba(255, 255, 255, 0.9)' }}>
-            Academic Conference Management Portal
+            Academic Conference & Journal Management Portal
           </Typography>
         </Box>
 
@@ -277,7 +277,7 @@ export default function Login() {
                 },
               }}
             >
-              {loading ? 'Signing In...' : 'Sign In to CMT Portal'}
+              {loading ? 'Signing In...' : 'Sign In to CJMS Portal'}
             </Button>
           </Box>
 
@@ -287,7 +287,7 @@ export default function Login() {
             <Typography variant="body2" color="text.secondary">
               Don't have an account?{' '}
               <Link to="/register" style={{ color: '#1565C0', fontWeight: 800, textDecoration: 'none' }}>
-                Create CMT Account
+                Create CJMS Account
               </Link>
             </Typography>
           </Box>

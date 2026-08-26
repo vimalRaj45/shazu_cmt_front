@@ -39,7 +39,7 @@ export default function ReviewerWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [confirmLockOpen, setConfirmLockOpen] = useState(false);
 
-  // 9 Microsoft CMT Standard Questions state
+  // 9 Standard Peer Review Questions state
   const [qRelevance, setQRelevance] = useState('Relevant');
   const [qStructure, setQStructure] = useState('Good');
   const [qLanguage, setQLanguage] = useState('Good');
@@ -196,7 +196,7 @@ export default function ReviewerWorkspacePage() {
             Peer Reviewer Evaluation Workspace
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Microsoft CMT standard 9-question evaluation form for double-blind academic review
+            Standard 9-question peer review evaluation form for double-blind academic review
           </Typography>
         </Box>
       </Box>
@@ -262,7 +262,7 @@ export default function ReviewerWorkspacePage() {
           </Card>
         </Grid>
 
-        {/* Right Side: Microsoft CMT 9-Question Evaluation Form */}
+        {/* Right Side: Standard 9-Question Evaluation Form */}
         <Grid item xs={12} md={8}>
           {selectedAssignment ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

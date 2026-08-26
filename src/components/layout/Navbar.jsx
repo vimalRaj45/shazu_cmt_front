@@ -119,7 +119,7 @@ export default function Navbar({ onMobileToggle }) {
                 SHAZU SOFT
               </Typography>
               <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.72rem', display: 'block' }}>
-                CMT PORTAL
+                CJMS PORTAL
               </Typography>
             </Box>
           </Box>
@@ -351,7 +351,7 @@ export default function Navbar({ onMobileToggle }) {
                     Chair & Admin Portal
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.72rem', display: 'block', whiteSpace: 'normal', lineHeight: 1.35 }}>
-                    Full conference management & reviewer assignment
+                    Full conference & journal management, reviewer assignment
                   </Typography>
                 </Box>
                 {activeRole === 'admin' && <i className="bi bi-check2 text-success" style={{ flexShrink: 0, fontWeight: 800, fontSize: '1.1rem' }}></i>}
@@ -437,7 +437,7 @@ export default function Navbar({ onMobileToggle }) {
       <ConfirmModal
         open={showLogoutConfirm}
         title="Sign Out Confirmation"
-        message="Are you sure you want to sign out of Shazu Soft CMT? You will need to log in again to access your submissions and review workspaces."
+        message="Are you sure you want to sign out of Shazu Soft CJMS? You will need to log in again to access your submissions and review workspaces."
         confirmText="Yes, Sign Out"
         cancelText="Stay Logged In"
         severity="logout"

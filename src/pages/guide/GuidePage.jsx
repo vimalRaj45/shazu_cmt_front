@@ -52,7 +52,7 @@ export default function GuidePage() {
             }}
           />
           <Typography variant="caption" sx={{ color: '#E8EFEB', fontWeight: 700, letterSpacing: '0.04em' }}>
-            Shazu Soft Conference Management Tool (CMT)
+            Shazu Soft Conference & Journal Management System (CJMS)
           </Typography>
         </Box>
         <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, letterSpacing: '-0.02em', color: '#FFFFFF', fontSize: { xs: '1.5rem', sm: '2rem' } }}>
@@ -218,7 +218,7 @@ export default function GuidePage() {
                     <i className="bi bi-person-badge text-success"></i> 1. Dual Participation
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#334E43', fontSize: '0.825rem', lineHeight: 1.55 }}>
-                    In research conferences, scholars frequently submit papers as <strong>Authors</strong> while reviewing manuscripts in their field as <strong>Reviewers</strong>. Shazu Soft CMT fully supports holding both roles simultaneously.
+                    In research conferences and journals, scholars frequently submit papers as <strong>Authors</strong> while reviewing manuscripts in their field as <strong>Reviewers</strong>. Shazu Soft CJMS fully supports holding both roles simultaneously.
                   </Typography>
                 </Box>
               </Grid>
@@ -253,7 +253,7 @@ export default function GuidePage() {
               Conference Workflow Lifecycle Pipeline
             </Typography>
             <Typography variant="body2" sx={{ color: '#334E43', mb: 3 }}>
-              Standard operating progression across all phases of the conference management lifecycle:
+              Standard operating progression across all phases of the conference & journal management lifecycle:
             </Typography>
 
             <Grid container spacing={2}>

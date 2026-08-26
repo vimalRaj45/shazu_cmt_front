@@ -323,10 +323,10 @@ export default function Register() {
             />
           </Box>
           <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-            Academic CMT Registration
+            Academic CJMS Registration
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.92, color: 'rgba(255, 255, 255, 0.9)', mt: 0.5 }}>
-            Join Shazu Soft Conference Management Portal • Step {activeStep + 1} of 3
+            Join Shazu Soft Conference & Journal Management Portal • Step {activeStep + 1} of 3
           </Typography>
         </Box>
 

@@ -305,12 +305,12 @@ export default function SubmissionDetailPage() {
             </CardContent>
           </Card>
 
-              {/* Microsoft CMT Standard "View Reviews" Questionnaire Section */}
+              {/* Standard "View Reviews" Questionnaire Section */}
               <Card sx={{ mb: 3, border: '1px solid #E2E8F0', borderRadius: 2.5, overflow: 'hidden' }}>
-                {/* CMT Header Bar */}
+                {/* Review Header Bar */}
                 <Box sx={{ backgroundColor: '#0F2942', color: '#FFFFFF', px: 3, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: '0.02em', textTransform: 'uppercase', fontSize: '0.8rem', color: '#90CAF9' }}>
-                    Conference Management Toolkit — View Reviews
+                    Peer Review & Evaluation Portal — View Reviews
                   </Typography>
                   <Chip
                     label={`${reviews.length} Review${reviews.length === 1 ? '' : 's'} Completed`}
@@ -371,7 +371,7 @@ export default function SubmissionDetailPage() {
                             Questions & Evaluation Criteria
                           </Typography>
 
-                          {/* 9 CMT Questions List */}
+                          {/* 9 Standard Review Questions List */}
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {/* Q1 */}
                             <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
