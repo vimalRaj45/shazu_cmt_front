@@ -204,35 +204,35 @@ export default function DecisionsPage() {
             description="No paper submissions matched your search criteria."
           />
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 900 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Paper ID</TableCell>
-                  <TableCell>Title & Author</TableCell>
-                  <TableCell>Completed Reviews</TableCell>
-                  <TableCell>Avg Score</TableCell>
-                  <TableCell>Current Decision</TableCell>
-                  <TableCell align="right">Decision Action</TableCell>
+                  <TableCell sx={{ minWidth: 140 }}>Paper ID</TableCell>
+                  <TableCell sx={{ minWidth: 260, maxWidth: 340 }}>Title & Author</TableCell>
+                  <TableCell sx={{ minWidth: 160 }}>Completed Reviews</TableCell>
+                  <TableCell sx={{ minWidth: 120 }}>Avg Score</TableCell>
+                  <TableCell sx={{ minWidth: 140 }}>Current Decision</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 160 }}>Decision Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredSubmissions.map((sub) => (
                   <TableRow key={sub.id} hover>
-                    <TableCell>
+                    <TableCell sx={{ minWidth: 140 }}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#1565C0' }}>
                         {sub.submission_number}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ maxWidth: 300 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F2942' }}>
+                    <TableCell sx={{ minWidth: 260, maxWidth: 340 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F2942', whiteSpace: 'normal', wordBreak: 'break-word' }}>
                         {sub.title}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', wordBreak: 'break-all' }}>
                         {sub.author_first_name} {sub.author_last_name} ({sub.author_email})
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ minWidth: 160 }}>
                       <Chip
                         label={`${sub.completed_reviews_count || 0} / ${sub.assigned_reviewers_count || 0} Reviews`}
                         size="small"
@@ -243,7 +243,7 @@ export default function DecisionsPage() {
                         }}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ minWidth: 120 }}>
                       {sub.average_score ? (
                         <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1565C0' }}>
                           {sub.average_score} / 5
@@ -252,7 +252,7 @@ export default function DecisionsPage() {
                         <Typography variant="caption" color="text.secondary">No scores</Typography>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ minWidth: 140 }}>
                       {sub.decision ? (
                         <Chip
                           label={sub.decision.toUpperCase()}

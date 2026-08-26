@@ -127,16 +127,16 @@ export default function CameraReadyPage() {
             description="Accepted papers will appear here once authors upload their final camera-ready manuscripts."
           />
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 950 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Paper ID</TableCell>
-                  <TableCell>Title & Track</TableCell>
-                  <TableCell>Corresponding Author</TableCell>
-                  <TableCell>Camera-Ready File</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell align="right">Approval Actions</TableCell>
+                  <TableCell sx={{ minWidth: 140, width: 140 }}>Paper ID</TableCell>
+                  <TableCell sx={{ minWidth: 260, maxWidth: 340 }}>Title & Track</TableCell>
+                  <TableCell sx={{ minWidth: 180 }}>Corresponding Author</TableCell>
+                  <TableCell sx={{ minWidth: 180 }}>Camera-Ready File</TableCell>
+                  <TableCell sx={{ minWidth: 140 }}>Status</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 180 }}>Approval Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -151,13 +151,13 @@ export default function CameraReadyPage() {
 
                   return (
                     <TableRow key={sub.id} hover>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 140 }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'monospace', color: '#123B32' }}>
                           {sub.submission_number}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 300 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#123B32' }}>
+                      <TableCell sx={{ minWidth: 260, maxWidth: 340 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#123B32', whiteSpace: 'normal', wordBreak: 'break-word' }}>
                           {sub.title}
                         </Typography>
                         <Chip
@@ -166,11 +166,11 @@ export default function CameraReadyPage() {
                           sx={{ mt: 0.5, fontSize: '0.7rem', backgroundColor: '#E8EFEB', color: '#123B32', fontWeight: 700 }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 180 }}>
                         <Typography variant="body2" sx={{ fontWeight: 600, color: '#26322E' }}>{sub.author_first_name} {sub.author_last_name}</Typography>
-                        <Typography variant="caption" color="text.secondary">{sub.author_email}</Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', wordBreak: 'break-all' }}>{sub.author_email}</Typography>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 180 }}>
                         {cameraFile ? (
                           <Button
                             size="small"
@@ -185,7 +185,7 @@ export default function CameraReadyPage() {
                           <Chip label="Awaiting Author Upload" size="small" sx={{ backgroundColor: '#FBEFE7', color: '#C47D4C', fontWeight: 700 }} />
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: 140 }}>
                         <Chip
                           label={sub.status === 'camera_ready_approved' ? 'Approved & Locked' : sub.status === 'camera_ready_pending' ? 'Pending Approval' : sub.status.toUpperCase()}
                           size="small"
@@ -197,7 +197,7 @@ export default function CameraReadyPage() {
                           }}
                         />
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" sx={{ minWidth: 180 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                           {cameraFile && sub.status !== 'camera_ready_approved' && (
                             <>
