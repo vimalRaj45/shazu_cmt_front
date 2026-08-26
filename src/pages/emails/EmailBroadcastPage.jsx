@@ -28,7 +28,7 @@ import api from '../../services/api';
 const EMAIL_TEMPLATES = [
   {
     name: 'Paper Submission Deadline Extension',
-    subject: 'Paper Submission Deadline Extended for [Conference]',
+    subject: 'Paper Submission Deadline Extended',
     content: 'Dear Authors,\n\nDue to multiple requests, the Program Committee has decided to extend the paper submission deadline by one week. Please ensure all PDF manuscripts and supplementary files are finalized before the new deadline.\n\nBest regards,\nProgram Committee',
   },
   {
@@ -39,7 +39,7 @@ const EMAIL_TEMPLATES = [
   {
     name: 'Camera-Ready Preparation Instructions',
     subject: 'Instructions for Final Camera-Ready Paper Submission',
-    content: 'Dear Authors,\n\nCongratulations again on the acceptance of your paper! Please follow the camera-ready guidelines and upload the final version along with presentation slides through your author dashboard.\n\nBest regards,\nConference Secretariat',
+    content: 'Dear Authors,\n\nCongratulations again on the acceptance of your paper! Please follow the camera-ready guidelines and upload the final version along with presentation slides through your author dashboard.\n\nBest regards,\nEditorial Committee',
   },
 ];
 

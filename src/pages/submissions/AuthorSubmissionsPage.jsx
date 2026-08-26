@@ -188,7 +188,7 @@ export default function AuthorSubmissionsPage() {
           <EmptyState
             icon="bi-journal-plus"
             title="No Submissions Yet"
-            description="You have not submitted any manuscripts to this conference. Submit your research paper to begin the peer evaluation process."
+            description="You have not submitted any manuscripts yet. Submit your research paper to begin the peer evaluation process."
             action={
               <Button variant="contained" onClick={() => navigate('/submit-paper')}>
                 Submit Paper Now
@@ -202,7 +202,7 @@ export default function AuthorSubmissionsPage() {
                 <TableRow>
                   <TableCell sx={{ minWidth: 140 }}>Paper ID</TableCell>
                   <TableCell sx={{ minWidth: 220 }}>Title & Track</TableCell>
-                  <TableCell sx={{ minWidth: 140 }}>Conference</TableCell>
+                  <TableCell sx={{ minWidth: 160 }}>Conference / Journal</TableCell>
                   <TableCell sx={{ minWidth: 120 }}>Status</TableCell>
                   <TableCell sx={{ minWidth: 110 }}>Files</TableCell>
                   <TableCell align="right" sx={{ minWidth: 120 }}>Actions</TableCell>

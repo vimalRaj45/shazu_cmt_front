@@ -47,9 +47,9 @@ export default function ConferenceDetailPage() {
   if (!details) {
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="h6">No Conference Selected</Typography>
+        <Typography variant="h6">No Conference / Journal Selected</Typography>
         <Button sx={{ mt: 2 }} variant="contained" onClick={() => navigate('/conferences')}>
-          Select Conference
+          Select Conference / Journal
         </Button>
       </Box>
     );
@@ -58,7 +58,7 @@ export default function ConferenceDetailPage() {
   return (
     <Box sx={{ pb: 4 }}>
       <Box sx={{ mb: 2 }}>
-        <BackButton fallbackUrl="/conferences" label="Back to Conferences" />
+        <BackButton fallbackUrl="/conferences" label="Back to Conferences & Journals" />
       </Box>
 
       {/* Header Banner */}
@@ -162,8 +162,8 @@ export default function ConferenceDetailPage() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Venue</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{details.venue || 'Virtual & Campus'}</Typography>
+                    <Typography variant="body2" color="text.secondary">Mode / Platform</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{details.venue || 'Online / Virtual Platform'}</Typography>
                   </Box>
                   <Divider sx={{ borderColor: '#D3DDD7' }} />
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

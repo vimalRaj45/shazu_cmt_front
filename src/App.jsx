@@ -78,7 +78,7 @@ export default function App() {
           {/* Reviewer */}
           <Route path="/reviewer/workspace" element={<ReviewerWorkspacePage />} />
 
-          {/* Admin & Conference Management */}
+          {/* Admin & Publication Management */}
           <Route path="/chair/submissions" element={<ChairSubmissionsPage />} />
           <Route path="/chair/reviewers" element={<ReviewerAssignmentPage />} />
           <Route path="/chair/decisions" element={<DecisionsPage />} />

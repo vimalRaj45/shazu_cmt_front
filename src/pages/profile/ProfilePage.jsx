@@ -1154,7 +1154,7 @@ export default function ProfilePage() {
                 variant="outlined"
                 size="small"
                 inputProps={{ min: 1, max: 20 }}
-                helperText="Maximum number of submissions you can review per conference"
+                helperText="Maximum number of submissions you can review per conference or journal issue"
                 sx={{
                   '& .MuiInputBase-input': { color: '#123B32', fontWeight: 600 },
                   '& .MuiOutlinedInput-root': { backgroundColor: editMode ? '#FFFFFF' : '#FAFCFB' },

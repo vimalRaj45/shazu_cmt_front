@@ -62,7 +62,7 @@ export default function ReportsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${selectedConference?.short_name || 'Conference'}_Submissions_Report.csv`);
+    link.setAttribute('download', `${selectedConference?.short_name || 'Publication'}_Submissions_Report.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -76,7 +76,7 @@ export default function ReportsPage() {
           <BackButton fallbackUrl="/dashboard" />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
-              Conference Analytics & Export Reports
+              Analytics & Export Reports
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Comprehensive track distribution, review completion metrics, and paper export data

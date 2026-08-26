@@ -59,7 +59,7 @@ export default function GuidePage() {
           End-to-End System & Workflow Guide
         </Typography>
         <Typography variant="body2" sx={{ opacity: 0.95, maxWidth: 780, color: '#E8EFEB', lineHeight: 1.65, fontSize: '0.925rem' }}>
-          Comprehensive documentation and operational standard operating procedures for managing the full lifecycle of academic conferences—from conference configuration and double-blind manuscript submission to peer evaluation rubrics, conflict-free assignments, decisions, and camera-ready publishing.
+          Comprehensive documentation and operational standard operating procedures for managing the full lifecycle of academic publications—from online conference and journal setup and double-blind manuscript submission to peer evaluation rubrics, conflict-free assignments, decisions, and camera-ready publishing.
         </Typography>
       </Paper>
 
@@ -250,7 +250,7 @@ export default function GuidePage() {
           {/* Workflow Pipeline */}
           <Paper elevation={0} sx={{ p: { xs: 2.5, sm: 3.5 }, border: '1px solid #D3DDD7', borderRadius: 2.5, backgroundColor: '#FFFFFF', mt: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', mb: 0.5 }}>
-              Conference Workflow Lifecycle Pipeline
+              Publication Workflow Lifecycle Pipeline
             </Typography>
             <Typography variant="body2" sx={{ color: '#334E43', mb: 3 }}>
               Standard operating progression across all phases of the conference & journal management lifecycle:
@@ -258,12 +258,12 @@ export default function GuidePage() {
 
             <Grid container spacing={2}>
               {[
-                { step: '1', title: 'Conference Setup', desc: 'Define conference themes, tracks, event dates, and submission deadlines.' },
+                { step: '1', title: 'Conference / Journal Setup', desc: 'Define online conference/journal themes, tracks, schedule/issue timeline, and submission deadlines.' },
                 { step: '2', title: 'Paper Submissions', desc: 'Authors submit abstracts and upload manuscripts to Cloudflare R2.' },
                 { step: '3', title: 'Reviewer Assignment', desc: 'Chair checks automated COI matrix and assigns reviewers.' },
                 { step: '4', title: 'Peer Review', desc: 'Reviewers evaluate manuscripts across 5-point scorecards.' },
                 { step: '5', title: 'Paper Decisions', desc: 'Chair calibrates scores and publishes Accept/Revision/Reject decisions.' },
-                { step: '6', title: 'Camera-Ready & Proceedings', desc: 'Authors upload final PDF; Chair approves and organizes sessions.' },
+                { step: '6', title: 'Camera-Ready & Publishing', desc: 'Authors upload final PDF; Admin approves and organizes sessions/issues.' },
               ].map((pipe, i) => (
                 <Grid item xs={12} sm={6} md={2} key={i}>
                   <Box sx={{ p: 2, backgroundColor: '#F5F3EC', borderRadius: 2, border: '1px solid #D3DDD7', height: '100%' }}>
@@ -308,13 +308,13 @@ export default function GuidePage() {
           <Accordion defaultExpanded elevation={0} sx={{ border: '1px solid #D3DDD7', borderRadius: 2, '&:before': { display: 'none' }, backgroundColor: '#FFFFFF' }}>
             <AccordionSummary expandIcon={<i className="bi bi-chevron-down" />}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#123B32' }}>
-                Step 1: Conference Configuration & Track Setup
+                Step 1: Conference / Journal Configuration & Track Setup
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ pt: 0 }}>
               <Typography variant="body2" sx={{ color: '#334E43', mb: 1.5, lineHeight: 1.6 }}>
-                1. Navigate to <strong>Conferences</strong> and select <strong>Create Conference</strong>.
-                <br />2. Fill in Conference Title, Acronym (e.g. <code>ICAI-2026</code>), Venue location, and Submission Deadlines.
+                1. Navigate to <strong>Conferences & Journals</strong> and select <strong>Create New Conference / Journal</strong>.
+                <br />2. Fill in Title, Acronym (e.g. <code>ICAI-2026</code> or <code>JCS-Vol5</code>), Online Platform/Publisher Info, and Submission Deadlines.
                 <br />3. Add Subject Tracks (e.g., <em>Track 1: Artificial Intelligence, Track 2: Cybersecurity</em>) so authors can categorize submissions.
               </Typography>
             </AccordionDetails>

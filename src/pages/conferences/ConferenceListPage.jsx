@@ -96,10 +96,10 @@ export default function ConferenceListPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Conferences Directory
+            Conferences & Journals Directory
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage and participate in Shazu Soft Technologies internal conferences
+            Manage and participate in conferences & journal publications
           </Typography>
         </Box>
         {(activeRole === 'chair' || activeRole === 'admin') && (
@@ -108,7 +108,7 @@ export default function ConferenceListPage() {
             onClick={() => setOpenModal(true)}
             startIcon={<i className="bi bi-plus-circle-fill"></i>}
           >
-            Create New Conference
+            Create New Conference / Journal
           </Button>
         )}
       </Box>
@@ -147,14 +147,14 @@ export default function ConferenceListPage() {
                   </Typography>
 
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {conf.description || 'Annual Shazu Soft conference series for research papers, peer reviews, and technical sessions.'}
+                    {conf.description || 'Online academic publication portal for research papers, peer reviews, and scholarly proceedings / articles.'}
                   </Typography>
 
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <i className="bi bi-geo-alt text-muted"></i>
+                      <i className="bi bi-globe2 text-muted"></i>
                       <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {conf.venue || 'Virtual / Shazu Soft Campus'}
+                        {conf.venue || 'Online / Virtual Platform'}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -181,7 +181,7 @@ export default function ConferenceListPage() {
                       navigate('/conference/details');
                     }}
                   >
-                    Enter Conference
+                    Enter Portal
                   </Button>
                 </Box>
               </Card>
@@ -193,7 +193,7 @@ export default function ConferenceListPage() {
       {/* Create Conference Modal Dialog */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0' }}>
-          Create New Academic Conference
+          Create New Academic Conference / Journal
         </DialogTitle>
         <Box component="form" onSubmit={handleCreate}>
           <DialogContent sx={{ pt: 3 }}>
@@ -201,11 +201,11 @@ export default function ConferenceListPage() {
               <Grid item xs={12} sm={8}>
                 <TextField
                   fullWidth
-                  label="Conference Name"
+                  label="Conference / Journal Name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Shazu Soft International Conference on AI"
+                  placeholder="e.g. International Conference on AI or Journal of Computing"
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -224,7 +224,7 @@ export default function ConferenceListPage() {
                   fullWidth
                   multiline
                   rows={2}
-                  label="Conference Description"
+                  label="Description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
@@ -233,10 +233,10 @@ export default function ConferenceListPage() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Venue / Location"
+                  label="Online Platform / Publisher"
                   value={formData.venue}
                   onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                  placeholder="e.g. Bangalore Auditorium & Online"
+                  placeholder="e.g. Online Portal, Virtual via Zoom / MS Teams"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -334,7 +334,7 @@ export default function ConferenceListPage() {
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
             <Button onClick={() => setOpenModal(false)}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={saving}>
-              {saving ? 'Creating...' : 'Create Conference'}
+              {saving ? 'Creating...' : 'Create'}
             </Button>
           </DialogActions>
         </Box>

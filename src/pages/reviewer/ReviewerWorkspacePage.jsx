@@ -318,7 +318,7 @@ export default function ReviewerWorkspacePage() {
                     {/* Q1 */}
                     <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 2 }}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F2942', mb: 1.5 }}>
-                        1. Relevance to the Conference
+                        1. Relevance to the Scope
                       </Typography>
                       <TextField
                         select
@@ -458,7 +458,7 @@ export default function ReviewerWorkspacePage() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                         <i className="bi bi-shield-lock text-primary"></i>
                         <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F2942' }}>
-                          8. Special Comments to the Editor: Whether the Manuscript meets the standard of Conference Proceedings?
+                          8. Special Comments to the Editor: Whether the Manuscript meets the standard of the Publication?
                         </Typography>
                       </Box>
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>

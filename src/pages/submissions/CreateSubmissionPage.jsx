@@ -190,7 +190,7 @@ export default function CreateSubmissionPage() {
             Submit New Manuscript
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Upload your academic research paper to the conference peer review pipeline
+            Upload your academic research paper to the peer review pipeline
           </Typography>
         </Box>
       </Box>
@@ -200,11 +200,11 @@ export default function CreateSubmissionPage() {
       {loading && <LinearProgress variant="determinate" value={uploadProgress} sx={{ mb: 3, borderRadius: 1 }} />}
 
       <Box component="form" onSubmit={handleSubmit}>
-        {/* Step 1: Conference & Track */}
+        {/* Step 1: Conference / Journal & Track */}
         <Card sx={{ mb: 3, p: 1 }}>
           <CardContent>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <i className="bi bi-calendar3 text-primary"></i> 1. Conference & Track Selection
+              <i className="bi bi-journal-bookmark-fill text-primary"></i> 1. Conference / Journal & Track Selection
             </Typography>
             <Grid container spacing={2.5}>
               <Grid item xs={12} sm={6}>
@@ -217,8 +217,8 @@ export default function CreateSubmissionPage() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Target Conference *"
-                      placeholder="Search conference name or code..."
+                      label="Target Conference / Journal *"
+                      placeholder="Search conference or journal name..."
                       required={!conferenceId}
                     />
                   )}
@@ -243,7 +243,7 @@ export default function CreateSubmissionPage() {
                   value={tracks.find((t) => String(t.id) === String(trackId)) || null}
                   onChange={(_, newValue) => setTrackId(newValue ? newValue.id : '')}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  noOptionsText={conferenceId ? 'No tracks defined' : 'Select a conference first'}
+                  noOptionsText={conferenceId ? 'No tracks defined' : 'Select a conference or journal first'}
                   renderInput={(params) => (
                     <TextField
                       {...params}

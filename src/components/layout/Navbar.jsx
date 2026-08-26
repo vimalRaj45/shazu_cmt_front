@@ -173,7 +173,7 @@ export default function Navbar({ onMobileToggle }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Conference"
+                placeholder="Select Conference / Journal"
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
@@ -422,7 +422,7 @@ export default function Navbar({ onMobileToggle }) {
             </MenuItem>
             <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/conferences'); }}>
               <ListItemIcon><i className="bi bi-globe" style={{ color: '#123B32' }}></i></ListItemIcon>
-              All Conferences
+              All Conferences & Journals
             </MenuItem>
             <Divider sx={{ my: 1, borderColor: '#D3DDD7' }} />
             <MenuItem onClick={handleRequestLogout} sx={{ color: '#DC2626' }}>

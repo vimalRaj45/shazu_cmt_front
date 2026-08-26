@@ -133,7 +133,7 @@ export default function ConferenceSchedulePage() {
           <BackButton fallbackUrl="/dashboard" />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800, color: '#0F2942' }}>
-              Conference Program & Session Schedule
+              Program & Session Schedule
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {selectedConference?.name} ({selectedConference?.short_name})
@@ -178,7 +178,7 @@ export default function ConferenceSchedulePage() {
                         {session.session_name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                        <strong>Room/Venue:</strong> {session.venue_room || 'TBD'} • <strong>Session Chair:</strong> {session.session_chair_name || 'TBD'}
+                        <strong>Online Room / Link:</strong> {session.venue_room || 'Online Session'} • <strong>Session Chair:</strong> {session.session_chair_name || 'TBD'}
                       </Typography>
                     </Box>
 
@@ -360,10 +360,10 @@ export default function ConferenceSchedulePage() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Venue / Room / Link"
+                  label="Online Room / Meeting Link / Stream"
+                  placeholder="e.g. Zoom Room 1, Google Meet, or Track Stream Link"
                   value={sessionForm.venueRoom}
                   onChange={(e) => setSessionForm({ ...sessionForm, venueRoom: e.target.value })}
-                  placeholder="e.g. Hall B / Zoom Link"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>

@@ -214,7 +214,7 @@ export default function SubmissionDetailPage() {
               {submission.title}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Conference: <strong>{submission.conference_name} ({submission.conference_short_name})</strong>
+              Conference / Journal: <strong>{submission.conference_name} ({submission.conference_short_name})</strong>
             </Typography>
           </Box>
 
@@ -376,7 +376,7 @@ export default function SubmissionDetailPage() {
                             {/* Q1 */}
                             <Box sx={{ p: 1.5, backgroundColor: '#F8FAFC', borderRadius: 1.5, border: '1px solid #E2E8F0' }}>
                               <Typography variant="caption" sx={{ fontWeight: 800, color: '#475569', display: 'block', mb: 0.25 }}>
-                                1. Relevance to the Conference
+                                1. Relevance to the Scope
                               </Typography>
                               <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
                                 {rev.q_relevance || 'Relevant'}
