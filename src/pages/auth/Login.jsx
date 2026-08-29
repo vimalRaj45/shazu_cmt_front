@@ -23,6 +23,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
+import TurnstileWidget from '../../components/common/TurnstileWidget';
 
 export default function Login() {
   const { login } = useAuth();
@@ -30,6 +31,7 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orcidLoading, setOrcidLoading] = useState(false);
@@ -40,7 +42,7 @@ export default function Login() {
     setLoading(true);
     console.log('[Login] Attempting sign-in for identifier:', email);
     try {
-      const user = await login(email, password);
+      const user = await login(email, password, turnstileToken);
       console.log('[Login] Sign-in successful for user:', user);
       navigate('/dashboard');
     } catch (err) {
@@ -250,6 +252,13 @@ export default function Login() {
                   </InputAdornment>
                 ),
               }}
+            />
+
+            {/* Cloudflare Turnstile Verification */}
+            <TurnstileWidget
+              action="login"
+              onVerify={(token) => setTurnstileToken(token)}
+              onExpire={() => setTurnstileToken('')}
             />
 
             <Button

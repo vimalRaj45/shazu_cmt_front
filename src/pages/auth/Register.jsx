@@ -45,6 +45,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
+import TurnstileWidget from '../../components/common/TurnstileWidget';
 
 const POPULAR_DOMAINS = [
   'Artificial Intelligence & Machine Learning',
@@ -107,6 +108,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [existingAccount, setExistingAccount] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // ORCID OAuth State
   const [orcidLoading, setOrcidLoading] = useState(false);
@@ -250,6 +252,8 @@ export default function Register() {
         orcidId: formData.orcidId,
         googleScholarUrl: formData.googleScholarUrl,
         bio: formData.bio,
+        turnstileToken,
+        'cf-turnstile-response': turnstileToken,
       });
       navigate('/dashboard');
     } catch (err) {
@@ -866,6 +870,13 @@ export default function Register() {
                     />
                   </Grid>
                 </Grid>
+
+                {/* Cloudflare Turnstile Bot Verification */}
+                <TurnstileWidget
+                  action="signup"
+                  onVerify={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken('')}
+                />
               </Box>
             )}
 

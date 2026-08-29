@@ -24,8 +24,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
+  const login = async (email, password, turnstileToken = '') => {
+    const res = await api.post('/auth/login', {
+      email,
+      password,
+      turnstileToken,
+      'cf-turnstile-response': turnstileToken,
+    });
     const { user: loggedInUser, token } = res.data;
     localStorage.setItem('cmt_token', token);
     localStorage.setItem('cmt_user', JSON.stringify(loggedInUser));
