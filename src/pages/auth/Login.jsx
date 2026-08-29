@@ -21,13 +21,18 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 import TurnstileWidget from '../../components/common/TurnstileWidget';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const partnerSource = searchParams.get('source') || searchParams.get('platform') || searchParams.get('ref') || '';
+  const partnerJournal = searchParams.get('journal') || searchParams.get('conference') || '';
+  const partnerName = partnerJournal || partnerSource || '';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -154,6 +159,19 @@ export default function Login() {
         </Box>
 
         <CardContent sx={{ p: { xs: 3, sm: 4.5 } }}>
+          {partnerName && (
+            <Alert
+              severity="info"
+              sx={{ mb: 3, borderRadius: 1.5, backgroundColor: '#EFF6FF', border: '1px solid #93C5FD', color: '#1E40AF' }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                Welcome Visitor from {partnerName}!
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', opacity: 0.9 }}>
+                Sign in with your existing CJMS credentials or create an account to proceed.
+              </Typography>
+            </Alert>
+          )}
           {error && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 1 }}>
               {error}

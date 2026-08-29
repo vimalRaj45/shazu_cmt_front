@@ -43,7 +43,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 import TurnstileWidget from '../../components/common/TurnstileWidget';
 
@@ -81,6 +81,11 @@ const STEPS = ['Account & Credentials', 'Academic Affiliation', 'Research & Revi
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const partnerSource = searchParams.get('source') || searchParams.get('platform') || searchParams.get('ref') || '';
+  const partnerJournal = searchParams.get('journal') || searchParams.get('conference') || '';
+  const partnerName = partnerJournal || partnerSource || '';
 
   // Multi-step Active Index (0, 1, 2)
   const [activeStep, setActiveStep] = useState(0);
@@ -357,6 +362,20 @@ export default function Register() {
         </Box>
 
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+          {partnerName && (
+            <Alert
+              severity="success"
+              icon={<AutoAwesomeIcon />}
+              sx={{ mb: 3, borderRadius: 1.5, backgroundColor: '#F0FDF4', border: '1px solid #86EFAC', color: '#166534', '& .MuiAlert-icon': { color: '#16A34A' } }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                Welcome Visitor from {partnerName}!
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', opacity: 0.9 }}>
+                Complete your registration below to access manuscript submissions, peer reviews, and editorial proceedings.
+              </Typography>
+            </Alert>
+          )}
           {error && (
             <Alert
               severity={existingAccount ? 'warning' : 'error'}
