@@ -103,7 +103,7 @@ export default function EmailBroadcastPage() {
 
       setAlertInfo({
         type: 'success',
-        text: res.data.message || 'Emails successfully broadcasted via Brevo API!',
+        text: res.data.message || 'Emails successfully broadcasted via Hostinger Email API!',
       });
 
       setSubject('');
@@ -125,10 +125,10 @@ export default function EmailBroadcastPage() {
         <BackButton fallbackUrl="/dashboard" />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Brevo Email Communication & Broadcast Desk
+            Hostinger Email Communication & Broadcast Desk
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Dispatch announcements, reminders, and notifications via Brevo Email API with audit delivery logs
+            Dispatch announcements, reminders, and notifications via Hostinger Email API with audit delivery logs
           </Typography>
         </Box>
       </Box>
@@ -224,7 +224,7 @@ export default function EmailBroadcastPage() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <i className="bi bi-shield-check text-success"></i>
                     <Typography variant="caption" color="text.secondary">
-                      Powered by <strong>Brevo Transactional SMTP API</strong>
+                      Powered by <strong>Hostinger Transactional Email API</strong>
                     </Typography>
                   </Box>
 
@@ -235,7 +235,7 @@ export default function EmailBroadcastPage() {
                     startIcon={sending ? <CircularProgress size={18} color="inherit" /> : <i className="bi bi-send-fill"></i>}
                     sx={{ px: 3, py: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)', '&:hover': { background: '#0B241E' } }}
                   >
-                    {sending ? 'Dispatching via Brevo...' : 'Broadcast Email'}
+                    {sending ? 'Dispatching via Hostinger...' : 'Broadcast Email'}
                   </Button>
                 </Box>
               </Box>
@@ -315,7 +315,7 @@ export default function EmailBroadcastPage() {
           <Card sx={{ p: 1 }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <i className="bi bi-clock-history text-primary"></i> Brevo Email Dispatch History Logs
+                <i className="bi bi-clock-history text-primary"></i> Hostinger Email Dispatch History Logs
               </Typography>
 
               <TableContainer>
@@ -326,7 +326,7 @@ export default function EmailBroadcastPage() {
                       <TableCell>Subject</TableCell>
                       <TableCell>Template</TableCell>
                       <TableCell>Delivery Status</TableCell>
-                      <TableCell>Brevo Message ID</TableCell>
+                      <TableCell>Message ID</TableCell>
                       <TableCell align="right">Dispatched At</TableCell>
                     </TableRow>
                   </TableHead>
@@ -389,7 +389,7 @@ export default function EmailBroadcastPage() {
       <ConfirmModal
         open={confirmBroadcastOpen}
         title="Confirm Mass Email Broadcast"
-        message={`Are you sure you want to dispatch this email broadcast to "${targetGroup === 'authors' ? 'All Paper Authors' : targetGroup === 'reviewers' ? 'All Program Committee Reviewers' : targetGroup === 'all' ? 'All Conference Users' : 'Specified Custom Recipients'}" with subject "${subject}"? This action will immediately send live emails via Brevo SMTP.`}
+        message={`Are you sure you want to dispatch this email broadcast to "${targetGroup === 'authors' ? 'All Paper Authors' : targetGroup === 'reviewers' ? 'All Program Committee Reviewers' : targetGroup === 'all' ? 'All Conference Users' : 'Specified Custom Recipients'}" with subject "${subject}"? This action will immediately send live emails via Hostinger Email API.`}
         confirmText="Yes, Dispatch Broadcast"
         cancelText="Review Email"
         severity="warning"

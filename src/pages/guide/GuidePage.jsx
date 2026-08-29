@@ -106,13 +106,13 @@ export default function GuidePage() {
             {[
               {
                 role: 'Administrator & Conference Chair',
-                desc: 'Oversees complete conference governance: configures conference metadata & tracks, assigns reviewers with automated Conflict of Interest (COI) matrix detection, makes final paper decisions, schedules presentation sessions, broadcasts Brevo emails, and monitors audit logs.',
+                desc: 'Oversees complete conference governance: configures conference metadata & tracks, assigns reviewers with automated Conflict of Interest (COI) matrix detection, makes final paper decisions, schedules presentation sessions, broadcasts Hostinger emails, and monitors audit logs.',
                 actions: [
                   'Conference & Subject Track Setup',
                   'Reviewer Assignment & COI Auto-Detection',
                   'Paper Decisions & Acceptance Calibrations',
                   'Session & Presentation Agendas',
-                  'Brevo Email Broadcasts',
+                  'Hostinger Email Broadcasts',
                   'User Directory Management & Audit Logs',
                 ],
                 icon: 'bi-shield-lock',
