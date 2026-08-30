@@ -134,7 +134,7 @@ export default function GuidePage() {
               },
               {
                 role: 'Paper Author',
-                desc: 'Submits academic manuscripts with verified co-authors, uploads research PDFs directly to Cloudflare R2 object storage, tracks double-blind review outcomes, uploads revised manuscripts, and submits camera-ready final files.',
+                desc: 'Submits academic manuscripts with verified co-authors, uploads research PDFs securely to cloud storage, tracks double-blind review outcomes, uploads revised manuscripts, and submits camera-ready final files.',
                 actions: [
                   'Submit New Research Manuscript',
                   'Manage Co-Authors & Affiliations',
@@ -259,7 +259,7 @@ export default function GuidePage() {
             <Grid container spacing={2}>
               {[
                 { step: '1', title: 'Conference / Journal Setup', desc: 'Define online conference/journal themes, tracks, schedule/issue timeline, and submission deadlines.' },
-                { step: '2', title: 'Paper Submissions', desc: 'Authors submit abstracts and upload manuscripts to Cloudflare R2.' },
+                { step: '2', title: 'Paper Submissions', desc: 'Authors submit abstracts and upload manuscripts to secure cloud storage.' },
                 { step: '3', title: 'Reviewer Assignment', desc: 'Chair checks automated COI matrix and assigns reviewers.' },
                 { step: '4', title: 'Peer Review', desc: 'Reviewers evaluate manuscripts across 5-point scorecards.' },
                 { step: '5', title: 'Paper Decisions', desc: 'Chair calibrates scores and publishes Accept/Revision/Reject decisions.' },
@@ -371,7 +371,7 @@ export default function GuidePage() {
               <Grid container spacing={2}>
                 {[
                   { title: 'Double-Blind Anonymization', text: 'Remove author names, affiliations, email addresses, and grant acknowledgments from the submitted manuscript PDF.' },
-                  { title: 'PDF Format & R2 Storage', text: 'Upload your file in standard PDF format (maximum size 50 MB). Files are securely stored with Cloudflare R2.' },
+                  { title: 'PDF Format & Storage Guidelines', text: 'Upload your file in standard PDF format (maximum size 50 MB). Files are securely stored in high-speed encrypted cloud storage.' },
                   { title: 'Co-Author Information', text: 'Accurately specify all co-author names, email addresses, and institutions in the submission form for correct COI detection.' },
                   { title: 'Keywords & Abstract', text: 'Provide 3 to 6 descriptive research keywords to assist matching with relevant technical reviewers.' },
                 ].map((item, i) => (
@@ -484,7 +484,7 @@ export default function GuidePage() {
             { q: 'How does the ORCID iD integration work?', a: 'Users can sign up and authenticate in one click via ORCID OAuth. Your verified 16-digit ORCID identifier and academic credentials will sync automatically with your profile.' },
             { q: 'What happens if a conflict of interest is detected?', a: 'The system prevents assigning a reviewer who shares the same institutional domain, co-authorship history, or personal conflict declared by the chair.' },
             { q: 'Can authors revise a paper after submission?', a: 'Authors can update manuscript files and metadata until the submission deadline. After the deadline, revisions are only permitted if requested by the Program Chair.' },
-            { q: 'Where are manuscript files stored?', a: 'All paper PDFs, supplementary files, and camera-ready documents are stored securely on Cloudflare R2 object storage with fast global distribution.' },
+            { q: 'Where are manuscript files stored?', a: 'All paper PDFs, supplementary files, and camera-ready documents are stored securely in high-speed encrypted cloud storage.' },
           ].map((faq, i) => (
             <Accordion key={i} defaultExpanded={i === 0} elevation={0} sx={{ border: '1px solid #D3DDD7', borderRadius: 2, '&:before': { display: 'none' }, backgroundColor: '#FFFFFF' }}>
               <AccordionSummary expandIcon={<i className="bi bi-chevron-down" />}>

@@ -134,7 +134,17 @@ export default function ConfirmModal({
         </DialogContentText>
       </DialogContent>
 
-      <DialogActions sx={{ px: 2.5, pb: 1.5, gap: 1.25 }}>
+      <DialogActions
+        sx={{
+          px: { xs: 2, sm: 2.5 },
+          pb: { xs: 2, sm: 1.5 },
+          gap: 1.25,
+          flexDirection: { xs: 'column-reverse', sm: 'row' },
+          '& > button': {
+            width: { xs: '100%', sm: 'auto' },
+          },
+        }}
+      >
         <Button
           onClick={onCancel}
           variant="outlined"

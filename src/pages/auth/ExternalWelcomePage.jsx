@@ -246,7 +246,7 @@ export default function ExternalWelcomePage() {
                   bg: '#E8EFEB',
                 },
                 {
-                  title: 'High-Speed R2 Cloud Storage',
+                  title: 'High-Speed Cloud Storage',
                   desc: 'Instant PDF uploads, camera-ready submissions, and proceedings distribution.',
                   icon: CloudUploadIcon,
                   color: '#1565C0',

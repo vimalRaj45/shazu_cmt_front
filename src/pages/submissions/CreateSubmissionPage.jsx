@@ -388,7 +388,7 @@ export default function CreateSubmissionPage() {
         <Card sx={{ mb: 3, p: 1 }}>
           <CardContent>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <i className="bi bi-cloud-arrow-up text-primary"></i> 4. Upload Manuscript & Files (Cloudflare R2)
+              <i className="bi bi-cloud-arrow-up text-primary"></i> 4. Upload Manuscript & Files
             </Typography>
 
             <Grid container spacing={3}>
@@ -553,7 +553,7 @@ export default function CreateSubmissionPage() {
               },
             }}
           >
-            {loading ? 'Submitting to R2 Storage...' : 'Complete Paper Submission'}
+            {loading ? 'Submitting Manuscript...' : 'Complete Paper Submission'}
           </Button>
         </Box>
       </Box>
@@ -624,7 +624,18 @@ export default function CreateSubmissionPage() {
             </Grid>
           </Paper>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5, justifyContent: 'center' }}>
+        <DialogActions
+          sx={{
+            px: { xs: 2, sm: 3 },
+            pb: 3,
+            gap: 1.5,
+            justifyContent: 'center',
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            '& > button': {
+              width: { xs: '100%', sm: 'auto' },
+            },
+          }}
+        >
           <Button
             variant="outlined"
             onClick={() => {

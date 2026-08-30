@@ -176,6 +176,12 @@ let baseTheme = createTheme({
         paper: {
           borderRadius: 12,
           margin: 16,
+          maxHeight: 'calc(100% - 32px)',
+          '@media (max-width: 600px)': {
+            margin: '12px !important',
+            width: 'calc(100% - 24px) !important',
+            maxWidth: '100% !important',
+          },
         },
       },
     },

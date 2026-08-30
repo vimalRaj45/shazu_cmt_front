@@ -689,7 +689,7 @@ export default function SubmissionDetailPage() {
             </Grid>
 
             <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1565C0', mb: 2 }}>
-              2. Upload Revised Manuscript PDF (Cloudflare R2)
+              2. Upload Revised Manuscript PDF
             </Typography>
 
             <Box
@@ -796,7 +796,7 @@ export default function SubmissionDetailPage() {
             </Box>
           </Paper>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'center' }}>
+        <DialogActions sx={{ px: { xs: 2, sm: 3 }, pb: 3, justifyContent: 'center', '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button
             variant="contained"
             onClick={() => setOpenRevisionSuccessModal(false)}
