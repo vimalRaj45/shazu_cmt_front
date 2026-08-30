@@ -57,6 +57,7 @@ export default function SubmissionDetailPage() {
   const [keywordInput, setKeywordInput] = useState('');
   const [rebuttalNotes, setRebuttalNotes] = useState('');
   const [revisionFile, setRevisionFile] = useState(null);
+  const [openRevisionSuccessModal, setOpenRevisionSuccessModal] = useState(false);
   const [submittingRevision, setSubmittingRevision] = useState(false);
   const [revisionError, setRevisionError] = useState('');
 
@@ -144,10 +145,10 @@ export default function SubmissionDetailPage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setSnackbar({ open: true, message: 'Revised manuscript and rebuttal submitted successfully!', severity: 'success' });
       setOpenRevisionModal(false);
       setRevisionFile(null);
       setRebuttalNotes('');
+      setOpenRevisionSuccessModal(true);
       fetchSubmission();
       fetchReviews();
     } catch (err) {
@@ -750,6 +751,69 @@ export default function SubmissionDetailPage() {
             </Button>
           </DialogActions>
         </Box>
+      </Dialog>
+
+      {/* Revision Submission Success Modal */}
+      <Dialog
+        open={openRevisionSuccessModal}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pt: 3, pb: 1 }}>
+          <Box sx={{ display: 'inline-flex', p: 2, borderRadius: '50%', backgroundColor: '#FEF3C7', mb: 2 }}>
+            <i className="bi bi-patch-check-fill" style={{ fontSize: '2.5rem', color: '#D97706' }} />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#123B32' }}>
+            Revision Submitted Successfully!
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Your revised manuscript and rebuttal letter have been registered into the peer review portal.
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, backgroundColor: '#FFFBEB', borderColor: '#FDE68A', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: '#92400E' }}>
+                Paper ID: #{submission?.submission_number}
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {submission?.title}
+              </Typography>
+              <Divider sx={{ my: 1 }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <i className="bi bi-envelope-check-fill" style={{ color: '#D97706' }} />
+                <Typography variant="caption" color="text.secondary">
+                  Notification email dispatched via <strong>Hostinger Email Service</strong> to author and review committee.
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            onClick={() => setOpenRevisionSuccessModal(false)}
+            sx={{
+              borderRadius: 1.5,
+              fontWeight: 700,
+              textTransform: 'none',
+              px: 4,
+              backgroundColor: '#D97706',
+              color: '#FFFFFF',
+              boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)',
+              '&:hover': { backgroundColor: '#B45309' },
+            }}
+          >
+            Acknowledge & Continue
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Feedback Toast */}

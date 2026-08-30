@@ -338,14 +338,14 @@ export default function GuidePage() {
           <Accordion elevation={0} sx={{ border: '1px solid #D3DDD7', borderRadius: 2, '&:before': { display: 'none' }, backgroundColor: '#FFFFFF' }}>
             <AccordionSummary expandIcon={<i className="bi bi-chevron-down" />}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#123B32' }}>
-                Step 3: Paper Decisions & Brevo Broadcast
+                Step 3: Paper Decisions & Email Broadcast
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ pt: 0 }}>
               <Typography variant="body2" sx={{ color: '#334E43', mb: 1.5, lineHeight: 1.6 }}>
                 1. Navigate to <strong>Decisions Desk</strong> once reviews are finalized.
                 <br />2. View average scores, recommendation matrices, and confidential chair notes.
-                <br />3. Record decisions (<em>Accepted, Revision Required, Rejected</em>) and publish notifications to authors via the integrated Brevo email service.
+                <br />3. Record decisions (<em>Accepted, Revision Required, Rejected</em>) and publish notifications to authors via the integrated Hostinger email service.
               </Typography>
             </AccordionDetails>
           </Accordion>

@@ -16,6 +16,10 @@ import {
   LinearProgress,
   CircularProgress,
   Autocomplete,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
@@ -57,6 +61,8 @@ export default function CreateSubmissionPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [successModalData, setSuccessModalData] = useState(null);
 
   // Fetch tracks whenever conferenceId changes
   useEffect(() => {
@@ -169,11 +175,12 @@ export default function CreateSubmissionPage() {
       }
 
       setUploadProgress(100);
-      setSuccess(`Paper ${newSubmission.submission_number} submitted successfully! A confirmation email has been dispatched.`);
-
-      setTimeout(() => {
-        navigate('/my-submissions');
-      }, 1500);
+      const trackName = tracks.find((t) => t.id === trackId)?.name || 'General Track';
+      setSuccessModalData({
+        ...newSubmission,
+        trackName,
+      });
+      setOpenSuccessModal(true);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to submit paper. Please verify form details.');
     } finally {
@@ -550,6 +557,117 @@ export default function CreateSubmissionPage() {
           </Button>
         </Box>
       </Box>
+
+      {/* Paper Submission Success Modal */}
+      <Dialog
+        open={openSuccessModal}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pt: 3, pb: 1 }}>
+          <Box sx={{ display: 'inline-flex', p: 2, borderRadius: '50%', backgroundColor: '#E8F5E9', mb: 2 }}>
+            <i className="bi bi-check-circle-fill" style={{ fontSize: '2.5rem', color: '#2E7D32' }} />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#123B32' }}>
+            Paper Submitted Successfully!
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Your research manuscript has been added to the conference peer review pipeline.
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, backgroundColor: '#F8FAF9', borderColor: '#E0E8E4', mb: 2 }}>
+            <Grid container spacing={1.5}>
+              <Grid item xs={4}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                  Submission ID
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', fontFamily: 'monospace' }}>
+                  {successModalData?.submission_number || '-'}
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                  Track
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {successModalData?.trackName || 'General Track'}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                  Paper Title
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: '#2C3E50' }}>
+                  {successModalData?.title || title}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Divider sx={{ my: 0.5 }} />
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <i className="bi bi-envelope-check-fill" style={{ color: '#2E7D32' }} />
+                  <Typography variant="caption" color="text.secondary">
+                    Confirmation email dispatched via <strong>Hostinger Email Service</strong> to{' '}
+                    <strong>{user?.email}</strong>.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1.5, justifyContent: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setOpenSuccessModal(false);
+              if (successModalData?.id) {
+                navigate(`/submissions/${successModalData.id}`);
+              } else {
+                navigate('/my-submissions');
+              }
+            }}
+            sx={{
+              borderRadius: 1.5,
+              fontWeight: 700,
+              textTransform: 'none',
+              px: 2.5,
+              borderColor: '#123B32',
+              color: '#123B32',
+              '&:hover': { backgroundColor: '#E8EFEB' },
+            }}
+          >
+            View Paper Details
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setOpenSuccessModal(false);
+              navigate('/my-submissions');
+            }}
+            sx={{
+              borderRadius: 1.5,
+              fontWeight: 700,
+              textTransform: 'none',
+              px: 3,
+              background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
+              color: '#FFFFFF',
+              boxShadow: '0 4px 12px rgba(18, 59, 50, 0.3)',
+              '&:hover': { background: '#0B241E' },
+            }}
+          >
+            Go to My Submissions
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

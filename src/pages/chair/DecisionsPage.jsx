@@ -113,7 +113,7 @@ export default function DecisionsPage() {
         notifyAuthor,
       });
 
-      setFeedbackMsg(`Decision successfully recorded! ${notifyAuthor ? 'Official decision email dispatched to authors via Brevo.' : ''}`);
+      setFeedbackMsg(`Decision successfully recorded! ${notifyAuthor ? 'Official decision email dispatched to authors via Hostinger Email.' : ''}`);
       setTimeout(() => {
         setDecisionModal({ open: false, submission: null, reviews: [] });
         fetchSubmissions();
@@ -398,7 +398,7 @@ export default function DecisionsPage() {
       <ConfirmModal
         open={confirmDecisionOpen}
         title="Confirm Manuscript Decision"
-        message={`Are you sure you want to finalize paper #${decisionModal.submission?.submission_number} as "${decisionValue.toUpperCase().replace('_', ' ')}"? ${notifyAuthor ? 'An official decision email will be dispatched to the corresponding author via Brevo immediately.' : 'Authors will not be notified by email.'}`}
+        message={`Are you sure you want to finalize paper #${decisionModal.submission?.submission_number} as "${decisionValue.toUpperCase().replace('_', ' ')}"? ${notifyAuthor ? 'An official decision email will be dispatched to the corresponding author via Hostinger Email immediately.' : 'Authors will not be notified by email.'}`}
         confirmText={`Yes, ${decisionValue === 'accept' ? 'Accept Paper' : decisionValue === 'reject' ? 'Reject Paper' : 'Request Revision'}`}
         cancelText="Review Again"
         severity={decisionValue === 'accept' ? 'success' : decisionValue === 'reject' ? 'danger' : 'warning'}

@@ -67,7 +67,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
           { label: 'Assign Reviewers', path: '/chair/reviewers', icon: 'bi-person-check' },
           { label: 'Paper Decisions', path: '/chair/decisions', icon: 'bi-check2-circle' },
           { label: 'Camera-Ready Desk', path: '/chair/camera-ready', icon: 'bi-award' },
-          { label: 'Brevo Broadcast', path: '/chair/emails', icon: 'bi-send' },
+          { label: 'Email Broadcast', path: '/chair/emails', icon: 'bi-send' },
           { label: 'Reports & Export', path: '/chair/reports', icon: 'bi-bar-chart-line' },
           { label: 'User Directory', path: '/admin/users', icon: 'bi-people' },
           { label: 'System Audit Logs', path: '/admin/audit-logs', icon: 'bi-shield-check' },
