@@ -103,22 +103,36 @@ export default function SubmissionDetailPage() {
 
   const handleDeleteFile = async () => {
     if (!deleteConfirmModal.file) return;
+    const targetFile = deleteConfirmModal.file;
     setDeletingFile(true);
     try {
-      await api.delete(`/submissions/files/${deleteConfirmModal.file.id}`);
+      await api.delete(`/submissions/files/${targetFile.id}`);
       setSnackbar({
         open: true,
-        message: `File "${deleteConfirmModal.file.file_name}" deleted permanently from storage.`,
+        message: `File "${targetFile.file_name}" deleted permanently from storage.`,
         severity: 'success',
       });
+      // Instantly remove from local submission files state
+      setSubmission((prev) => (prev ? { ...prev, files: (prev.files || []).filter((f) => f.id !== targetFile.id) } : prev));
       setDeleteConfirmModal({ open: false, file: null });
       fetchSubmission();
     } catch (err) {
-      setSnackbar({
-        open: true,
-        message: err.response?.data?.error || 'Failed to delete file',
-        severity: 'error',
-      });
+      if (err.response?.status === 404) {
+        // If file already removed on server, clean up UI
+        setSubmission((prev) => (prev ? { ...prev, files: (prev.files || []).filter((f) => f.id !== targetFile.id) } : prev));
+        setSnackbar({
+          open: true,
+          message: 'File was already removed from storage.',
+          severity: 'info',
+        });
+        setDeleteConfirmModal({ open: false, file: null });
+      } else {
+        setSnackbar({
+          open: true,
+          message: err.response?.data?.error || 'Failed to delete file',
+          severity: 'error',
+        });
+      }
     } finally {
       setDeletingFile(false);
     }
