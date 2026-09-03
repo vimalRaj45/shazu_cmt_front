@@ -21,11 +21,14 @@ import {
   CircularProgress,
   Rating,
   Snackbar,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TableSkeleton, EmptyState } from '../../components/common/LoadingState';
 import BackButton from '../../components/common/BackButton';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import api from '../../services/api';
 
 const STATUS_CHIPS = {
@@ -93,6 +96,33 @@ export default function SubmissionDetailPage() {
     fetchSubmission();
     fetchReviews();
   }, [id]);
+
+  // File Delete Modal State
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState({ open: false, file: null });
+  const [deletingFile, setDeletingFile] = useState(false);
+
+  const handleDeleteFile = async () => {
+    if (!deleteConfirmModal.file) return;
+    setDeletingFile(true);
+    try {
+      await api.delete(`/submissions/files/${deleteConfirmModal.file.id}`);
+      setSnackbar({
+        open: true,
+        message: `File "${deleteConfirmModal.file.file_name}" deleted permanently from storage.`,
+        severity: 'success',
+      });
+      setDeleteConfirmModal({ open: false, file: null });
+      fetchSubmission();
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.error || 'Failed to delete file',
+        severity: 'error',
+      });
+    } finally {
+      setDeletingFile(false);
+    }
+  };
 
   const handleDownload = async (file) => {
     try {
@@ -506,14 +536,35 @@ export default function SubmissionDetailPage() {
                             {file.file_type?.toUpperCase()} • v{file.version} • {(file.file_size / 1024 / 1024).toFixed(2)} MB
                           </Typography>
                         </Box>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => handleDownload(file)}
-                          startIcon={<i className="bi bi-download"></i>}
-                        >
-                          PDF
-                        </Button>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => handleDownload(file)}
+                            startIcon={<i className="bi bi-download"></i>}
+                            sx={{ textTransform: 'none', fontWeight: 600 }}
+                          >
+                            PDF
+                          </Button>
+                          {(user?.role === 'admin' || user?.activeRole === 'chair' || isAuthor) && (
+                            <Tooltip title="Delete file from storage">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => setDeleteConfirmModal({ open: true, file })}
+                                sx={{
+                                  border: '1px solid #FECDD3',
+                                  borderRadius: 1.5,
+                                  p: 0.6,
+                                  backgroundColor: '#FFF1F2',
+                                  '&:hover': { backgroundColor: '#FFE4E6' },
+                                }}
+                              >
+                                <i className="bi bi-trash3" style={{ fontSize: '0.85rem' }}></i>
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
                       </Box>
                     </Paper>
                   ))}
@@ -860,6 +911,19 @@ export default function SubmissionDetailPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* File Deletion Confirmation Modal */}
+      <ConfirmModal
+        open={deleteConfirmModal.open}
+        title="Delete Uploaded File"
+        message={`Are you sure you want to permanently delete "${deleteConfirmModal.file?.file_name}" from Cloudflare R2 storage and the system? This action cannot be undone.`}
+        confirmText="Yes, Delete Permanently"
+        cancelText="Cancel"
+        severity="error"
+        loading={deletingFile}
+        onConfirm={handleDeleteFile}
+        onCancel={() => setDeleteConfirmModal({ open: false, file: null })}
+      />
 
       {/* Feedback Toast */}
       <Snackbar

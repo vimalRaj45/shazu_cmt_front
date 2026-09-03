@@ -20,6 +20,8 @@ import {
   Autocomplete,
   Snackbar,
   Alert,
+  Menu,
+  CircularProgress,
 } from '@mui/material';
 import { useConference } from '../../context/ConferenceContext';
 import { useNavigate } from 'react-router-dom';
@@ -48,6 +50,10 @@ export default function ChairSubmissionsPage() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
+
+  // ZIP Download State
+  const [downloadingZip, setDownloadingZip] = useState(false);
+  const [zipMenuAnchor, setZipMenuAnchor] = useState(null);
 
   const fetchSubmissions = async () => {
     if (!selectedConference?.id) return;
@@ -86,6 +92,52 @@ export default function ChairSubmissionsPage() {
     }
   };
 
+  const handleDownloadZip = async (fileType = 'all') => {
+    if (!selectedConference?.id) return;
+    setZipMenuAnchor(null);
+    setDownloadingZip(true);
+    try {
+      const res = await api.get(`/submissions/conference/${selectedConference.id}/download-zip`, {
+        params: {
+          fileType,
+          trackId: trackFilter || undefined,
+          status: statusFilter || undefined,
+        },
+        responseType: 'blob',
+      });
+
+      const confCode = (selectedConference.short_name || 'CONF').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `${confCode}_Submissions_Backup_${new Date().toISOString().slice(0, 10)}.zip`;
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/zip' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      setSnackbar({
+        open: true,
+        message: 'Submissions ZIP archive downloaded successfully!',
+        severity: 'success',
+      });
+    } catch (err) {
+      console.error('Failed to download ZIP archive:', err);
+      let errMsg = 'Failed to download ZIP archive. No uploaded files found.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json.error) errMsg = json.error;
+        } catch (e) {}
+      }
+      setSnackbar({ open: true, message: errMsg, severity: 'error' });
+    } finally {
+      setDownloadingZip(false);
+    }
+  };
+
   return (
     <Box sx={{ pb: 4 }}>
       {/* Header */}
@@ -101,7 +153,38 @@ export default function ChairSubmissionsPage() {
             </Typography>
           </Box>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+          <Button
+            variant="contained"
+            disabled={downloadingZip || submissions.length === 0}
+            onClick={(e) => setZipMenuAnchor(e.currentTarget)}
+            startIcon={downloadingZip ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-file-earmark-zip-fill" />}
+            sx={{
+              backgroundColor: '#123B32',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              textTransform: 'none',
+              '&:hover': { backgroundColor: '#0B241E' },
+            }}
+          >
+            {downloadingZip ? 'Generating ZIP...' : 'Download Submissions (ZIP)'}
+          </Button>
+          <Menu
+            anchorEl={zipMenuAnchor}
+            open={Boolean(zipMenuAnchor)}
+            onClose={() => setZipMenuAnchor(null)}
+          >
+            <MenuItem onClick={() => handleDownloadZip('all')} sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+              <i className="bi bi-folder-symlink me-2 text-primary" style={{ marginRight: 8 }}></i> Download All Files & Manuscripts
+            </MenuItem>
+            <MenuItem onClick={() => handleDownloadZip('camera_ready')} sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+              <i className="bi bi-award me-2 text-success" style={{ marginRight: 8 }}></i> Download Camera-Ready Papers Only
+            </MenuItem>
+            <MenuItem onClick={() => handleDownloadZip('revision')} sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+              <i className="bi bi-arrow-repeat me-2 text-warning" style={{ marginRight: 8 }}></i> Download Revised Manuscripts Only
+            </MenuItem>
+          </Menu>
+
           <Button variant="outlined" onClick={() => navigate('/chair/reviewers')} startIcon={<i className="bi bi-person-check"></i>}>
             Assign Reviewers
           </Button>
