@@ -325,9 +325,47 @@ export default function AuthorSubmissionsPage() {
           <DialogContent sx={{ pt: 3 }}>
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-            <Typography variant="body2" sx={{ mb: 2, color: '#334E43' }}>
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#334E43' }}>
               <strong>Paper:</strong> {uploadModal.submission?.submission_number} - {uploadModal.submission?.title}
             </Typography>
+
+            {/* Standardized File Naming Recommendation Box */}
+            <Box
+              sx={{
+                p: 1.5,
+                mb: 2,
+                borderRadius: 2,
+                backgroundColor: '#E8EFEB',
+                border: '1px solid #B8CEC2',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <i className="bi bi-file-earmark-check" style={{ color: '#123B32', fontSize: '1.1rem' }}></i>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', fontSize: '0.82rem' }}>
+                  Recommended File Naming Format
+                </Typography>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  color: '#123B32',
+                  backgroundColor: '#FFFFFF',
+                  px: 1.2,
+                  py: 0.6,
+                  borderRadius: 1,
+                  display: 'inline-block',
+                  border: '1px dashed #527A68',
+                }}
+              >
+                {(uploadModal.submission?.conference_short_name || 'CONF').replace(/\s+/g, '_')}_{uploadModal.submission?.submission_number}_{uploadModal.fileType === 'camera_ready' ? 'CameraReady' : 'Revision'}.pdf
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', mt: 0.75, color: '#334E43', fontSize: '0.75rem' }}>
+                💡 <em>Avoid spaces or special symbols in your filename for seamless tracking across all reviewer systems.</em>
+              </Typography>
+            </Box>
 
             <Paper
               variant="outlined"
@@ -356,9 +394,16 @@ export default function AuthorSubmissionsPage() {
                 </Button>
               </label>
               {selectedFile && (
-                <Typography variant="body2" sx={{ mt: 1.5, fontWeight: 700, color: '#123B32' }}>
-                  ✓ {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                </Typography>
+                <Box sx={{ mt: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
+                    ✓ Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </Typography>
+                  {/\s/.test(selectedFile.name) && (
+                    <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600, display: 'block', mt: 0.5 }}>
+                      ℹ Note: Spaces in filename will be automatically sanitized to underscores (<code>_</code>) upon upload.
+                    </Typography>
+                  )}
+                </Box>
               )}
             </Paper>
 

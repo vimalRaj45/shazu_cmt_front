@@ -688,9 +688,47 @@ export default function SubmissionDetailPage() {
               </Grid>
             </Grid>
 
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1565C0', mb: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1565C0', mb: 1 }}>
               2. Upload Revised Manuscript PDF
             </Typography>
+
+            {/* Standardized File Naming Recommendation Box */}
+            <Box
+              sx={{
+                p: 1.5,
+                mb: 2,
+                borderRadius: 2,
+                backgroundColor: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <i className="bi bi-file-earmark-check" style={{ color: '#1D4ED8', fontSize: '1.1rem' }}></i>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1E40AF', fontSize: '0.82rem' }}>
+                  Recommended File Naming Format
+                </Typography>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  color: '#1E3A8A',
+                  backgroundColor: '#FFFFFF',
+                  px: 1.2,
+                  py: 0.6,
+                  borderRadius: 1,
+                  display: 'inline-block',
+                  border: '1px dashed #3B82F6',
+                }}
+              >
+                {(submission?.conference_short_name || 'CONF').replace(/\s+/g, '_')}_{submission?.submission_number}_Revision.pdf
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', mt: 0.75, color: '#475569', fontSize: '0.75rem' }}>
+                💡 <em>Avoid spaces or special symbols in your filename for seamless tracking across all reviewer systems.</em>
+              </Typography>
+            </Box>
 
             <Box
               sx={{
@@ -715,9 +753,16 @@ export default function SubmissionDetailPage() {
                 </Button>
               </label>
               {revisionFile && (
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0', mt: 1.5 }}>
-                  Selected: {revisionFile.name} ({(revisionFile.size / 1024 / 1024).toFixed(2)} MB)
-                </Typography>
+                <Box sx={{ mt: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                    ✓ Selected: {revisionFile.name} ({(revisionFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </Typography>
+                  {/\s/.test(revisionFile.name) && (
+                    <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600, display: 'block', mt: 0.5 }}>
+                      ℹ Note: Spaces in filename will be automatically sanitized to underscores (<code>_</code>) upon upload.
+                    </Typography>
+                  )}
+                </Box>
               )}
             </Box>
 
