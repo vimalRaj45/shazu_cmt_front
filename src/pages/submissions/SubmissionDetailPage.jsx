@@ -64,6 +64,24 @@ export default function SubmissionDetailPage() {
   const [submittingRevision, setSubmittingRevision] = useState(false);
   const [revisionError, setRevisionError] = useState('');
 
+  // Edit Paper Metadata & Authors Modal
+  const [editPaperModalOpen, setEditPaperModalOpen] = useState(false);
+  const [editPaperTitle, setEditPaperTitle] = useState('');
+  const [editPaperAbstract, setEditPaperAbstract] = useState('');
+  const [editPaperKeywords, setEditPaperKeywords] = useState('');
+  const [editPaperAuthors, setEditPaperAuthors] = useState([]);
+  const [savingPaperEdit, setSavingPaperEdit] = useState(false);
+
+  // Delete / Withdraw Submission State
+  const [deletePaperModalOpen, setDeletePaperModalOpen] = useState(false);
+  const [deletingPaper, setDeletingPaper] = useState(false);
+
+  // Status Change Modal (Admin / Chair)
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [statusValue, setStatusValue] = useState('');
+  const [statusNotes, setStatusNotes] = useState('');
+  const [savingStatus, setSavingStatus] = useState(false);
+
   const fetchSubmission = async () => {
     try {
       setLoading(true);
@@ -96,6 +114,111 @@ export default function SubmissionDetailPage() {
     fetchSubmission();
     fetchReviews();
   }, [id]);
+
+  // Open Edit Paper Modal
+  const handleOpenEditPaper = () => {
+    if (!submission) return;
+    setEditPaperTitle(submission.title || '');
+    setEditPaperAbstract(submission.abstract || '');
+    setEditPaperKeywords(Array.isArray(submission.keywords) ? submission.keywords.join(', ') : '');
+    setEditPaperAuthors(
+      submission.authors && submission.authors.length > 0
+        ? submission.authors.map((a) => ({ ...a }))
+        : [{ name: '', email: '', institution: '', department: '', country: '', is_primary: true, is_corresponding: true }]
+    );
+    setEditPaperModalOpen(true);
+  };
+
+  // Save Edit Paper
+  const handleSavePaperEdit = async (e) => {
+    e.preventDefault();
+    setSavingPaperEdit(true);
+    try {
+      const keywordsArray = editPaperKeywords
+        ? editPaperKeywords.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      await api.put(`/submissions/${id}`, {
+        title: editPaperTitle,
+        abstract: editPaperAbstract,
+        keywords: keywordsArray,
+        authors: editPaperAuthors,
+      });
+
+      setSnackbar({ open: true, message: 'Paper details and co-authors updated successfully!', severity: 'success' });
+      setEditPaperModalOpen(false);
+      fetchSubmission();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to update paper', severity: 'error' });
+    } finally {
+      setSavingPaperEdit(false);
+    }
+  };
+
+  // Add / Remove Author Helpers
+  const handleAddAuthor = () => {
+    setEditPaperAuthors([
+      ...editPaperAuthors,
+      {
+        name: '',
+        email: '',
+        institution: '',
+        department: '',
+        country: '',
+        is_primary: false,
+        is_corresponding: false,
+        author_order: editPaperAuthors.length + 1,
+      },
+    ]);
+  };
+
+  const handleRemoveAuthor = (index) => {
+    if (editPaperAuthors.length <= 1) return;
+    setEditPaperAuthors(editPaperAuthors.filter((_, i) => i !== index));
+  };
+
+  const handleAuthorFieldChange = (index, field, value) => {
+    const updated = [...editPaperAuthors];
+    updated[index][field] = value;
+    setEditPaperAuthors(updated);
+  };
+
+  // Delete / Withdraw Paper
+  const handleDeletePaper = async () => {
+    setDeletingPaper(true);
+    try {
+      await api.delete(`/submissions/${id}`);
+      setSnackbar({ open: true, message: 'Submission deleted / withdrawn successfully.', severity: 'success' });
+      setDeletePaperModalOpen(false);
+      setTimeout(() => {
+        navigate(user?.role === 'admin' || user?.role === 'chair' ? '/chair/submissions' : '/my-submissions');
+      }, 800);
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to delete submission', severity: 'error' });
+      setDeletingPaper(false);
+    }
+  };
+
+  // Update Status
+  const handleUpdateStatus = async (e) => {
+    e.preventDefault();
+    if (!statusValue) return;
+    setSavingStatus(true);
+    try {
+      await api.patch(`/submissions/${id}/status`, {
+        status: statusValue,
+        notes: statusNotes,
+      });
+      setSnackbar({ open: true, message: `Submission status updated to "${statusValue.replace(/_/g, ' ')}"`, severity: 'success' });
+      setStatusModalOpen(false);
+      setStatusNotes('');
+      fetchSubmission();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to update status', severity: 'error' });
+    } finally {
+      setSavingStatus(false);
+    }
+  };
 
   // File Delete Modal State
   const [deleteConfirmModal, setDeleteConfirmModal] = useState({ open: false, file: null });
@@ -263,18 +386,61 @@ export default function SubmissionDetailPage() {
             </Typography>
           </Box>
 
-          {/* Action Button for Revision */}
-          {isAuthor && isRevisionRequired && (
-            <Button
-              variant="contained"
-              color="warning"
-              onClick={() => setOpenRevisionModal(true)}
-              startIcon={<i className="bi bi-arrow-repeat"></i>}
-              sx={{ fontWeight: 700, px: 3, py: 1.25, backgroundColor: '#D97706', '&:hover': { backgroundColor: '#B45309' } }}
-            >
-              Submit Revised Paper
-            </Button>
-          )}
+          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', alignItems: 'center' }}>
+            {/* Edit Paper Details (Author editable or Admin/Chair) */}
+            {(isAuthor || user?.role === 'admin' || user?.role === 'chair') && (
+              <Button
+                variant="outlined"
+                onClick={handleOpenEditPaper}
+                startIcon={<i className="bi bi-pencil-square"></i>}
+                sx={{ fontWeight: 700 }}
+              >
+                Edit Paper Details
+              </Button>
+            )}
+
+            {/* Admin / Chair: Change Status */}
+            {(user?.role === 'admin' || user?.role === 'chair') && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  setStatusValue(submission.status);
+                  setStatusModalOpen(true);
+                }}
+                startIcon={<i className="bi bi-sliders"></i>}
+                sx={{ fontWeight: 700 }}
+              >
+                Update Status
+              </Button>
+            )}
+
+            {/* Action Button for Revision */}
+            {isAuthor && isRevisionRequired && (
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={() => setOpenRevisionModal(true)}
+                startIcon={<i className="bi bi-arrow-repeat"></i>}
+                sx={{ fontWeight: 700, px: 3, py: 1.25, backgroundColor: '#D97706', '&:hover': { backgroundColor: '#B45309' } }}
+              >
+                Submit Revised Paper
+              </Button>
+            )}
+
+            {/* Withdraw / Delete Button */}
+            {(isAuthor || user?.role === 'admin' || user?.role === 'chair') && (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => setDeletePaperModalOpen(true)}
+                startIcon={<i className="bi bi-trash"></i>}
+                sx={{ fontWeight: 700 }}
+              >
+                {isAuthor && user?.role !== 'admin' ? 'Withdraw Paper' : 'Delete Paper'}
+              </Button>
+            )}
+          </Box>
         </Box>
       </Paper>
 
@@ -937,6 +1103,209 @@ export default function SubmissionDetailPage() {
         loading={deletingFile}
         onConfirm={handleDeleteFile}
         onCancel={() => setDeleteConfirmModal({ open: false, file: null })}
+      />
+
+      {/* Edit Paper Details & Co-Authors Modal */}
+      <Dialog open={editPaperModalOpen} onClose={() => setEditPaperModalOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+          Edit Paper Details & Authors ({submission?.submission_number})
+        </DialogTitle>
+        <Box component="form" onSubmit={handleSavePaperEdit}>
+          <DialogContent sx={{ pt: 3 }}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Manuscript Title"
+                  required
+                  size="small"
+                  value={editPaperTitle}
+                  onChange={(e) => setEditPaperTitle(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Abstract"
+                  required
+                  multiline
+                  rows={4}
+                  size="small"
+                  value={editPaperAbstract}
+                  onChange={(e) => setEditPaperAbstract(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Keywords (comma-separated)"
+                  size="small"
+                  value={editPaperKeywords}
+                  onChange={(e) => setEditPaperKeywords(e.target.value)}
+                />
+              </Grid>
+
+              {/* Co-Authors Management */}
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F2942' }}>
+                    Authors & Affiliations
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<i className="bi bi-person-plus"></i>}
+                    onClick={handleAddAuthor}
+                    sx={{ textTransform: 'none', fontWeight: 700 }}
+                  >
+                    Add Co-Author
+                  </Button>
+                </Box>
+
+                {editPaperAuthors.map((author, index) => (
+                  <Paper key={index} variant="outlined" sx={{ p: 2, mb: 1.5, borderRadius: 2, backgroundColor: '#F8FAFC' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1565C0' }}>
+                        Author #{index + 1} {index === 0 && '(Primary / Corresponding)'}
+                      </Typography>
+                      {editPaperAuthors.length > 1 && (
+                        <IconButton size="small" color="error" onClick={() => handleRemoveAuthor(index)}>
+                          <i className="bi bi-trash"></i>
+                        </IconButton>
+                      )}
+                    </Box>
+                    <Grid container spacing={1.5}>
+                      <Grid item xs={12} sm={4}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Full Name"
+                          required
+                          value={author.name}
+                          onChange={(e) => handleAuthorFieldChange(index, 'name', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Email Address"
+                          required
+                          type="email"
+                          value={author.email}
+                          onChange={(e) => handleAuthorFieldChange(index, 'email', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Institution"
+                          value={author.institution || ''}
+                          onChange={(e) => handleAuthorFieldChange(index, 'institution', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Department"
+                          value={author.department || ''}
+                          onChange={(e) => handleAuthorFieldChange(index, 'department', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Country"
+                          value={author.country || ''}
+                          onChange={(e) => handleAuthorFieldChange(index, 'country', e.target.value)}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setEditPaperModalOpen(false)}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={savingPaperEdit || !editPaperTitle.trim()}
+              startIcon={savingPaperEdit ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check2" />}
+              sx={{ fontWeight: 700 }}
+            >
+              {savingPaperEdit ? 'Saving...' : 'Save Paper & Authors'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Admin / Chair Status Update Modal */}
+      <Dialog open={statusModalOpen} onClose={() => setStatusModalOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+          Update Paper Status
+        </DialogTitle>
+        <Box component="form" onSubmit={handleUpdateStatus}>
+          <DialogContent sx={{ pt: 3 }}>
+            <TextField
+              fullWidth
+              select
+              label="Paper Lifecycle Status"
+              required
+              size="small"
+              value={statusValue}
+              onChange={(e) => setStatusValue(e.target.value)}
+              sx={{ mb: 2 }}
+            >
+              <MenuItem value="draft">Draft</MenuItem>
+              <MenuItem value="submitted">Submitted</MenuItem>
+              <MenuItem value="under_review">Under Review</MenuItem>
+              <MenuItem value="revision_required">Revision Required</MenuItem>
+              <MenuItem value="accepted">Accepted</MenuItem>
+              <MenuItem value="rejected">Rejected</MenuItem>
+              <MenuItem value="camera_ready_pending">Camera-Ready Pending</MenuItem>
+              <MenuItem value="camera_ready_approved">Camera-Ready Approved</MenuItem>
+            </TextField>
+
+            <TextField
+              fullWidth
+              label="Status Change Notes / Remarks"
+              multiline
+              rows={3}
+              size="small"
+              value={statusNotes}
+              onChange={(e) => setStatusNotes(e.target.value)}
+              placeholder="Optional notes for internal tracking..."
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setStatusModalOpen(false)}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={savingStatus}
+              startIcon={savingStatus ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check2" />}
+              sx={{ fontWeight: 700 }}
+            >
+              {savingStatus ? 'Updating...' : 'Update Status'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Delete / Withdraw Submission Confirmation */}
+      <ConfirmModal
+        open={deletePaperModalOpen}
+        title={user?.role === 'admin' ? 'Delete Submission Permanently' : 'Withdraw Submission'}
+        message={`Are you sure you want to ${user?.role === 'admin' ? 'permanently delete' : 'withdraw'} "${submission?.title}" (${submission?.submission_number})? All uploaded manuscripts and reviews will be permanently removed.`}
+        confirmText={deletingPaper ? 'Processing...' : user?.role === 'admin' ? 'Delete Submission' : 'Withdraw Submission'}
+        confirmColor="error"
+        onConfirm={handleDeletePaper}
+        onClose={() => setDeletePaperModalOpen(false)}
       />
 
       {/* Feedback Toast */}

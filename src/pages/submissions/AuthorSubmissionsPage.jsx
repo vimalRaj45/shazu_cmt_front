@@ -25,6 +25,7 @@ import {
   Snackbar,
   CircularProgress,
   Tooltip,
+  InputAdornment,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +50,8 @@ export default function AuthorSubmissionsPage() {
 
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   // Upload modal state (revision or camera ready)
   const [uploadModal, setUploadModal] = useState({
@@ -62,6 +65,23 @@ export default function AuthorSubmissionsPage() {
   const [confirmUploadOpen, setConfirmUploadOpen] = useState(false);
   const [error, setError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  // Edit Submission Modal
+  const [editModal, setEditModal] = useState({
+    open: false,
+    submission: null,
+    title: '',
+    abstract: '',
+    keywords: '',
+    saving: false,
+  });
+
+  // Delete / Withdraw Modal
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    submission: null,
+    deleting: false,
+  });
 
   // Reviews modal
   const [reviewsModal, setReviewsModal] = useState({
@@ -136,6 +156,58 @@ export default function AuthorSubmissionsPage() {
     }
   };
 
+  // Open Edit Modal
+  const handleOpenEdit = (sub) => {
+    setEditModal({
+      open: true,
+      submission: sub,
+      title: sub.title || '',
+      abstract: sub.abstract || '',
+      keywords: Array.isArray(sub.keywords) ? sub.keywords.join(', ') : '',
+      saving: false,
+    });
+  };
+
+  // Save Edit Submission
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editModal.submission) return;
+    setEditModal((prev) => ({ ...prev, saving: true }));
+    try {
+      const keywordsArray = editModal.keywords
+        ? editModal.keywords.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      await api.put(`/submissions/${editModal.submission.id}`, {
+        title: editModal.title,
+        abstract: editModal.abstract,
+        keywords: keywordsArray,
+      });
+
+      setSnackbar({ open: true, message: 'Submission updated successfully!', severity: 'success' });
+      setEditModal({ open: false, submission: null, title: '', abstract: '', keywords: '', saving: false });
+      fetchSubmissions();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to update submission', severity: 'error' });
+      setEditModal((prev) => ({ ...prev, saving: false }));
+    }
+  };
+
+  // Delete / Withdraw Submission
+  const handleDeleteSubmission = async () => {
+    if (!deleteModal.submission) return;
+    setDeleteModal((prev) => ({ ...prev, deleting: true }));
+    try {
+      await api.delete(`/submissions/${deleteModal.submission.id}`);
+      setSnackbar({ open: true, message: `Submission ${deleteModal.submission.submission_number} withdrawn successfully.`, severity: 'success' });
+      setDeleteModal({ open: false, submission: null, deleting: false });
+      fetchSubmissions();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to withdraw submission', severity: 'error' });
+      setDeleteModal((prev) => ({ ...prev, deleting: false }));
+    }
+  };
+
   const handleViewReviews = async (sub) => {
     try {
       const res = await api.get(`/reviews/submission/${sub.id}`);
@@ -158,6 +230,17 @@ export default function AuthorSubmissionsPage() {
     }
   };
 
+  // Filtered submissions
+  const filteredSubmissions = submissions.filter((sub) => {
+    const matchesSearch = search
+      ? sub.title?.toLowerCase().includes(search.toLowerCase()) ||
+        sub.submission_number?.toLowerCase().includes(search.toLowerCase()) ||
+        sub.conference_short_name?.toLowerCase().includes(search.toLowerCase())
+      : true;
+    const matchesStatus = statusFilter ? sub.status === statusFilter : true;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <Box sx={{ pb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
@@ -168,7 +251,7 @@ export default function AuthorSubmissionsPage() {
               My Submissions
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Manage your submitted manuscripts, track review progress, and submit revisions
+              Manage your submitted manuscripts, track review progress, edit paper metadata, and submit revisions
             </Typography>
           </Box>
         </Box>
@@ -176,41 +259,90 @@ export default function AuthorSubmissionsPage() {
           variant="contained"
           onClick={() => navigate('/submit-paper')}
           startIcon={<i className="bi bi-file-earmark-plus"></i>}
+          sx={{ fontWeight: 700, borderRadius: 2 }}
         >
           Submit New Paper
         </Button>
       </Box>
 
+      {/* Filter Bar */}
+      <Card sx={{ mb: 3, p: 1, border: '1px solid #E2E8F0', borderRadius: 3 }}>
+        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={7}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search paper by title, submission ID, or conference..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <i className="bi bi-search" style={{ color: '#1565C0' }}></i>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={5}>
+              <TextField
+                fullWidth
+                select
+                size="small"
+                label="Filter by Status"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value="">All Statuses</MenuItem>
+                <MenuItem value="submitted">Submitted</MenuItem>
+                <MenuItem value="under_review">Under Review</MenuItem>
+                <MenuItem value="revision_required">Revision Required</MenuItem>
+                <MenuItem value="accepted">Accepted</MenuItem>
+                <MenuItem value="rejected">Rejected</MenuItem>
+                <MenuItem value="camera_ready_pending">Camera-Ready Under Review</MenuItem>
+                <MenuItem value="camera_ready_approved">Camera-Ready Approved</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
       <Card sx={{ p: 1, border: '1px solid #E2E8F0', borderRadius: 3 }}>
         {loading ? (
           <TableSkeleton rows={4} columns={6} />
-        ) : submissions.length === 0 ? (
+        ) : filteredSubmissions.length === 0 ? (
           <EmptyState
             icon="bi-journal-plus"
-            title="No Submissions Yet"
-            description="You have not submitted any manuscripts yet. Submit your research paper to begin the peer evaluation process."
+            title="No Submissions Found"
+            description={submissions.length === 0 ? "You have not submitted any manuscripts yet. Submit your research paper to begin the peer evaluation process." : "No papers matched your search or status filter."}
             action={
-              <Button variant="contained" onClick={() => navigate('/submit-paper')}>
-                Submit Paper Now
-              </Button>
+              submissions.length === 0 ? (
+                <Button variant="contained" onClick={() => navigate('/submit-paper')}>
+                  Submit Paper Now
+                </Button>
+              ) : null
             }
           />
         ) : (
           <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
-            <Table sx={{ minWidth: 650 }}>
+            <Table sx={{ minWidth: 700 }}>
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ minWidth: 140 }}>Paper ID</TableCell>
-                  <TableCell sx={{ minWidth: 220 }}>Title & Track</TableCell>
-                  <TableCell sx={{ minWidth: 160 }}>Conference / Journal</TableCell>
-                  <TableCell sx={{ minWidth: 120 }}>Status</TableCell>
-                  <TableCell sx={{ minWidth: 110 }}>Files</TableCell>
-                  <TableCell align="right" sx={{ minWidth: 120 }}>Actions</TableCell>
+                  <TableCell sx={{ minWidth: 240 }}>Title & Track</TableCell>
+                  <TableCell sx={{ minWidth: 150 }}>Conference</TableCell>
+                  <TableCell sx={{ minWidth: 130 }}>Status</TableCell>
+                  <TableCell sx={{ minWidth: 120 }}>Files</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 160 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {submissions.map((sub) => {
+                {filteredSubmissions.map((sub) => {
                   const statusInfo = STATUS_CONFIG[sub.status] || STATUS_CONFIG.submitted;
+                  const isEditable = ['submitted', 'revision_required', 'draft'].includes(sub.status);
+                  const isDeletable = !['accepted', 'camera_ready_approved'].includes(sub.status);
+
                   return (
                     <TableRow key={sub.id} hover>
                       <TableCell>
@@ -262,7 +394,7 @@ export default function AuthorSubmissionsPage() {
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.5 }}>
                           {sub.status === 'revision_required' && (
                             <Button
                               size="small"
@@ -271,7 +403,7 @@ export default function AuthorSubmissionsPage() {
                               onClick={() => handleOpenUpload(sub, 'revision')}
                               startIcon={<i className="bi bi-arrow-repeat"></i>}
                             >
-                              Upload Revision
+                              Revision
                             </Button>
                           )}
 
@@ -297,14 +429,39 @@ export default function AuthorSubmissionsPage() {
                             </Button>
                           )}
 
-                          <IconButton
-                            size="small"
-                            onClick={() => navigate(`/submission/${sub.id}`)}
-                            title="View Details"
-                            sx={{ color: '#1565C0' }}
-                          >
-                            <i className="bi bi-eye"></i>
-                          </IconButton>
+                          {isEditable && (
+                            <Tooltip title="Edit Paper Details">
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => handleOpenEdit(sub)}
+                              >
+                                <i className="bi bi-pencil"></i>
+                              </IconButton>
+                            </Tooltip>
+                          )}
+
+                          <Tooltip title="View Paper Details">
+                            <IconButton
+                              size="small"
+                              onClick={() => navigate(`/submission/${sub.id}`)}
+                              sx={{ color: '#1565C0' }}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </IconButton>
+                          </Tooltip>
+
+                          {isDeletable && (
+                            <Tooltip title="Withdraw / Delete Submission">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => setDeleteModal({ open: true, submission: sub, deleting: false })}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -315,6 +472,63 @@ export default function AuthorSubmissionsPage() {
           </TableContainer>
         )}
       </Card>
+
+      {/* Edit Submission Modal */}
+      <Dialog open={editModal.open} onClose={() => setEditModal({ ...editModal, open: false })} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+          Edit Paper Details ({editModal.submission?.submission_number})
+        </DialogTitle>
+        <Box component="form" onSubmit={handleSaveEdit}>
+          <DialogContent sx={{ pt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Manuscript Title"
+                  required
+                  size="small"
+                  value={editModal.title}
+                  onChange={(e) => setEditModal({ ...editModal, title: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Abstract"
+                  required
+                  multiline
+                  rows={4}
+                  size="small"
+                  value={editModal.abstract}
+                  onChange={(e) => setEditModal({ ...editModal, abstract: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Keywords (comma-separated)"
+                  size="small"
+                  value={editModal.keywords}
+                  onChange={(e) => setEditModal({ ...editModal, keywords: e.target.value })}
+                  helperText="e.g. Distributed Systems, Cloud Computing, Consensus"
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setEditModal({ ...editModal, open: false })}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={editModal.saving || !editModal.title.trim()}
+              startIcon={editModal.saving ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-check2" />}
+              sx={{ fontWeight: 700 }}
+            >
+              {editModal.saving ? 'Saving...' : 'Save Paper Details'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
 
       {/* Upload Revision / Camera-Ready Modal */}
       <Dialog open={uploadModal.open} onClose={() => setUploadModal({ ...uploadModal, open: false })} maxWidth="sm" fullWidth>
@@ -329,44 +543,6 @@ export default function AuthorSubmissionsPage() {
               <strong>Paper:</strong> {uploadModal.submission?.submission_number} - {uploadModal.submission?.title}
             </Typography>
 
-            {/* Standardized File Naming Recommendation Box */}
-            <Box
-              sx={{
-                p: 1.5,
-                mb: 2,
-                borderRadius: 2,
-                backgroundColor: '#E8EFEB',
-                border: '1px solid #B8CEC2',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <i className="bi bi-file-earmark-check" style={{ color: '#123B32', fontSize: '1.1rem' }}></i>
-                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#123B32', fontSize: '0.82rem' }}>
-                  Recommended File Naming Format
-                </Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontFamily: 'monospace',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  color: '#123B32',
-                  backgroundColor: '#FFFFFF',
-                  px: 1.2,
-                  py: 0.6,
-                  borderRadius: 1,
-                  display: 'inline-block',
-                  border: '1px dashed #527A68',
-                }}
-              >
-                {(uploadModal.submission?.conference_short_name || 'CONF').replace(/\s+/g, '_')}_{uploadModal.submission?.submission_number}_{uploadModal.fileType === 'camera_ready' ? 'CameraReady' : 'Revision'}.pdf
-              </Typography>
-              <Typography variant="caption" sx={{ display: 'block', mt: 0.75, color: '#334E43', fontSize: '0.75rem' }}>
-                💡 <em>Avoid spaces or special symbols in your filename for seamless tracking across all reviewer systems.</em>
-              </Typography>
-            </Box>
-
             <Paper
               variant="outlined"
               sx={{
@@ -378,132 +554,123 @@ export default function AuthorSubmissionsPage() {
               }}
             >
               <i className="bi bi-cloud-arrow-up" style={{ fontSize: '2.5rem', color: '#123B32' }}></i>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mt: 1, color: '#123B32' }}>
-                Select {uploadModal.fileType === 'camera_ready' ? 'Camera-Ready PDF' : 'Revised PDF'}
+              <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 700, color: '#123B32' }}>
+                {selectedFile ? selectedFile.name : 'Choose a PDF file to upload'}
               </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                PDF only (Max 30MB)
+              </Typography>
+
               <input
                 type="file"
-                accept=".pdf,application/pdf"
-                id="modal-file-upload"
+                accept="application/pdf"
+                id="modal-file-upload-input"
                 style={{ display: 'none' }}
-                onChange={(e) => setSelectedFile(e.target.files[0])}
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setSelectedFile(e.target.files[0]);
+                    setError('');
+                  }
+                }}
               />
-              <label htmlFor="modal-file-upload">
-                <Button variant="outlined" component="span" sx={{ mt: 1.5, borderColor: '#527A68', color: '#123B32' }}>
-                  {selectedFile ? 'Change PDF File' : 'Browse File'}
+              <label htmlFor="modal-file-upload-input">
+                <Button variant="outlined" component="span" startIcon={<i className="bi bi-folder2-open"></i>}>
+                  Browse File
                 </Button>
               </label>
-              {selectedFile && (
-                <Box sx={{ mt: 1.5 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#123B32' }}>
-                    ✓ Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </Typography>
-                  {/\s/.test(selectedFile.name) && (
-                    <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600, display: 'block', mt: 0.5 }}>
-                      ℹ Note: Spaces in filename will be automatically sanitized to underscores (<code>_</code>) upon upload.
-                    </Typography>
-                  )}
-                </Box>
-              )}
             </Paper>
 
             {uploadModal.fileType === 'revision' && (
-              <Box sx={{ mt: 2.5 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: '#123B32' }}>
-                  Response to Reviewers / Rebuttal Notes (Optional)
-                </Typography>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  placeholder="Summarize how you addressed the reviewers' feedback in this revised draft..."
-                  value={modalRebuttalNotes}
-                  onChange={(e) => setModalRebuttalNotes(e.target.value)}
-                  helperText="These notes will accompany your revised PDF for Program Committee re-evaluation."
-                />
-              </Box>
+              <TextField
+                fullWidth
+                label="Author Response / Rebuttal Notes"
+                multiline
+                rows={3}
+                sx={{ mt: 2.5 }}
+                placeholder="Describe the modifications made in response to reviewers' comments..."
+                value={modalRebuttalNotes}
+                onChange={(e) => setModalRebuttalNotes(e.target.value)}
+              />
             )}
           </DialogContent>
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #D3DDD7' }}>
-            <Button onClick={() => setUploadModal({ ...uploadModal, open: false })}>
-              Cancel
-            </Button>
+            <Button onClick={() => setUploadModal({ ...uploadModal, open: false })}>Cancel</Button>
             <Button
               type="submit"
               variant="contained"
               disabled={uploading || !selectedFile}
-              startIcon={uploading ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-cloud-arrow-up" />}
-              sx={{
-                fontWeight: 700,
-                borderRadius: 1.5,
-                backgroundColor: '#123B32',
-                color: '#FFFFFF',
-                '&:hover': { backgroundColor: '#0B241E' },
-              }}
+              startIcon={uploading ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-upload"></i>}
+              sx={{ fontWeight: 700 }}
             >
-              {uploading ? 'Uploading File...' : 'Upload File'}
+              {uploading ? 'Uploading...' : 'Confirm Upload'}
             </Button>
           </DialogActions>
         </Box>
       </Dialog>
 
-      {/* Upload Confirmation Modal */}
+      {/* Delete / Withdraw Confirmation Modal */}
       <ConfirmModal
-        open={confirmUploadOpen}
-        title="Confirm Manuscript Upload"
-        message={`Are you sure you want to upload "${selectedFile?.name}" as the official ${uploadModal.fileType === 'camera_ready' ? 'Final Camera-Ready Paper' : 'Revised Manuscript'} for submission #${uploadModal.submission?.submission_number}?`}
-        confirmText="Yes, Upload File"
-        cancelText="Review Selection"
-        severity="info"
-        loading={uploading}
-        onConfirm={handleExecuteFileUpload}
-        onCancel={() => setConfirmUploadOpen(false)}
+        open={deleteModal.open}
+        title="Withdraw Submission"
+        message={`Are you sure you want to withdraw paper "${deleteModal.submission?.title}" (${deleteModal.submission?.submission_number})? All uploaded files will be permanently deleted and reviewers notified.`}
+        confirmText={deleteModal.deleting ? 'Withdrawing...' : 'Withdraw Submission'}
+        confirmColor="error"
+        onConfirm={handleDeleteSubmission}
+        onClose={() => setDeleteModal({ open: false, submission: null, deleting: false })}
       />
 
-      {/* Peer Reviews Viewer Modal */}
+      {/* Confirmation Modal for File Upload */}
+      <ConfirmModal
+        open={confirmUploadOpen}
+        title={`Confirm ${uploadModal.fileType === 'camera_ready' ? 'Camera-Ready' : 'Revision'} Upload`}
+        message={`You are about to upload "${selectedFile?.name}" for paper ${uploadModal.submission?.submission_number}. Do you want to proceed?`}
+        confirmText="Yes, Upload File"
+        onConfirm={handleExecuteFileUpload}
+        onClose={() => setConfirmUploadOpen(false)}
+      />
+
+      {/* Reviews View Modal */}
       <Dialog open={reviewsModal.open} onClose={() => setReviewsModal({ ...reviewsModal, open: false })} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #D3DDD7', color: '#123B32' }}>
-          Peer Review Evaluation Feedback: {reviewsModal.submission?.submission_number}
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#0F2942' }}>
+          Peer Review Evaluations ({reviewsModal.submission?.submission_number})
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           {reviewsModal.reviews.length === 0 ? (
-            <Typography color="text.secondary">No finalized review comments available yet.</Typography>
+            <Alert severity="info">No completed reviews available yet for this submission.</Alert>
           ) : (
-            reviewsModal.reviews.map((rev, idx) => (
-              <Paper key={idx} elevation={0} sx={{ p: 2.5, mb: 2, border: '1px solid #D3DDD7', borderRadius: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#123B32' }}>
-                    Reviewer #{idx + 1}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {reviewsModal.reviews.map((r, idx) => (
+                <Paper key={r.id || idx} variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, alignItems: 'center' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F2942' }}>
+                      Reviewer #{idx + 1}
+                    </Typography>
+                    <Chip
+                      label={`Score: ${r.overall_score || 'N/A'}/5`}
+                      color={r.overall_score >= 4 ? 'success' : r.overall_score >= 3 ? 'primary' : 'warning'}
+                      size="small"
+                      sx={{ fontWeight: 700 }}
+                    />
+                  </Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#475569', mb: 0.5 }}>
+                    Comments for Authors:
                   </Typography>
-                  <Chip
-                    label={`Recommendation: ${rev.recommendation?.toUpperCase() || 'N/A'}`}
-                    size="small"
-                    sx={{ fontWeight: 700, backgroundColor: '#E8EFEB', color: '#123B32' }}
-                  />
-                </Box>
-
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, backgroundColor: '#F5F3EC', p: 1.5, borderRadius: 2 }}>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Technical: {rev.technical_quality || '-'}/5</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Originality: {rev.originality || '-'}/5</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Relevance: {rev.relevance || '-'}/5</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Presentation: {rev.presentation_quality || '-'}/5</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#123B32' }}>Overall: {rev.overall_score || '-'}/5</Typography>
-                </Box>
-
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5, color: '#123B32' }}>Comments for Authors:</Typography>
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: '#334E43' }}>
-                  {rev.comments_for_authors || 'No detailed comments provided.'}
-                </Typography>
-              </Paper>
-            ))
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 1.5 }}>
+                    {r.comments_for_authors || 'No detailed comments provided.'}
+                  </Typography>
+                </Paper>
+              ))}
+            </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: '1px solid #D3DDD7' }}>
-          <Button onClick={() => setReviewsModal({ ...reviewsModal, open: false })}>Close</Button>
+        <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+          <Button variant="contained" onClick={() => setReviewsModal({ ...reviewsModal, open: false })}>
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Global Feedback Snackbar */}
+      {/* Toast Feedback */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
