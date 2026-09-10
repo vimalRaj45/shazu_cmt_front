@@ -30,7 +30,7 @@ const ROLE_CONFIG = {
   author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author View', icon: 'bi-file-earmark-text' },
 };
 
-export default function Navbar({ onMobileToggle }) {
+export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen }) {
   const { user, activeRole, switchActiveRole, logout } = useAuth();
   const { conferences, selectedConference, selectConference } = useConference();
   const navigate = useNavigate();
@@ -79,17 +79,31 @@ export default function Navbar({ onMobileToggle }) {
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2, md: 3 } }}>
-        {/* Mobile Hamburger & Brand */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.5 } }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={onMobileToggle}
-            sx={{ display: { md: 'none' }, color: '#123B32', p: 0.75 }}
-          >
-            <i className="bi bi-list" style={{ fontSize: '1.45rem' }}></i>
-          </IconButton>
+        {/* Sidebar Toggle & Brand */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.25 } }}>
+          <Tooltip title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}>
+            <IconButton
+              color="inherit"
+              aria-label="toggle sidebar"
+              edge="start"
+              onClick={onToggleSidebar || onMobileToggle}
+              sx={{
+                color: '#123B32',
+                p: 0.8,
+                borderRadius: 2,
+                border: '1px solid #D3DDD7',
+                backgroundColor: '#F5F3EC',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#E8EFEB',
+                  borderColor: '#123B32',
+                  color: '#123B32',
+                },
+              }}
+            >
+              <i className="bi bi-list" style={{ fontSize: '1.35rem', display: 'flex' }}></i>
+            </IconButton>
+          </Tooltip>
 
           <Box
             onClick={() => navigate('/dashboard')}

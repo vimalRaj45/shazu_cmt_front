@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const DRAWER_WIDTH = 260;
 
-export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }) {
+export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, desktopOpen = true }) {
   const { activeRole } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -171,7 +171,18 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
   );
 
   return (
-    <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}>
+    <Box
+      component="nav"
+      sx={{
+        width: { md: desktopOpen ? DRAWER_WIDTH : 0 },
+        flexShrink: { md: 0 },
+        transition: (theme) =>
+          theme.transitions.create('width', {
+            easing: theme.transitions.easing.easeInOut,
+            duration: 250,
+          }),
+      }}
+    >
       {/* Mobile Temporary Drawer */}
       <Drawer
         variant="temporary"
@@ -192,9 +203,10 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
         {drawerContent}
       </Drawer>
 
-      {/* Desktop Permanent Drawer */}
+      {/* Desktop Persistent Drawer */}
       <Drawer
-        variant="permanent"
+        variant="persistent"
+        open={desktopOpen}
         sx={{
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': {
@@ -202,9 +214,15 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {} }
             width: DRAWER_WIDTH,
             borderRight: '1px solid #D3DDD7',
             backgroundColor: '#FFFFFF',
+            transition: (theme) =>
+              theme.transitions.create(['transform', 'visibility'], {
+                easing: theme.transitions.easing.easeInOut,
+                duration: 250,
+              }),
+            transform: desktopOpen ? 'none' : `translateX(-${DRAWER_WIDTH}px)`,
+            visibility: desktopOpen ? 'visible' : 'hidden',
           },
         }}
-        open
       >
         <Toolbar />
         {drawerContent}
