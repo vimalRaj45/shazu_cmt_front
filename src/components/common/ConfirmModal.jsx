@@ -71,8 +71,10 @@ export default function ConfirmModal({
   icon,
   onConfirm,
   onCancel,
+  onClose,
   loading = false,
 }) {
+  const handleCancel = onCancel || onClose;
   // If confirmColor is passed as 'error', map to 'danger'
   const resolvedSeverity = severity === 'warning' && confirmColor === 'error' ? 'danger' : severity;
   const theme = SEVERITY_THEMES[resolvedSeverity] || SEVERITY_THEMES.warning;
@@ -81,7 +83,7 @@ export default function ConfirmModal({
   return (
     <Dialog
       open={open}
-      onClose={loading ? undefined : onCancel}
+      onClose={loading ? undefined : handleCancel}
       TransitionComponent={Fade}
       transitionDuration={200}
       maxWidth="xs"
@@ -146,7 +148,7 @@ export default function ConfirmModal({
         }}
       >
         <Button
-          onClick={onCancel}
+          onClick={handleCancel}
           variant="outlined"
           size="small"
           disabled={loading}

@@ -1303,9 +1303,11 @@ export default function SubmissionDetailPage() {
         open={deletePaperModalOpen}
         title={user?.role === 'admin' ? 'Delete Submission Permanently' : 'Withdraw Submission'}
         message={`Are you sure you want to ${user?.role === 'admin' ? 'permanently delete' : 'withdraw'} "${submission?.title}" (${submission?.submission_number})? All uploaded manuscripts and reviews will be permanently removed.`}
-        confirmText={deletingPaper ? 'Processing...' : user?.role === 'admin' ? 'Delete Submission' : 'Withdraw Submission'}
+        confirmText={user?.role === 'admin' ? 'Delete Submission' : 'Withdraw Submission'}
         confirmColor="error"
+        loading={deletingPaper}
         onConfirm={handleDeletePaper}
+        onCancel={() => setDeletePaperModalOpen(false)}
         onClose={() => setDeletePaperModalOpen(false)}
       />
 
