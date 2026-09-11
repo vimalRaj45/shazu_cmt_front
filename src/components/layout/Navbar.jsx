@@ -79,38 +79,14 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2, md: 3 } }}>
-        {/* Sidebar Toggle & Brand */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.25 } }}>
-          <Tooltip title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}>
-            <IconButton
-              color="inherit"
-              aria-label="toggle sidebar"
-              edge="start"
-              onClick={onToggleSidebar || onMobileToggle}
-              sx={{
-                color: '#123B32',
-                p: 0.8,
-                borderRadius: 2,
-                border: '1px solid #D3DDD7',
-                backgroundColor: '#F5F3EC',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: '#E8EFEB',
-                  borderColor: '#123B32',
-                  color: '#123B32',
-                },
-              }}
-            >
-              <i className="bi bi-list" style={{ fontSize: '1.35rem', display: 'flex' }}></i>
-            </IconButton>
-          </Tooltip>
-
+        {/* Brand & Sidebar Toggle (Hamburger on right) */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
           <Box
             onClick={() => navigate('/dashboard')}
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1.5,
+              gap: 1.25,
               cursor: 'pointer',
               textDecoration: 'none',
             }}
@@ -137,6 +113,29 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               </Typography>
             </Box>
           </Box>
+
+          <Tooltip title={sidebarOpen ? 'Collapse to icons only' : 'Expand sidebar'}>
+            <IconButton
+              color="inherit"
+              aria-label="toggle sidebar"
+              onClick={onToggleSidebar || onMobileToggle}
+              sx={{
+                color: '#123B32',
+                p: 0.8,
+                borderRadius: 2,
+                border: '1px solid #D3DDD7',
+                backgroundColor: '#F5F3EC',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#E8EFEB',
+                  borderColor: '#123B32',
+                  color: '#123B32',
+                },
+              }}
+            >
+              <i className="bi bi-list" style={{ fontSize: '1.35rem', display: 'flex' }}></i>
+            </IconButton>
+          </Tooltip>
 
           <Divider orientation="vertical" flexItem sx={{ height: 24, my: 'auto', mx: { xs: 0.25, sm: 0.75 }, borderColor: '#D3DDD7', display: { xs: 'none', sm: 'block' } }} />
 

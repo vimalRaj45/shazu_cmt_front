@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Container, Toolbar, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import Sidebar, { DRAWER_WIDTH, DRAWER_COLLAPSED_WIDTH } from './Sidebar';
 
 export default function AppLayout() {
   const theme = useTheme();
@@ -45,7 +45,7 @@ export default function AppLayout() {
           p: { xs: 1.5, sm: 2.5, md: 3.5 },
           width: {
             xs: '100%',
-            md: desktopOpen ? `calc(100% - 260px)` : '100%',
+            md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : `calc(100% - ${DRAWER_COLLAPSED_WIDTH}px)`,
           },
           minHeight: '100vh',
           backgroundColor: 'var(--brand-bg, #F5F3EC)',

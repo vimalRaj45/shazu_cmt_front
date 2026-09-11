@@ -10,11 +10,13 @@ import {
   Box,
   Divider,
   Toolbar,
+  Tooltip,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const DRAWER_WIDTH = 260;
+export const DRAWER_WIDTH = 260;
+export const DRAWER_COLLAPSED_WIDTH = 72;
 
 export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, desktopOpen = true }) {
   const { activeRole } = useAuth();
@@ -87,94 +89,158 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, 
     }
   };
 
-  const drawerContent = (
-    <Box sx={{ overflowY: 'auto', py: 2, px: 1.5 }}>
+  const renderContent = (isExpanded) => (
+    <Box
+      sx={{
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        py: 2,
+        px: isExpanded ? 1.5 : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: isExpanded ? 'stretch' : 'center',
+        height: '100%',
+      }}
+    >
       {navSections.map((section, idx) => (
-        <Box key={section.title} sx={{ mb: 2 }}>
-          <Typography
-            variant="caption"
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              fontWeight: 800,
-              letterSpacing: '0.06em',
-              color: '#123B32',
-              display: 'block',
-              fontSize: '0.675rem',
-            }}
-          >
-            {section.title}
-          </Typography>
-          <List dense disablePadding>
+        <Box key={section.title} sx={{ mb: isExpanded ? 2 : 1, width: '100%' }}>
+          {isExpanded ? (
+            <Typography
+              variant="caption"
+              sx={{
+                px: 1.5,
+                py: 0.5,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                color: '#123B32',
+                display: 'block',
+                fontSize: '0.675rem',
+              }}
+            >
+              {section.title}
+            </Typography>
+          ) : (
+            idx > 0 && <Divider sx={{ my: 1, borderColor: '#D3DDD7', width: '60%', mx: 'auto' }} />
+          )}
+
+          <List dense disablePadding sx={{ width: '100%' }}>
             {section.items.map((item) => {
               const isActive = location.pathname === item.path;
-              return (
-                <ListItem key={item.path} disablePadding sx={{ my: 0.25 }}>
-                  <ListItemButton
-                    onClick={() => handleNavClick(item.path)}
-                    selected={isActive}
+              const buttonNode = (
+                <ListItemButton
+                  onClick={() => handleNavClick(item.path)}
+                  selected={isActive}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1,
+                    px: isExpanded ? 1.5 : 0,
+                    justifyContent: isExpanded ? 'flex-start' : 'center',
+                    minHeight: 44,
+                    width: isExpanded ? '100%' : 44,
+                    mx: isExpanded ? 0 : 'auto',
+                    backgroundColor: isActive ? '#E8EFEB' : 'transparent',
+                    color: isActive ? '#123B32' : '#334E43',
+                    transition: 'all 0.15s ease-in-out',
+                    '&:hover': {
+                      backgroundColor: isActive ? '#E8EFEB' : '#F5F3EC',
+                    },
+                    '&.Mui-selected': {
+                      backgroundColor: '#E8EFEB',
+                      color: '#123B32',
+                      fontWeight: 700,
+                    },
+                  }}
+                >
+                  <ListItemIcon
                     sx={{
-                      borderRadius: 1.5,
-                      py: 0.9,
-                      px: 1.5,
-                      backgroundColor: isActive ? '#E8EFEB' : 'transparent',
-                      color: isActive ? '#123B32' : '#334E43',
-                      '&:hover': {
-                        backgroundColor: isActive ? '#E8EFEB' : '#F5F3EC',
-                      },
-                      '&.Mui-selected': {
-                        backgroundColor: '#E8EFEB',
-                        color: '#123B32',
-                        fontWeight: 700,
-                      },
+                      minWidth: isExpanded ? 32 : 'auto',
+                      justifyContent: 'center',
+                      color: isActive ? '#123B32' : '#527A68',
+                      fontSize: '1.25rem',
                     }}
                   >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 32,
-                        color: isActive ? '#123B32' : '#527A68',
-                        fontSize: '1.1rem',
-                      }}
-                    >
-                      <i className={`bi ${item.icon}`}></i>
-                    </ListItemIcon>
+                    <i className={`bi ${item.icon}`}></i>
+                  </ListItemIcon>
+                  {isExpanded && (
                     <ListItemText
                       primary={item.label}
                       primaryTypographyProps={{
                         fontSize: '0.85rem',
                         fontWeight: isActive ? 700 : 500,
                         color: isActive ? '#123B32' : 'inherit',
+                        whiteSpace: 'nowrap',
                       }}
                     />
-                  </ListItemButton>
+                  )}
+                </ListItemButton>
+              );
+
+              return (
+                <ListItem key={item.path} disablePadding sx={{ my: 0.35, display: 'block' }}>
+                  {!isExpanded ? (
+                    <Tooltip title={item.label} placement="right" arrow>
+                      {buttonNode}
+                    </Tooltip>
+                  ) : (
+                    buttonNode
+                  )}
                 </ListItem>
               );
             })}
           </List>
-          {idx < navSections.length - 1 && <Divider sx={{ my: 1.5, borderColor: '#D3DDD7' }} />}
+
+          {isExpanded && idx < navSections.length - 1 && (
+            <Divider sx={{ my: 1.5, borderColor: '#D3DDD7' }} />
+          )}
         </Box>
       ))}
 
       {/* COI Integrity Status Pill */}
-      <Box sx={{ mt: 3, p: 1.5, mx: 1.5, borderRadius: 2, backgroundColor: '#E8EFEB', border: '1px solid #D3DDD7', textAlign: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, color: '#123B32', mb: 0.5 }}>
-          <i className="bi bi-shield-check" style={{ fontSize: '1rem', color: '#123B32' }}></i>
-          <Typography variant="caption" sx={{ fontWeight: 800, color: '#123B32' }}>
-            COI Protection Active
+      {isExpanded ? (
+        <Box sx={{ mt: 'auto', pt: 2, p: 1.5, mx: 0.5, borderRadius: 2, backgroundColor: '#E8EFEB', border: '1px solid #D3DDD7', textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, color: '#123B32', mb: 0.5 }}>
+            <i className="bi bi-shield-check" style={{ fontSize: '1rem', color: '#123B32' }}></i>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: '#123B32' }}>
+              COI Protection Active
+            </Typography>
+          </Box>
+          <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.68rem', display: 'block', lineHeight: 1.3 }}>
+            Authors & Reviewers can co-exist. Self-review & conflicts are blocked.
           </Typography>
         </Box>
-        <Typography variant="caption" sx={{ color: '#334E43', fontSize: '0.68rem', display: 'block', lineHeight: 1.3 }}>
-          Authors & Reviewers can co-exist. Self-review & institutional conflicts are blocked.
-        </Typography>
-      </Box>
+      ) : (
+        <Box sx={{ mt: 'auto', pt: 2, textAlign: 'center', pb: 1 }}>
+          <Tooltip title="COI Protection Active: Self-review & conflicts are blocked" placement="right" arrow>
+            <Box
+              sx={{
+                width: 38,
+                height: 38,
+                borderRadius: '50%',
+                backgroundColor: '#E8EFEB',
+                border: '1px solid #D3DDD7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                color: '#123B32',
+                cursor: 'pointer',
+              }}
+            >
+              <i className="bi bi-shield-check" style={{ fontSize: '1.15rem' }}></i>
+            </Box>
+          </Tooltip>
+        </Box>
+      )}
     </Box>
   );
+
+  const currentWidth = desktopOpen ? DRAWER_WIDTH : DRAWER_COLLAPSED_WIDTH;
 
   return (
     <Box
       component="nav"
       sx={{
-        width: { md: desktopOpen ? DRAWER_WIDTH : 0 },
+        width: { md: currentWidth },
         flexShrink: { md: 0 },
         transition: (theme) =>
           theme.transitions.create('width', {
@@ -183,7 +249,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, 
           }),
       }}
     >
-      {/* Mobile Temporary Drawer */}
+      {/* Mobile Temporary Drawer (Full labels) */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -200,32 +266,31 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, 
         }}
       >
         <Toolbar />
-        {drawerContent}
+        {renderContent(true)}
       </Drawer>
 
-      {/* Desktop Persistent Drawer */}
+      {/* Desktop Persistent Drawer (Expanded or Icon-Only when collapsed) */}
       <Drawer
-        variant="persistent"
-        open={desktopOpen}
+        variant="permanent"
+        open
         sx={{
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
+            width: currentWidth,
             borderRight: '1px solid #D3DDD7',
             backgroundColor: '#FFFFFF',
+            overflowX: 'hidden',
             transition: (theme) =>
-              theme.transitions.create(['transform', 'visibility'], {
+              theme.transitions.create('width', {
                 easing: theme.transitions.easing.easeInOut,
                 duration: 250,
               }),
-            transform: desktopOpen ? 'none' : `translateX(-${DRAWER_WIDTH}px)`,
-            visibility: desktopOpen ? 'visible' : 'hidden',
           },
         }}
       >
         <Toolbar />
-        {drawerContent}
+        {renderContent(desktopOpen)}
       </Drawer>
     </Box>
   );
