@@ -17,6 +17,10 @@ import {
   Paper,
   InputAdornment,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import ConfirmModal from '../../components/common/ConfirmModal';
@@ -58,6 +62,45 @@ export default function ProfilePage() {
   });
 
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
+
+  // Password Change Modal State
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [pwdData, setPwdData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState('');
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwdError('');
+
+    if (pwdData.newPassword.length < 6) {
+      setPwdError('New password must be at least 6 characters long.');
+      return;
+    }
+    if (pwdData.newPassword !== pwdData.confirmPassword) {
+      setPwdError('Passwords do not match. Please verify.');
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      const res = await api.post('/auth/change-password', {
+        currentPassword: pwdData.currentPassword,
+        newPassword: pwdData.newPassword,
+      });
+      setNotification({
+        open: true,
+        message: res.data?.message || 'Password updated successfully!',
+        severity: 'success',
+      });
+      setPasswordModalOpen(false);
+      setPwdData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setPwdError(err.response?.data?.error || 'Failed to update password. Please check your current password.');
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   // Fetch full user profile from backend
   const fetchUserProfile = async () => {
@@ -1171,8 +1214,114 @@ export default function ProfilePage() {
               </Box>
             </CardContent>
           </Card>
+
+          {/* Account Security & Password Card */}
+          <Card sx={{ mt: 3, border: '1px solid #D3DDD7', borderRadius: 2.5, backgroundColor: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 1.5,
+                    backgroundColor: '#E8EFEB',
+                    color: '#123B32',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                  }}
+                >
+                  <i className="bi bi-shield-lock" />
+                </Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#123B32' }}>
+                  Account Security
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Update your account password or replace your temporary login password.
+              </Typography>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => {
+                  setPasswordModalOpen(true);
+                  setPwdError('');
+                  setPwdData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                }}
+                startIcon={<i className="bi bi-key" />}
+                sx={{
+                  borderColor: '#527A68',
+                  color: '#123B32',
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  '&:hover': { borderColor: '#123B32', backgroundColor: '#E8EFEB' },
+                }}
+              >
+                Change Password
+              </Button>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
+
+      {/* Change Password Modal */}
+      <Dialog open={passwordModalOpen} onClose={() => setPasswordModalOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
+          Change Password
+        </DialogTitle>
+        <Box component="form" onSubmit={handleChangePassword}>
+          <DialogContent sx={{ pt: 3 }}>
+            {pwdError && <Alert severity="error" sx={{ mb: 2 }}>{pwdError}</Alert>}
+            <TextField
+              fullWidth
+              label="Current Password"
+              type="password"
+              value={pwdData.currentPassword}
+              onChange={(e) => setPwdData({ ...pwdData, currentPassword: e.target.value })}
+              placeholder="Enter current or temporary password"
+              sx={{ mb: 2 }}
+              helperText="Required if you already have an existing password"
+            />
+            <TextField
+              fullWidth
+              label="New Password"
+              type="password"
+              value={pwdData.newPassword}
+              onChange={(e) => setPwdData({ ...pwdData, newPassword: e.target.value })}
+              required
+              placeholder="At least 6 characters"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Confirm New Password"
+              type="password"
+              value={pwdData.confirmPassword}
+              onChange={(e) => setPwdData({ ...pwdData, confirmPassword: e.target.value })}
+              required
+              placeholder="Re-enter new password"
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setPasswordModalOpen(false)}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={pwdLoading}
+              startIcon={pwdLoading ? <CircularProgress size={16} color="inherit" /> : <i className="bi bi-check2" />}
+              sx={{
+                fontWeight: 700,
+                borderRadius: 1.5,
+                backgroundColor: '#123B32',
+                '&:hover': { backgroundColor: '#2F5B4E' },
+              }}
+            >
+              {pwdLoading ? 'Updating...' : 'Update Password'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
 
       {/* Notification Toast */}
       <Snackbar

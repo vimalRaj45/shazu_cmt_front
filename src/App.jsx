@@ -10,6 +10,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import OrcidCallback from './pages/auth/OrcidCallback';
 import ExternalWelcomePage from './pages/auth/ExternalWelcomePage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // Main Pages
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -57,6 +58,8 @@ export default function App() {
         <Route path="/welcome" element={<ExternalWelcomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ResetPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/auth/orcid/callback" element={<OrcidCallback />} />
 
         {/* Protected Dashboard & App Routes */}

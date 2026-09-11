@@ -172,6 +172,11 @@ export default function Login() {
               </Typography>
             </Alert>
           )}
+          {searchParams.get('reset') === 'success' && (
+            <Alert severity="success" sx={{ mb: 3, borderRadius: 1.5, fontWeight: 600 }}>
+              Your password has been reset successfully! You can now sign in with your new password.
+            </Alert>
+          )}
           {error && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 1 }}>
               {error}
@@ -262,7 +267,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              sx={{ mb: 3 }}
+              sx={{ mb: 1.5 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -271,6 +276,20 @@ export default function Login() {
                 ),
               }}
             />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2.5 }}>
+              <Link
+                to="/reset-password"
+                style={{
+                  color: '#1565C0',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                }}
+              >
+                Forgot password?
+              </Link>
+            </Box>
 
             {/* Cloudflare Turnstile Verification */}
             <TurnstileWidget
