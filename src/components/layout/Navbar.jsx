@@ -157,7 +157,7 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               <Popper
                 {...props}
                 sx={{
-                  width: { xs: '280px !important', sm: '360px !important' },
+                  width: { xs: '290px !important', sm: '380px !important' },
                   boxShadow: '0 8px 24px rgba(18, 59, 50, 0.15)',
                   borderRadius: 2,
                   zIndex: (theme) => theme.zIndex.modal + 1,
@@ -168,7 +168,32 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
                   },
                 }}
                 placement="bottom-start"
-              />
+              >
+                {props.children}
+                {(user?.role === 'admin' || activeRole === 'admin') && (
+                  <Box sx={{ p: 1, borderTop: '1px solid #D3DDD7', backgroundColor: '#F8FAFC', textAlign: 'center', borderRadius: '0 0 8px 8px' }}>
+                    <Box
+                      onClick={() => navigate('/conferences')}
+                      sx={{
+                        cursor: 'pointer',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        color: '#123B32',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 0.75,
+                        py: 0.75,
+                        borderRadius: 1,
+                        '&:hover': { backgroundColor: '#E8EFEB', color: '#0B241E' },
+                      }}
+                    >
+                      <i className="bi bi-gear-wide-connected" />
+                      Manage, Deactivate & Delete Conferences
+                    </Box>
+                  </Box>
+                )}
+              </Popper>
             )}
             sx={{
               flex: { xs: '1 1 auto', sm: '0 1 240px', md: '0 1 320px' },
@@ -208,33 +233,45 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
                 }}
               />
             )}
-            renderOption={(props, option) => (
-              <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1.25, py: 1.25, px: 1.5, borderBottom: '1px solid #F5F3EC' }}>
-                <Box
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 1,
-                    backgroundColor: '#E8EFEB',
-                    color: '#123B32',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <i className="bi bi-calendar2-check" style={{ fontSize: '0.95rem' }}></i>
+            renderOption={(props, option) => {
+              const isHidden = option.is_active === false;
+              const isCompleted = option.status === 'completed';
+              return (
+                <Box component="li" {...props} key={option.id} sx={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 1.25, py: 1.25, px: 1.5, borderBottom: '1px solid #F5F3EC', opacity: isHidden ? 0.75 : 1 }}>
+                  <Box
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 1,
+                      backgroundColor: isHidden ? '#FEE2E2' : '#E8EFEB',
+                      color: isHidden ? '#991B1B' : '#123B32',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <i className={`bi ${isHidden ? 'bi-eye-slash-fill' : 'bi-calendar2-check'}`} style={{ fontSize: '0.95rem' }}></i>
+                  </Box>
+                  <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2 }}>
+                        {option.short_name}
+                      </Typography>
+                      {isHidden && (
+                        <Chip label="Hidden" size="small" sx={{ height: 18, fontSize: '0.65rem', fontWeight: 800, backgroundColor: '#FEE2E2', color: '#991B1B' }} />
+                      )}
+                      {isCompleted && (
+                        <Chip label="Completed" size="small" sx={{ height: 18, fontSize: '0.65rem', fontWeight: 800, backgroundColor: '#E2E8F0', color: '#475569' }} />
+                      )}
+                    </Box>
+                    <Typography variant="caption" sx={{ color: '#334E43', display: 'block', fontSize: '0.75rem', mt: 0.25, whiteSpace: 'normal', lineHeight: 1.4 }}>
+                      {option.name}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#123B32', lineHeight: 1.2, whiteSpace: 'normal' }}>
-                    {option.short_name}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#334E43', display: 'block', fontSize: '0.75rem', mt: 0.25, whiteSpace: 'normal', lineHeight: 1.4 }}>
-                    {option.name}
-                  </Typography>
-                </Box>
-              </Box>
-            )}
+              );
+            }}
           />
         </Box>
 

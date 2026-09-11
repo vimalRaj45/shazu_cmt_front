@@ -333,7 +333,7 @@ export default function ProfilePage() {
   const roleStyle = ROLE_BADGES[profile?.role] || ROLE_BADGES.author;
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 0.25, sm: 1.5, md: 2.5 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
       {/* Top Banner Card */}
       <Card
         sx={{

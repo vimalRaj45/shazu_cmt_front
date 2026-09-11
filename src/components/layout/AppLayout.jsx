@@ -42,7 +42,7 @@ export default function AppLayout() {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1.5, sm: 2.5, md: 3.5 },
+          p: { xs: 0.75, sm: 1.5, md: 2 },
           width: {
             xs: '100%',
             md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : `calc(100% - ${DRAWER_COLLAPSED_WIDTH}px)`,
@@ -57,8 +57,8 @@ export default function AppLayout() {
             }),
         }}
       >
-        <Toolbar /> {/* 64px spacer for fixed Navbar */}
-        <Container maxWidth="xl" sx={{ p: { xs: 0, sm: 1 }, maxWidth: '100%' }}>
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }} /> {/* Spacer for fixed Navbar */}
+        <Container disableGutters maxWidth={false} sx={{ px: { xs: 0.25, sm: 0.75 }, py: 0, maxWidth: '100%' }}>
           <Outlet />
         </Container>
       </Box>

@@ -90,47 +90,182 @@ export default function ConferenceListPage() {
     }
   };
 
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteDialogProps, setDeleteDialogProps] = useState({ open: false, hasSubmissions: false, submissionCount: 0 });
+  const [filterTab, setFilterTab] = useState('all'); // 'all', 'active', 'inactive'
+
+  const isAdmin = activeRole === 'admin' || activeRole === 'chair';
+
+  const handleToggleActive = async (conf) => {
+    try {
+      const res = await api.patch(`/conferences/${conf.id}/toggle-active`);
+      setSnackbar({ open: true, message: res.data.message, severity: 'success' });
+      await refreshConferences();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to toggle conference status', severity: 'error' });
+    }
+  };
+
+  const handleToggleComplete = async (conf) => {
+    try {
+      const newStatus = conf.status === 'completed' ? 'open' : 'completed';
+      await api.put(`/conferences/${conf.id}`, { status: newStatus });
+      setSnackbar({
+        open: true,
+        message: newStatus === 'completed'
+          ? `"${conf.short_name}" marked as Completed (hidden from active submissions)`
+          : `"${conf.short_name}" re-opened`,
+        severity: 'success',
+      });
+      await refreshConferences();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to update status', severity: 'error' });
+    }
+  };
+
+  const handleOpenDelete = (conf) => {
+    setDeleteTarget(conf);
+    const subCount = parseInt(conf.submission_count, 10) || 0;
+    setDeleteDialogProps({ open: true, hasSubmissions: subCount > 0, submissionCount: subCount });
+  };
+
+  const handleConfirmDelete = async (force = false) => {
+    if (!deleteTarget) return;
+    try {
+      await api.delete(`/conferences/${deleteTarget.id}${force ? '?force=true' : ''}`);
+      setSnackbar({ open: true, message: `Conference "${deleteTarget.short_name}" deleted successfully`, severity: 'success' });
+      setDeleteDialogProps({ open: false, hasSubmissions: false, submissionCount: 0 });
+      setDeleteTarget(null);
+      await refreshConferences();
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.hasSubmissions) {
+        setDeleteDialogProps({ open: true, hasSubmissions: true, submissionCount: data.submissionCount });
+      } else {
+        setSnackbar({ open: true, message: data?.error || 'Failed to delete conference', severity: 'error' });
+      }
+    }
+  };
+
+  const filteredConferences = conferences.filter((conf) => {
+    const isHidden = conf.is_active === false || conf.status === 'completed';
+    if (filterTab === 'active') return !isHidden;
+    if (filterTab === 'inactive') return isHidden;
+    return true;
+  });
+
   return (
-    <Box sx={{ pb: 4 }}>
+    <Box sx={{ pb: 4, px: { xs: 0, sm: 1 } }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#123B32', fontSize: { xs: '1.5rem', sm: '2rem' } }}>
             Conferences & Journals Directory
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage and participate in conferences & journal publications
+            Manage academic conferences, journals, publication schedules, and active visibility
           </Typography>
         </Box>
-        {(activeRole === 'chair' || activeRole === 'admin') && (
+        {isAdmin && (
           <Button
             variant="contained"
             onClick={() => setOpenModal(true)}
             startIcon={<i className="bi bi-plus-circle-fill"></i>}
+            sx={{
+              backgroundColor: '#123B32',
+              fontWeight: 700,
+              '&:hover': { backgroundColor: '#1D4C40' },
+            }}
           >
             Create New Conference / Journal
           </Button>
         )}
       </Box>
 
+      {/* Admin Status Filter Tabs */}
+      {isAdmin && (
+        <Box sx={{ display: 'flex', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
+          <Button
+            size="small"
+            variant={filterTab === 'all' ? 'contained' : 'outlined'}
+            onClick={() => setFilterTab('all')}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+          >
+            All Publications ({conferences.length})
+          </Button>
+          <Button
+            size="small"
+            variant={filterTab === 'active' ? 'contained' : 'outlined'}
+            color="success"
+            onClick={() => setFilterTab('active')}
+            startIcon={<i className="bi bi-eye" />}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+          >
+            Active (Visible to Users) ({conferences.filter((c) => c.is_active !== false && c.status !== 'completed').length})
+          </Button>
+          <Button
+            size="small"
+            variant={filterTab === 'inactive' ? 'contained' : 'outlined'}
+            color="warning"
+            onClick={() => setFilterTab('inactive')}
+            startIcon={<i className="bi bi-eye-slash" />}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+          >
+            Completed & Deactivated (Hidden) ({conferences.filter((c) => c.is_active === false || c.status === 'completed').length})
+          </Button>
+        </Box>
+      )}
+
       {/* Conference Cards Grid */}
-      <Grid container spacing={3}>
-        {conferences.map((conf) => {
+      <Grid container spacing={2.5}>
+        {filteredConferences.map((conf) => {
           const statusStyle = STATUS_COLORS[conf.status] || STATUS_COLORS.open;
+          const isDeactivated = conf.is_active === false;
+          const isCompleted = conf.status === 'completed';
+
           return (
             <Grid item xs={12} md={6} key={conf.id}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 1 }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                    <Chip
-                      label={conf.short_name}
-                      sx={{
-                        fontWeight: 800,
-                        backgroundColor: '#EFF6FF',
-                        color: '#1E40AF',
-                        fontSize: '0.85rem',
-                      }}
-                    />
+              <Card
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  p: { xs: 1.5, sm: 2 },
+                  borderRadius: 2.5,
+                  border: isDeactivated ? '2px dashed #EF4444' : isCompleted ? '1px solid #94A3B8' : '1px solid #D3DDD7',
+                  backgroundColor: isDeactivated ? '#FFF5F5' : isCompleted ? '#F8FAFC' : '#FFFFFF',
+                  boxShadow: '0 4px 16px rgba(18, 59, 50, 0.06)',
+                  opacity: isDeactivated ? 0.88 : 1,
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <CardContent sx={{ p: 0, pb: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                      <Chip
+                        label={conf.short_name}
+                        sx={{
+                          fontWeight: 800,
+                          backgroundColor: '#E8EFEB',
+                          color: '#123B32',
+                          fontSize: '0.85rem',
+                        }}
+                      />
+                      {isDeactivated && (
+                        <Chip
+                          icon={<i className="bi bi-eye-slash-fill" style={{ fontSize: '0.75rem', color: '#991B1B' }} />}
+                          label="HIDDEN FROM USERS"
+                          size="small"
+                          sx={{
+                            fontWeight: 800,
+                            backgroundColor: '#FEE2E2',
+                            color: '#991B1B',
+                            fontSize: '0.7rem',
+                          }}
+                        />
+                      )}
+                    </Box>
                     <Chip
                       label={conf.status?.toUpperCase()}
                       size="small"
@@ -142,7 +277,7 @@ export default function ConferenceListPage() {
                     />
                   </Box>
 
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#123B32', mb: 1, fontSize: { xs: '1.05rem', sm: '1.2rem' } }}>
                     {conf.name}
                   </Typography>
 
@@ -150,29 +285,36 @@ export default function ConferenceListPage() {
                     {conf.description || 'Online academic publication portal for research papers, peer reviews, and scholarly proceedings / articles.'}
                   </Typography>
 
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, backgroundColor: '#F8FAFC', p: 1.5, borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, backgroundColor: isDeactivated ? '#FEE2E2' : '#F5F3EC', p: 1.5, borderRadius: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <i className="bi bi-globe2 text-muted"></i>
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                      <i className="bi bi-globe2" style={{ color: '#527A68' }}></i>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: '#123B32' }}>
                         {conf.venue || 'Online / Virtual Platform'}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <i className="bi bi-calendar-event text-muted"></i>
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                      <i className="bi bi-calendar-event" style={{ color: '#527A68' }}></i>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: '#123B32' }}>
                         {conf.start_date} to {conf.end_date}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <i className="bi bi-clock text-danger"></i>
+                      <i className="bi bi-clock" style={{ color: '#DC2626' }}></i>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: '#DC2626' }}>
                         Submission Due: {new Date(conf.submission_deadline).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <i className="bi bi-file-earmark-text" style={{ color: '#123B32' }}></i>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#123B32' }}>
+                        Total Submissions: {conf.submission_count || 0} papers
                       </Typography>
                     </Box>
                   </Box>
                 </CardContent>
 
-                <Box sx={{ p: 2, pt: 0, display: 'flex', gap: 1 }}>
+                {/* Card Action Controls */}
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1, pt: 1, borderTop: '1px solid #E2E8F0', alignItems: 'stretch' }}>
                   <Button
                     fullWidth
                     variant="contained"
@@ -180,15 +322,119 @@ export default function ConferenceListPage() {
                       selectConference(conf);
                       navigate('/conference/details');
                     }}
+                    sx={{
+                      backgroundColor: '#123B32',
+                      fontWeight: 700,
+                      '&:hover': { backgroundColor: '#1D4C40' },
+                    }}
                   >
                     Enter Portal
                   </Button>
+
+                  {isAdmin && (
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                      {/* Deactivate / Activate Button (Hide from users) */}
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color={isDeactivated ? 'success' : 'warning'}
+                        onClick={() => handleToggleActive(conf)}
+                        startIcon={<i className={`bi ${isDeactivated ? 'bi-eye' : 'bi-eye-slash'}`} />}
+                        sx={{ fontWeight: 700, fontSize: '0.75rem', whiteSpace: 'nowrap' }}
+                      >
+                        {isDeactivated ? 'Show to Users' : 'Hide from Users'}
+                      </Button>
+
+                      {/* Mark Completed Button */}
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color={isCompleted ? 'info' : 'secondary'}
+                        onClick={() => handleToggleComplete(conf)}
+                        startIcon={<i className={`bi ${isCompleted ? 'bi-arrow-clockwise' : 'bi-check2-circle'}`} />}
+                        sx={{ fontWeight: 700, fontSize: '0.75rem', whiteSpace: 'nowrap' }}
+                      >
+                        {isCompleted ? 'Re-open' : 'Mark Done'}
+                      </Button>
+
+                      {/* Delete Conference Button */}
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color="error"
+                        onClick={() => handleOpenDelete(conf)}
+                        sx={{ minWidth: 40, px: 1 }}
+                      >
+                        <i className="bi bi-trash" style={{ fontSize: '0.95rem' }} />
+                      </Button>
+                    </Box>
+                  )}
                 </Box>
               </Card>
             </Grid>
           );
         })}
       </Grid>
+
+      {/* Delete / Deactivate Confirmation Dialog */}
+      <Dialog open={deleteDialogProps.open} onClose={() => setDeleteDialogProps({ open: false, hasSubmissions: false, submissionCount: 0 })} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, color: '#991B1B', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <i className="bi bi-exclamation-triangle-fill" style={{ color: '#DC2626' }} />
+          Delete or Deactivate Conference
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2, fontWeight: 600, color: '#123B32' }}>
+            Are you sure you want to remove <strong>"{deleteTarget?.name}"</strong> ({deleteTarget?.short_name})?
+          </Typography>
+
+          {deleteDialogProps.hasSubmissions ? (
+            <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+              This publication currently has <strong>{deleteDialogProps.submissionCount} submitted manuscripts</strong>.
+              <br /><br />
+              <strong>Recommended:</strong> Click <strong>"Deactivate & Hide from Users"</strong> to remove it from user dropdowns and submission portals while preserving scholar records and reviews.
+              <br /><br />
+              Alternatively, choose <strong>"Force Delete Everything"</strong> to permanently erase all papers, reviews, and assignments.
+            </Alert>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              This conference has no papers submitted. Deleting will remove it permanently from the system.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 2, gap: 1, flexWrap: 'wrap' }}>
+          <Button
+            variant="outlined"
+            onClick={() => setDeleteDialogProps({ open: false, hasSubmissions: false, submissionCount: 0 })}
+          >
+            Cancel
+          </Button>
+
+          {deleteDialogProps.hasSubmissions && (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={async () => {
+                await handleToggleActive(deleteTarget);
+                setDeleteDialogProps({ open: false, hasSubmissions: false, submissionCount: 0 });
+              }}
+              startIcon={<i className="bi bi-eye-slash" />}
+              sx={{ fontWeight: 700 }}
+            >
+              Deactivate & Hide from Users
+            </Button>
+          )}
+
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleConfirmDelete(deleteDialogProps.hasSubmissions)}
+            startIcon={<i className="bi bi-trash" />}
+            sx={{ fontWeight: 700 }}
+          >
+            {deleteDialogProps.hasSubmissions ? 'Force Delete Everything' : 'Delete Permanently'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Create Conference Modal Dialog */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="md" fullWidth>
