@@ -102,25 +102,41 @@ export default function ReviewerAssignmentPage() {
     fetchSubs();
   }, [selectedConference, location.search]);
 
-  // When selected submission changes, load details & conflicts
+  // When selected submission changes or conference changes, load details & conflicts/pool
   const loadConflictsAndAssignments = async () => {
-    if (!selectedSubId) return;
+    if (!selectedConference?.id) return;
     setLoading(true);
     try {
-      // 1. Get submission details
-      const subRes = await api.get(`/submissions/${selectedSubId}`);
-      setSelectedSubmission(subRes.data.submission);
+      if (selectedSubId) {
+        // 1. Get submission details
+        const subRes = await api.get(`/submissions/${selectedSubId}`);
+        setSelectedSubmission(subRes.data.submission);
 
-      // 2. Get conflict matrix & AI match scores
-      const confRes = await api.get(`/reviewers/conflicts/submission/${selectedSubId}`);
-      setReviewersWithConflicts(confRes.data.reviewersWithConflictStatus || []);
+        // 2. Get conflict matrix & AI match scores
+        const confRes = await api.get(`/reviewers/conflicts/submission/${selectedSubId}`);
+        setReviewersWithConflicts(confRes.data.reviewersWithConflictStatus || []);
 
-      // 3. Get currently assigned reviewers
-      const reviewsRes = await api.get(`/reviews/submission/${selectedSubId}`);
-      const assignedIds = new Set((reviewsRes.data.reviews || []).map((r) => r.reviewer_id));
-      setAssignedReviewerIds(assignedIds);
+        // 3. Get currently assigned reviewers
+        const reviewsRes = await api.get(`/reviews/submission/${selectedSubId}`);
+        const assignedIds = new Set((reviewsRes.data.reviews || []).map((r) => r.reviewer_id));
+        setAssignedReviewerIds(assignedIds);
+      } else {
+        // No submission selected or no submissions yet -> Load conference committee reviewers
+        setSelectedSubmission(null);
+        setAssignedReviewerIds(new Set());
+        const confRevRes = await api.get(`/reviewers/conference/${selectedConference.id}`);
+        const pool = (confRevRes.data.reviewers || []).map((r) => ({
+          ...r,
+          matchScore: 75,
+          confidence: 'Active Member',
+          rationale: 'Enrolled in Conference Committee',
+          hasConflict: false,
+          conflictReason: null,
+        }));
+        setReviewersWithConflicts(pool);
+      }
     } catch (err) {
-      console.error('Failed to analyze reviewer conflicts:', err);
+      console.error('Failed to analyze reviewer conflicts or load pool:', err);
     } finally {
       setLoading(false);
     }
@@ -128,7 +144,7 @@ export default function ReviewerAssignmentPage() {
 
   useEffect(() => {
     loadConflictsAndAssignments();
-  }, [selectedSubId]);
+  }, [selectedSubId, selectedConference]);
 
   const handleAssign = async (reviewerId) => {
     setActionLoadingId(`assign-${reviewerId}`);
@@ -167,18 +183,30 @@ export default function ReviewerAssignmentPage() {
   const handleInviteReviewer = async (e) => {
     e.preventDefault();
     if (!inviteEmail) return;
+    if (!selectedConference?.id) {
+      setInviteError('Please select or create an active conference first before adding reviewers.');
+      return;
+    }
     setInviting(true);
     setInviteError('');
     try {
-      await api.post(`/reviewers/conference/${selectedConference.id}/invite`, {
-        email: inviteEmail,
+      const res = await api.post(`/reviewers/conference/${selectedConference.id}/invite`, {
+        email: inviteEmail.trim(),
       });
-      setSnackbar({ open: true, message: 'Reviewer added to Program Committee!', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: res.data?.message || 'Reviewer added to Program Committee!',
+        severity: 'success',
+      });
       setOpenInviteModal(false);
       setInviteEmail('');
-      loadConflictsAndAssignments();
+      await loadConflictsAndAssignments();
     } catch (err) {
-      setInviteError(err.response?.data?.error || 'Failed to invite reviewer');
+      const errorMsg =
+        err.response?.data?.details
+          ? `${err.response?.data?.error || 'Failed to invite reviewer'}: ${err.response.data.details}`
+          : (err.response?.data?.error || err.message || 'Failed to invite reviewer');
+      setInviteError(errorMsg);
     } finally {
       setInviting(false);
     }
@@ -643,7 +671,15 @@ export default function ReviewerAssignmentPage() {
                       </TableCell>
 
                       <TableCell align="right">
-                        {isAssigned ? (
+                        {!selectedSubId ? (
+                          <Chip
+                            label="Enrolled Member"
+                            size="small"
+                            color="success"
+                            variant="outlined"
+                            sx={{ fontWeight: 700, fontSize: '0.75rem', backgroundColor: '#F0FDF4' }}
+                          />
+                        ) : isAssigned ? (
                           <Button
                             size="small"
                             variant="outlined"
@@ -899,8 +935,13 @@ export default function ReviewerAssignmentPage() {
         <Box component="form" onSubmit={handleInviteReviewer}>
           <DialogContent sx={{ pt: 3 }}>
             {inviteError && <Alert severity="error" sx={{ mb: 2 }}>{inviteError}</Alert>}
+            {!selectedConference?.id && (
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                Please select or create an active conference from the header before adding committee reviewers.
+              </Alert>
+            )}
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Enter the registered email of the user to enroll them as a Peer Reviewer for this conference.
+              Enter the email of the reviewer to enroll them in the Program Committee for <strong>{selectedConference?.short_name || 'this conference'}</strong>. If they do not have an account, one will be created automatically.
             </Typography>
             <TextField
               fullWidth
@@ -909,6 +950,7 @@ export default function ReviewerAssignmentPage() {
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               required
+              disabled={inviting || !selectedConference?.id}
               placeholder="e.g. reviewer1@shazusoft.com"
             />
           </DialogContent>
@@ -917,7 +959,7 @@ export default function ReviewerAssignmentPage() {
             <Button
               type="submit"
               variant="contained"
-              disabled={inviting}
+              disabled={inviting || !selectedConference?.id}
               startIcon={inviting ? <CircularProgress size={16} sx={{ color: '#FFFFFF' }} /> : <i className="bi bi-person-plus" />}
               sx={{
                 fontWeight: 700,
