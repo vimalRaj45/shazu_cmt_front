@@ -25,9 +25,9 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../common/ConfirmModal';
 
 const ROLE_CONFIG = {
-  admin: { bg: '#E8EFEB', text: '#123B32', border: '#527A68', label: 'Administrator', icon: 'bi-shield-lock' },
-  reviewer: { bg: '#E8EFEB', text: '#2F5B4E', border: '#527A68', label: 'Reviewer View', icon: 'bi-journal-check' },
-  author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author View', icon: 'bi-file-earmark-text' },
+  admin: { bg: '#E8EFEB', text: '#123B32', border: '#527A68', label: 'Administrator', shortLabel: 'Admin', icon: 'bi-shield-lock' },
+  reviewer: { bg: '#E8EFEB', text: '#2F5B4E', border: '#527A68', label: 'Reviewer View', shortLabel: 'Reviewer', icon: 'bi-journal-check' },
+  author: { bg: '#FBEFE7', text: '#C47D4C', border: '#C47D4C', label: 'Author View', shortLabel: 'Author', icon: 'bi-file-earmark-text' },
 };
 
 export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen }) {
@@ -78,9 +78,9 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
         width: '100%',
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2, md: 3 } }}>
-        {/* Brand & Sidebar Toggle (Hamburger on right) */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
+      <Toolbar sx={{ justifyContent: 'space-between', minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2, md: 3 }, gap: { xs: 0.5, sm: 1.5 } }}>
+        {/* Brand & Conference Selector */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1.25, md: 1.5 }, flex: { xs: 1, md: 'initial' }, minWidth: 0 }}>
           <Box
             onClick={() => navigate('/dashboard')}
             sx={{
@@ -89,6 +89,7 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               gap: 1.25,
               cursor: 'pointer',
               textDecoration: 'none',
+              flexShrink: 0,
             }}
           >
             <Box
@@ -96,30 +97,32 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               src="/logo.png"
               alt="Shazu Soft Logo"
               sx={{
-                height: 42,
-                width: 42,
-                maxHeight: 42,
-                maxWidth: 42,
+                height: { xs: 34, sm: 40 },
+                width: { xs: 34, sm: 40 },
+                maxHeight: 40,
+                maxWidth: 40,
                 objectFit: 'contain',
                 flexShrink: 0,
               }}
             />
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: '0.95rem' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1, color: '#123B32', letterSpacing: '-0.01em', fontSize: { sm: '0.85rem', md: '0.95rem' } }}>
                 SHAZU SOFT
               </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.72rem', display: 'block' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.08em', color: '#527A68', fontSize: '0.7rem', display: 'block' }}>
                 CJMS PORTAL
               </Typography>
             </Box>
           </Box>
 
+          {/* Desktop Sidebar Toggle (Only on md and above) */}
           <Tooltip title={sidebarOpen ? 'Collapse to icons only' : 'Expand sidebar'}>
             <IconButton
               color="inherit"
               aria-label="toggle sidebar"
-              onClick={onToggleSidebar || onMobileToggle}
+              onClick={onToggleSidebar}
               sx={{
+                display: { xs: 'none', md: 'inline-flex' },
                 color: '#123B32',
                 p: 0.8,
                 borderRadius: 2,
@@ -137,7 +140,7 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
             </IconButton>
           </Tooltip>
 
-          <Divider orientation="vertical" flexItem sx={{ height: 24, my: 'auto', mx: { xs: 0.25, sm: 0.75 }, borderColor: '#D3DDD7', display: { xs: 'none', sm: 'block' } }} />
+          <Divider orientation="vertical" flexItem sx={{ height: 24, my: 'auto', mx: { xs: 0.25, sm: 0.5 }, borderColor: '#D3DDD7', display: { xs: 'none', md: 'block' } }} />
 
           {/* Searchable Active Conference Selector */}
           <Autocomplete
@@ -154,7 +157,7 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               <Popper
                 {...props}
                 sx={{
-                  width: { xs: '290px !important', sm: '360px !important' },
+                  width: { xs: '280px !important', sm: '360px !important' },
                   boxShadow: '0 8px 24px rgba(18, 59, 50, 0.15)',
                   borderRadius: 2,
                   zIndex: (theme) => theme.zIndex.modal + 1,
@@ -168,30 +171,37 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
               />
             )}
             sx={{
-              minWidth: { xs: 120, sm: 190, md: 280 },
-              maxWidth: { xs: 160, sm: 260, md: 360 },
+              flex: { xs: '1 1 auto', sm: '0 1 240px', md: '0 1 320px' },
+              minWidth: { xs: 90, sm: 160, md: 220 },
+              maxWidth: { xs: '100%', sm: 280, md: 360 },
               backgroundColor: '#FFFFFF',
               borderRadius: 1.5,
               '& .MuiOutlinedInput-root': {
-                fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                fontSize: { xs: '0.76rem', sm: '0.85rem' },
                 fontWeight: 700,
                 color: '#123B32',
-                py: '2px',
+                py: { xs: '1px', sm: '2px' },
                 px: { xs: '4px', sm: '8px' },
                 '& fieldset': { borderColor: '#D3DDD7' },
                 '&:hover fieldset': { borderColor: '#123B32' },
                 '&.Mui-focused fieldset': { borderColor: '#123B32' },
               },
+              '& .MuiOutlinedInput-input': {
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                py: { xs: '3px !important', sm: '4px !important' },
+              },
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Select Conference / Journal"
+                placeholder="Select Conference"
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
                     <>
-                      <i className="bi bi-calendar-check" style={{ color: '#123B32', marginRight: 4, fontSize: '0.85rem' }}></i>
+                      <i className="bi bi-calendar-check" style={{ color: '#123B32', marginRight: 4, fontSize: '0.8rem', flexShrink: 0 }}></i>
                       {params.InputProps.startAdornment}
                     </>
                   ),
@@ -229,34 +239,55 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
         </Box>
 
         {/* User Role Badge & Perspective Switcher */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.25 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 }, flexShrink: 0, ml: { xs: 0.5, sm: 1.5 } }}>
           {/* Interactive Role Perspective Chip (Visible and Responsive on all screens) */}
-          <Chip
-            label={currentRoleStyle.label}
-            size="small"
-            onClick={handleRoleMenuOpen}
-            sx={{
-              display: 'inline-flex',
-              backgroundColor: currentRoleStyle.bg,
-              color: currentRoleStyle.text,
-              border: `1px solid ${currentRoleStyle.border}`,
-              fontWeight: 800,
-              fontSize: { xs: '0.7rem', sm: '0.8rem' },
-              height: { xs: 26, sm: 28 },
-              px: { xs: 0.25, sm: 0.5 },
-              borderRadius: 1.5,
-              cursor: 'pointer',
-              userSelect: 'none',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                filter: 'brightness(0.95)',
-                transform: 'translateY(-1px)',
-              },
-            }}
-            icon={<i className={`bi ${currentRoleStyle.icon}`} style={{ marginLeft: 6, color: currentRoleStyle.text, fontSize: '0.85rem' }}></i>}
-            deleteIcon={<i className="bi bi-chevron-down" style={{ marginRight: 6, color: currentRoleStyle.text, fontSize: '0.7rem' }}></i>}
-            onDelete={handleRoleMenuOpen}
-          />
+          <Tooltip title={`Current Perspective: ${currentRoleStyle.label} (Click to switch)`} arrow>
+            <Chip
+              label={
+                <>
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                    {currentRoleStyle.label}
+                  </Box>
+                  <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
+                    {currentRoleStyle.shortLabel}
+                  </Box>
+                </>
+              }
+              size="small"
+              onClick={handleRoleMenuOpen}
+              sx={{
+                display: 'inline-flex',
+                backgroundColor: currentRoleStyle.bg,
+                color: currentRoleStyle.text,
+                border: `1px solid ${currentRoleStyle.border}`,
+                fontWeight: 800,
+                fontSize: { xs: '0.72rem', sm: '0.8rem' },
+                height: { xs: 28, sm: 30 },
+                px: { xs: 0.5, sm: 0.75 },
+                borderRadius: 1.5,
+                cursor: 'pointer',
+                userSelect: 'none',
+                flexShrink: 0,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  filter: 'brightness(0.95)',
+                  transform: 'translateY(-1px)',
+                },
+                '& .MuiChip-icon': {
+                  ml: { xs: '2px', sm: '4px' },
+                  mr: { xs: '2px', sm: '4px' },
+                },
+                '& .MuiChip-deleteIcon': {
+                  display: { xs: 'none', sm: 'inline-flex' },
+                  mr: { xs: '2px', sm: '4px' },
+                  ml: '1px',
+                },
+              }}
+              icon={<i className={`bi ${currentRoleStyle.icon}`} style={{ color: currentRoleStyle.text, fontSize: '0.85rem' }}></i>}
+              deleteIcon={<i className="bi bi-chevron-down" style={{ color: currentRoleStyle.text, fontSize: '0.7rem' }}></i>}
+              onDelete={handleRoleMenuOpen}
+            />
+          </Tooltip>
 
           {/* Perspective Switcher Popover Menu */}
           <Menu
@@ -378,19 +409,20 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 0.75,
+              gap: { xs: 0.25, sm: 0.75 },
               cursor: 'pointer',
               p: '2px 4px',
               borderRadius: 1.5,
+              flexShrink: 0,
               '&:hover': { backgroundColor: '#E8EFEB' },
             }}
           >
             <Avatar
               sx={{
-                width: 30,
-                height: 30,
+                width: { xs: 28, sm: 30 },
+                height: { xs: 28, sm: 30 },
                 background: 'linear-gradient(135deg, #123B32 0%, #2F5B4E 100%)',
-                fontSize: '0.825rem',
+                fontSize: { xs: '0.75rem', sm: '0.825rem' },
                 fontWeight: 700,
                 color: '#FFFFFF',
               }}
@@ -405,8 +437,34 @@ export default function Navbar({ onMobileToggle, onToggleSidebar, sidebarOpen })
                 {user?.institution || user?.email}
               </Typography>
             </Box>
-            <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem', color: '#527A68' }}></i>
+            <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem', color: '#527A68', display: 'flex' }}></i>
           </Box>
+
+          {/* Mobile Sidebar Hamburger Toggle (Right Side on Mobile) */}
+          <Tooltip title="Navigation Menu" arrow>
+            <IconButton
+              color="inherit"
+              aria-label="open navigation menu"
+              onClick={onMobileToggle || onToggleSidebar}
+              sx={{
+                display: { xs: 'inline-flex', md: 'none' },
+                color: '#123B32',
+                p: { xs: 0.6, sm: 0.8 },
+                borderRadius: 2,
+                border: '1px solid #D3DDD7',
+                backgroundColor: '#F5F3EC',
+                flexShrink: 0,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: '#E8EFEB',
+                  borderColor: '#123B32',
+                  color: '#123B32',
+                },
+              }}
+            >
+              <i className="bi bi-list" style={{ fontSize: '1.25rem', display: 'flex' }}></i>
+            </IconButton>
+          </Tooltip>
 
           <Menu
             anchorEl={anchorEl}
