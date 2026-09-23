@@ -371,7 +371,7 @@ export default function GuidePage() {
               <Grid container spacing={2}>
                 {[
                   { title: 'Double-Blind Anonymization', text: 'Remove author names, affiliations, email addresses, and grant acknowledgments from the submitted manuscript PDF.' },
-                  { title: 'PDF Format & Storage Guidelines', text: 'Upload your file in standard PDF format (maximum size 50 MB). Files are securely stored in high-speed encrypted cloud storage.' },
+                  { title: 'PDF Format & Storage Guidelines', text: 'Upload your file in standard PDF format (maximum size 10 MB). Files are securely stored in high-speed encrypted cloud storage.' },
                   { title: 'Co-Author Information', text: 'Accurately specify all co-author names, email addresses, and institutions in the submission form for correct COI detection.' },
                   { title: 'Keywords & Abstract', text: 'Provide 3 to 6 descriptive research keywords to assist matching with relevant technical reviewers.' },
                 ].map((item, i) => (

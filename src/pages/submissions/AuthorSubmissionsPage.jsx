@@ -122,6 +122,10 @@ export default function AuthorSubmissionsPage() {
       setError('Please select a PDF file');
       return;
     }
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setError('Selected file exceeds the 10MB limit. Please choose a smaller file.');
+      return;
+    }
     setConfirmUploadOpen(true);
   };
 
@@ -558,7 +562,7 @@ export default function AuthorSubmissionsPage() {
                 {selectedFile ? selectedFile.name : 'Choose a PDF file to upload'}
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
-                PDF only (Max 30MB)
+                PDF only (Max 10MB)
               </Typography>
 
               <input
@@ -568,7 +572,14 @@ export default function AuthorSubmissionsPage() {
                 style={{ display: 'none' }}
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setSelectedFile(e.target.files[0]);
+                    const file = e.target.files[0];
+                    if (file.size > 10 * 1024 * 1024) {
+                      setError('Selected file exceeds the 10MB limit.');
+                      e.target.value = '';
+                      setSelectedFile(null);
+                      return;
+                    }
+                    setSelectedFile(file);
                     setError('');
                   }
                 }}

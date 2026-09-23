@@ -134,6 +134,14 @@ export default function CreateSubmissionPage() {
       setError('Please select a Manuscript PDF file to upload.');
       return;
     }
+    if (manuscriptFile.size > 10 * 1024 * 1024) {
+      setError('Manuscript file size exceeds the 10MB limit. Please upload a smaller file.');
+      return;
+    }
+    if (supplementaryFile && supplementaryFile.size > 10 * 1024 * 1024) {
+      setError('Supplementary file size exceeds the 10MB limit. Please upload a smaller file.');
+      return;
+    }
 
     setError('');
     setSuccess('');
@@ -408,14 +416,25 @@ export default function CreateSubmissionPage() {
                     Manuscript File (PDF) *
                   </Typography>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>
-                    Max 50MB. PDF format required.
+                    Max 10MB. PDF format required.
                   </Typography>
                   <input
                     type="file"
                     accept=".pdf,application/pdf"
                     id="manuscript-upload"
                     style={{ display: 'none' }}
-                    onChange={(e) => setManuscriptFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                          setError('Selected manuscript file exceeds the 10MB limit.');
+                          e.target.value = '';
+                          return;
+                        }
+                        setError('');
+                        setManuscriptFile(file);
+                      }
+                    }}
                   />
                   <label htmlFor="manuscript-upload">
                     <Button
@@ -460,13 +479,24 @@ export default function CreateSubmissionPage() {
                     Supplementary Materials (Optional)
                   </Typography>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>
-                    ZIP, PDF, dataset, or code appendix.
+                    ZIP, PDF, dataset, or code appendix (Max 10MB).
                   </Typography>
                   <input
                     type="file"
                     id="supplementary-upload"
                     style={{ display: 'none' }}
-                    onChange={(e) => setSupplementaryFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                          setError('Selected supplementary file exceeds the 10MB limit.');
+                          e.target.value = '';
+                          return;
+                        }
+                        setError('');
+                        setSupplementaryFile(file);
+                      }
+                    }}
                   />
                   <label htmlFor="supplementary-upload">
                     <Button

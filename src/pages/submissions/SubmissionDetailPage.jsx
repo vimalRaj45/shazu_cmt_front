@@ -292,6 +292,10 @@ export default function SubmissionDetailPage() {
       setRevisionError('Please select a revised manuscript PDF file');
       return;
     }
+    if (revisionFile.size > 10 * 1024 * 1024) {
+      setRevisionError('Selected revision file exceeds the 10MB limit. Please upload a smaller file.');
+      return;
+    }
     setRevisionError('');
     setSubmittingRevision(true);
 
@@ -977,11 +981,23 @@ export default function SubmissionDetailPage() {
                 accept=".pdf"
                 id="revision-pdf-upload"
                 style={{ display: 'none' }}
-                onChange={(e) => setRevisionFile(e.target.files[0])}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                      setRevisionError('Selected file exceeds the 10MB limit.');
+                      e.target.value = '';
+                      setRevisionFile(null);
+                      return;
+                    }
+                    setRevisionError('');
+                    setRevisionFile(file);
+                  }
+                }}
               />
               <label htmlFor="revision-pdf-upload">
                 <Button variant="outlined" component="span" startIcon={<i className="bi bi-file-earmark-pdf"></i>}>
-                  Select Revised PDF File
+                  Select Revised PDF File (Max 10MB)
                 </Button>
               </label>
               {revisionFile && (
