@@ -191,7 +191,7 @@ export default function ConferenceListPage() {
             onClick={() => setFilterTab('all')}
             sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
           >
-            All Publications ({conferences.length})
+            All Conferences & Journals ({conferences.length})
           </Button>
           <Button
             size="small"

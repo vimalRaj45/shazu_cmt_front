@@ -308,7 +308,7 @@ export default function ConferenceDetailPage() {
               startIcon={<i className="bi bi-plus-circle" />}
               sx={{ backgroundColor: '#1B5E20', '&:hover': { backgroundColor: '#144A18' }, textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
             >
-              Add New Publication
+              + Add New Conference / Journal
             </Button>
             <Button
               variant="outlined"
@@ -327,7 +327,7 @@ export default function ConferenceDetailPage() {
               startIcon={<i className="bi bi-trash" />}
               sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
             >
-              Delete Publication
+              Delete Conference / Journal
             </Button>
           </Box>
         )}
@@ -547,10 +547,10 @@ export default function ConferenceDetailPage() {
         </Grid>
       </Grid>
 
-      {/* Edit Conference Modal */}
+      {/* Edit Conference / Journal Modal */}
       <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
-          Manage & Edit Publication Details
+          Manage & Edit Conference / Journal Details
         </DialogTitle>
         <Box component="form" onSubmit={handleEditSubmit}>
           <DialogContent sx={{ pt: 3 }}>
@@ -567,7 +567,7 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
-                  label="Acronym / Short Name"
+                  label="Acronym / Short Name / ISSN"
                   required
                   value={editFormData.shortName}
                   onChange={(e) => setEditFormData({ ...editFormData, shortName: e.target.value })}
@@ -586,7 +586,7 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Venue / Virtual Platform"
+                  label="Venue / Virtual Platform / Publisher"
                   value={editFormData.venue}
                   onChange={(e) => setEditFormData({ ...editFormData, venue: e.target.value })}
                 />
@@ -595,7 +595,7 @@ export default function ConferenceDetailPage() {
                 <TextField
                   select
                   fullWidth
-                  label="Publication Workflow Phase"
+                  label="Workflow Status Phase"
                   value={editFormData.status}
                   onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
                 >
@@ -632,7 +632,7 @@ export default function ConferenceDetailPage() {
                 <TextField
                   fullWidth
                   type="date"
-                  label="Paper Submission Deadline"
+                  label="Paper / Manuscript Submission Deadline"
                   InputLabelProps={{ shrink: true }}
                   value={editFormData.submissionDeadline}
                   onChange={(e) => setEditFormData({ ...editFormData, submissionDeadline: e.target.value })}
@@ -642,7 +642,7 @@ export default function ConferenceDetailPage() {
                 <TextField
                   fullWidth
                   type="date"
-                  label="Review Evaluation Deadline"
+                  label="Peer Review Evaluation Deadline"
                   InputLabelProps={{ shrink: true }}
                   value={editFormData.reviewDeadline}
                   onChange={(e) => setEditFormData({ ...editFormData, reviewDeadline: e.target.value })}
@@ -659,10 +659,11 @@ export default function ConferenceDetailPage() {
         </Box>
       </Dialog>
 
-      {/* Create New Conference Modal */}
+      {/* Create New Conference / Journal Modal */}
       <Dialog open={openCreateModal} onClose={() => setOpenCreateModal(false)} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
-          Create New Academic Conference / Journal
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <i className="bi bi-plus-circle-fill" style={{ color: '#1B5E20' }} />
+          Create New Conference or Journal
         </DialogTitle>
         <Box component="form" onSubmit={handleCreateSubmit}>
           <DialogContent sx={{ pt: 3 }}>
@@ -670,9 +671,9 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12} sm={8}>
                 <TextField
                   fullWidth
-                  label="Conference / Journal Name"
+                  label="Conference or Journal Name"
                   required
-                  placeholder="e.g. International Conference on Computational Intelligence 2027"
+                  placeholder="e.g. International Conference on AI & Robotics 2027 OR Journal of Computer Systems"
                   value={createFormData.name}
                   onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
                 />
@@ -680,9 +681,9 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
-                  label="Acronym / Short Code"
+                  label="Short Acronym / Code"
                   required
-                  placeholder="e.g. ICCI 2027"
+                  placeholder="e.g. ICAIR 2027 or JCS-2027"
                   value={createFormData.shortName}
                   onChange={(e) => setCreateFormData({ ...createFormData, shortName: e.target.value })}
                 />
@@ -692,8 +693,8 @@ export default function ConferenceDetailPage() {
                   fullWidth
                   multiline
                   rows={3}
-                  label="Description & Call for Papers Scope"
-                  placeholder="Describe the scope, objectives, indexing partners, and theme..."
+                  label="Description & Scope / Call for Papers"
+                  placeholder="Describe the research topics, indexing goals, and submission guidelines..."
                   value={createFormData.description}
                   onChange={(e) => setCreateFormData({ ...createFormData, description: e.target.value })}
                 />
@@ -701,7 +702,8 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Venue / Virtual Location"
+                  label="Venue / Publisher / Platform"
+                  placeholder="e.g. Virtual Auditorium, Bangalore OR Open Access Journal Issue"
                   value={createFormData.venue}
                   onChange={(e) => setCreateFormData({ ...createFormData, venue: e.target.value })}
                 />
@@ -722,7 +724,7 @@ export default function ConferenceDetailPage() {
                 <TextField
                   fullWidth
                   type="date"
-                  label="Event Start Date"
+                  label="Start Date / Publication Launch"
                   InputLabelProps={{ shrink: true }}
                   required
                   value={createFormData.startDate}
@@ -733,7 +735,7 @@ export default function ConferenceDetailPage() {
                 <TextField
                   fullWidth
                   type="date"
-                  label="Event End Date"
+                  label="End Date / Issue Finalization"
                   InputLabelProps={{ shrink: true }}
                   required
                   value={createFormData.endDate}
@@ -764,7 +766,7 @@ export default function ConferenceDetailPage() {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Research Tracks (Comma-separated)"
+                  label="Topics / Research Tracks (Comma-separated)"
                   helperText="Initial tracks e.g. Artificial Intelligence, Cloud Systems, Cybersecurity"
                   value={createFormData.tracksInput}
                   onChange={(e) => setCreateFormData({ ...createFormData, tracksInput: e.target.value })}
@@ -775,7 +777,7 @@ export default function ConferenceDetailPage() {
           <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
             <Button onClick={() => setOpenCreateModal(false)}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={savingCreate} sx={{ backgroundColor: '#1B5E20', fontWeight: 700 }}>
-              {savingCreate ? 'Creating...' : 'Create Publication'}
+              {savingCreate ? 'Creating...' : 'Create Conference / Journal'}
             </Button>
           </DialogActions>
         </Box>
@@ -784,7 +786,7 @@ export default function ConferenceDetailPage() {
       {/* Add Track Modal */}
       <Dialog open={openAddTrackModal} onClose={() => setOpenAddTrackModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
-          Add New Conference Track
+          Add New Conference / Journal Track
         </DialogTitle>
         <Box component="form" onSubmit={handleAddTrackSubmit}>
           <DialogContent sx={{ pt: 3 }}>
@@ -820,7 +822,7 @@ export default function ConferenceDetailPage() {
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 800, color: '#991B1B', display: 'flex', alignItems: 'center', gap: 1 }}>
           <i className="bi bi-exclamation-triangle-fill" style={{ color: '#DC2626' }} />
-          Delete or Deactivate Conference
+          Delete or Deactivate Conference / Journal
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ mb: 2, fontWeight: 600, color: '#123B32' }}>
@@ -829,7 +831,7 @@ export default function ConferenceDetailPage() {
 
           {deleteDialogProps.hasSubmissions ? (
             <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
-              This publication currently has <strong>{deleteDialogProps.submissionCount} submitted manuscripts</strong>.
+              This conference / journal currently has <strong>{deleteDialogProps.submissionCount} submitted manuscripts</strong>.
               <br /><br />
               <strong>Recommended:</strong> Choose <strong>"Hide from Users / Deactivate"</strong> to keep scholar archives and reviews intact while hiding it from active dropdowns.
               <br /><br />
@@ -837,7 +839,7 @@ export default function ConferenceDetailPage() {
             </Alert>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              This publication has no active submissions. Deleting will erase all metadata, sessions, and tracks permanently.
+              This conference / journal has no active submissions. Deleting will erase all metadata, sessions, and tracks permanently.
             </Typography>
           )}
         </DialogContent>
