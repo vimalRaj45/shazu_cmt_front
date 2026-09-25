@@ -67,6 +67,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose = () => {}, 
         items: [
           { label: 'All Submissions', path: '/chair/submissions', icon: 'bi-folder2-open' },
           { label: 'Assign Reviewers', path: '/chair/reviewers', icon: 'bi-person-check' },
+          { label: 'Bulk Invitations', path: '/admin/invitations', icon: 'bi-envelope-paper-heart' },
           { label: 'Paper Decisions', path: '/chair/decisions', icon: 'bi-check2-circle' },
           { label: 'Camera-Ready Desk', path: '/chair/camera-ready', icon: 'bi-award' },
           { label: 'Email Broadcast', path: '/chair/emails', icon: 'bi-send' },

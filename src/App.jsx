@@ -41,6 +41,7 @@ import ProfilePage from './pages/profile/ProfilePage';
 // Admin Pages
 import UserManagementPage from './pages/admin/UserManagementPage';
 import AuditLogsPage from './pages/admin/AuditLogsPage';
+import InvitationPage from './pages/admin/InvitationPage';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -86,6 +87,7 @@ export default function App() {
           {/* Admin & Publication Management */}
           <Route path="/chair/submissions" element={<ChairSubmissionsPage />} />
           <Route path="/chair/reviewers" element={<ReviewerAssignmentPage />} />
+          <Route path="/chair/invitations" element={<InvitationPage />} />
           <Route path="/chair/decisions" element={<DecisionsPage />} />
           <Route path="/chair/camera-ready" element={<CameraReadyPage />} />
           <Route path="/chair/emails" element={<EmailBroadcastPage />} />
@@ -97,6 +99,7 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
 
           {/* Admin */}
+          <Route path="/admin/invitations" element={<InvitationPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/audit-logs" element={<AuditLogsPage />} />
         </Route>

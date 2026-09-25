@@ -58,6 +58,7 @@ const POPULAR_DOMAINS = [
   'Electronics & Communication Engineering',
   'Robotics & Autonomous Systems',
   'Information Systems & Management',
+  'Other',
 ];
 
 const SUGGESTED_INTEREST_TAGS = [
@@ -102,6 +103,7 @@ export default function Register() {
     institution: '',
     department: 'Computer Science & Engineering',
     domain: 'Artificial Intelligence & Machine Learning',
+    customDomain: '',
     areasOfInterest: ['Deep Learning', 'Natural Language Processing'],
     interestInput: '',
     maxReviewLimit: 3,
@@ -218,6 +220,10 @@ export default function Register() {
         setError('Please enter your University, Institution, or Organization.');
         return;
       }
+      if (formData.domain === 'Other' && !formData.customDomain?.trim()) {
+        setError('Please specify your custom research discipline / domain.');
+        return;
+      }
     }
 
     setActiveStep((prev) => prev + 1);
@@ -237,6 +243,8 @@ export default function Register() {
       return;
     }
 
+    const effectiveDomain = formData.domain === 'Other' ? (formData.customDomain?.trim() || 'Other') : formData.domain;
+
     setLoading(true);
     try {
       await register({
@@ -250,7 +258,7 @@ export default function Register() {
         role: formData.role,
         qualification: formData.qualification,
         designation: formData.designation,
-        domain: formData.domain,
+        domain: effectiveDomain,
         areasOfInterest: formData.areasOfInterest,
         expertiseKeywords: formData.areasOfInterest,
         maxReviewLimit: parseInt(formData.maxReviewLimit, 10) || 3,
@@ -719,6 +727,33 @@ export default function Register() {
                       ))}
                     </TextField>
                   </Grid>
+
+                  {formData.domain === 'Other' && (
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        label="Specify Custom Research Domain / Discipline"
+                        name="customDomain"
+                        placeholder="e.g., Quantum Computing, Biomedical Engineering, Applied Mathematics"
+                        value={formData.customDomain}
+                        onChange={handleChange}
+                        helperText="Enter your specific academic or industrial research domain"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AutoAwesomeIcon sx={{ color: '#1565C0', fontSize: 18 }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            backgroundColor: '#F8FAFC',
+                          },
+                        }}
+                      />
+                    </Grid>
+                  )}
                 </Grid>
               </Box>
             )}
