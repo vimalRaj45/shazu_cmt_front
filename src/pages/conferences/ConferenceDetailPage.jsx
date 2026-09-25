@@ -41,7 +41,7 @@ const STATUS_COLORS = {
 };
 
 export default function ConferenceDetailPage() {
-  const { selectedConference, setSelectedConference, refreshConferences } = useConference();
+  const { selectedConference, setSelectedConference, selectConference, refreshConferences } = useConference();
   const { activeRole } = useAuth();
   const navigate = useNavigate();
 
@@ -64,6 +64,29 @@ export default function ConferenceDetailPage() {
     status: 'open',
   });
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Create New Conference Modal State
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [createFormData, setCreateFormData] = useState({
+    name: '',
+    shortName: '',
+    description: '',
+    venue: 'Shazu Soft Virtual & On-Site Auditorium',
+    startDate: '',
+    endDate: '',
+    submissionDeadline: '',
+    reviewDeadline: '',
+    decisionDate: '',
+    cameraReadyDeadline: '',
+    status: 'open',
+    tracksInput: 'Artificial Intelligence, Cloud Computing, Cyber Security, IoT',
+  });
+  const [savingCreate, setSavingCreate] = useState(false);
+
+  // Add Track Modal State
+  const [openAddTrackModal, setOpenAddTrackModal] = useState(false);
+  const [newTrackData, setNewTrackData] = useState({ name: '', description: '' });
+  const [savingTrack, setSavingTrack] = useState(false);
 
   // Delete / Deactivate Dialog State
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -112,7 +135,7 @@ export default function ConferenceDetailPage() {
     if (!details?.id) return;
     setSavingEdit(true);
     try {
-      const res = await api.put(`/conferences/${details.id}`, {
+      await api.put(`/conferences/${details.id}`, {
         name: editFormData.name,
         shortName: editFormData.shortName,
         description: editFormData.description,
@@ -134,6 +157,65 @@ export default function ConferenceDetailPage() {
       setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to update details', severity: 'error' });
     } finally {
       setSavingEdit(false);
+    }
+  };
+
+  // Handle Create New Conference
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    setSavingCreate(true);
+    try {
+      const tracksArray = createFormData.tracksInput
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const res = await api.post('/conferences', {
+        name: createFormData.name,
+        shortName: createFormData.shortName,
+        description: createFormData.description,
+        venue: createFormData.venue,
+        startDate: createFormData.startDate,
+        endDate: createFormData.endDate,
+        submissionDeadline: createFormData.submissionDeadline,
+        reviewDeadline: createFormData.reviewDeadline,
+        decisionDate: createFormData.decisionDate,
+        cameraReadyDeadline: createFormData.cameraReadyDeadline,
+        status: createFormData.status,
+        tracks: tracksArray,
+      });
+
+      setSnackbar({ open: true, message: 'New publication created successfully!', severity: 'success' });
+      setOpenCreateModal(false);
+      if (refreshConferences) await refreshConferences();
+      if (selectConference) selectConference(res.data.conference);
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to create conference', severity: 'error' });
+    } finally {
+      setSavingCreate(false);
+    }
+  };
+
+  // Handle Add Track Submit
+  const handleAddTrackSubmit = async (e) => {
+    e.preventDefault();
+    if (!details?.id || !newTrackData.name.trim()) return;
+    setSavingTrack(true);
+    try {
+      await api.post('/tracks', {
+        conferenceId: details.id,
+        name: newTrackData.name.trim(),
+        description: newTrackData.description.trim(),
+      });
+
+      setSnackbar({ open: true, message: `Track "${newTrackData.name}" added successfully!`, severity: 'success' });
+      setNewTrackData({ name: '', description: '' });
+      setOpenAddTrackModal(false);
+      await fetchDetails();
+    } catch (err) {
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to add track', severity: 'error' });
+    } finally {
+      setSavingTrack(false);
     }
   };
 
@@ -196,9 +278,16 @@ export default function ConferenceDetailPage() {
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
         <Typography variant="h6">No Conference / Journal Selected</Typography>
-        <Button sx={{ mt: 2 }} variant="contained" onClick={() => navigate('/conferences')}>
-          Select Conference / Journal
-        </Button>
+        <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Button variant="contained" onClick={() => navigate('/conferences')}>
+            Select Conference / Journal
+          </Button>
+          {isAdmin && (
+            <Button variant="outlined" onClick={() => setOpenCreateModal(true)} startIcon={<i className="bi bi-plus-circle" />}>
+              Create New
+            </Button>
+          )}
+        </Box>
       </Box>
     );
   }
@@ -207,10 +296,20 @@ export default function ConferenceDetailPage() {
 
   return (
     <Box sx={{ pb: 4, maxWidth: 1300, mx: 'auto' }}>
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Top Header Actions */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
         <BackButton fallbackUrl="/conferences" label="Back to Conferences & Journals" />
         {isAdmin && (
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => setOpenCreateModal(true)}
+              startIcon={<i className="bi bi-plus-circle" />}
+              sx={{ backgroundColor: '#1B5E20', '&:hover': { backgroundColor: '#144A18' }, textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+            >
+              Add New Publication
+            </Button>
             <Button
               variant="outlined"
               size="small"
@@ -324,25 +423,44 @@ export default function ConferenceDetailPage() {
         <Grid item xs={12} md={7}>
           <Card sx={{ height: '100%', p: 1, border: '1px solid #D3DDD7', borderRadius: 2.5 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, display: 'flex', alignItems: 'center', gap: 1, color: '#123B32' }}>
-                <i className="bi bi-diagram-3" style={{ color: '#123B32' }}></i> Conference Tracks & Topics
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#123B32' }}>
+                  <i className="bi bi-diagram-3" style={{ color: '#123B32' }}></i> Conference Tracks & Topics
+                </Typography>
+                {isAdmin && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setOpenAddTrackModal(true)}
+                    startIcon={<i className="bi bi-plus-lg" />}
+                    sx={{ textTransform: 'none', borderRadius: 2, borderColor: '#CBD5E1', color: '#123B32', fontWeight: 700 }}
+                  >
+                    Add Track
+                  </Button>
+                )}
+              </Box>
 
               <List disablePadding>
                 {details.tracks && details.tracks.length > 0 ? (
-                  details.tracks.map((track, idx) => (
-                    <Paper key={track.id} elevation={0} sx={{ p: 2, mb: 1.5, border: '1px solid #D3DDD7', borderRadius: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#123B32' }}>
-                          Track {idx + 1}: {track.name}
+                  details.tracks.map((track, idx) => {
+                    const trackDisplayName = track.name?.toLowerCase().startsWith('track')
+                      ? track.name
+                      : `Track ${idx + 1}: ${track.name}`;
+
+                    return (
+                      <Paper key={track.id} elevation={0} sx={{ p: 2, mb: 1.5, border: '1px solid #D3DDD7', borderRadius: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#123B32' }}>
+                            {trackDisplayName}
+                          </Typography>
+                          <Chip label={track.is_active ? 'Active' : 'Closed'} size="small" color={track.is_active ? 'success' : 'default'} />
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {track.description || 'Papers covering research algorithms, implementations, evaluation, and empirical case studies.'}
                         </Typography>
-                        <Chip label={track.is_active ? 'Active' : 'Closed'} size="small" color={track.is_active ? 'success' : 'default'} />
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {track.description || 'Papers covering research algorithms, implementations, evaluation, and empirical case studies.'}
-                      </Typography>
-                    </Paper>
-                  ))
+                      </Paper>
+                    );
+                  })
                 ) : (
                   <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
                     No specific tracks declared. All standard topic submissions are welcome.
@@ -536,6 +654,163 @@ export default function ConferenceDetailPage() {
             <Button onClick={() => setOpenEditModal(false)}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={savingEdit} sx={{ backgroundColor: '#123B32', fontWeight: 700 }}>
               {savingEdit ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Create New Conference Modal */}
+      <Dialog open={openCreateModal} onClose={() => setOpenCreateModal(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
+          Create New Academic Conference / Journal
+        </DialogTitle>
+        <Box component="form" onSubmit={handleCreateSubmit}>
+          <DialogContent sx={{ pt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={8}>
+                <TextField
+                  fullWidth
+                  label="Conference / Journal Name"
+                  required
+                  placeholder="e.g. International Conference on Computational Intelligence 2027"
+                  value={createFormData.name}
+                  onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Acronym / Short Code"
+                  required
+                  placeholder="e.g. ICCI 2027"
+                  value={createFormData.shortName}
+                  onChange={(e) => setCreateFormData({ ...createFormData, shortName: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Description & Call for Papers Scope"
+                  placeholder="Describe the scope, objectives, indexing partners, and theme..."
+                  value={createFormData.description}
+                  onChange={(e) => setCreateFormData({ ...createFormData, description: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Venue / Virtual Location"
+                  value={createFormData.venue}
+                  onChange={(e) => setCreateFormData({ ...createFormData, venue: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Initial Status"
+                  value={createFormData.status}
+                  onChange={(e) => setCreateFormData({ ...createFormData, status: e.target.value })}
+                >
+                  <MenuItem value="open">Open for Submissions</MenuItem>
+                  <MenuItem value="draft">Draft / Setup</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Event Start Date"
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  value={createFormData.startDate}
+                  onChange={(e) => setCreateFormData({ ...createFormData, startDate: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Event End Date"
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  value={createFormData.endDate}
+                  onChange={(e) => setCreateFormData({ ...createFormData, endDate: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Paper Submission Deadline"
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  value={createFormData.submissionDeadline}
+                  onChange={(e) => setCreateFormData({ ...createFormData, submissionDeadline: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Review Evaluation Deadline"
+                  InputLabelProps={{ shrink: true }}
+                  value={createFormData.reviewDeadline}
+                  onChange={(e) => setCreateFormData({ ...createFormData, reviewDeadline: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Research Tracks (Comma-separated)"
+                  helperText="Initial tracks e.g. Artificial Intelligence, Cloud Systems, Cybersecurity"
+                  value={createFormData.tracksInput}
+                  onChange={(e) => setCreateFormData({ ...createFormData, tracksInput: e.target.value })}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setOpenCreateModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={savingCreate} sx={{ backgroundColor: '#1B5E20', fontWeight: 700 }}>
+              {savingCreate ? 'Creating...' : 'Create Publication'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Add Track Modal */}
+      <Dialog open={openAddTrackModal} onClose={() => setOpenAddTrackModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800, borderBottom: '1px solid #E2E8F0', color: '#123B32' }}>
+          Add New Conference Track
+        </DialogTitle>
+        <Box component="form" onSubmit={handleAddTrackSubmit}>
+          <DialogContent sx={{ pt: 3 }}>
+            <TextField
+              fullWidth
+              required
+              label="Track Name / Topic"
+              placeholder="e.g., Computer Vision & Pattern Recognition"
+              value={newTrackData.name}
+              onChange={(e) => setNewTrackData({ ...newTrackData, name: e.target.value })}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Track Description (Optional)"
+              placeholder="Topics, keywords, and areas covered by this track..."
+              value={newTrackData.description}
+              onChange={(e) => setNewTrackData({ ...newTrackData, description: e.target.value })}
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 2, borderTop: '1px solid #E2E8F0' }}>
+            <Button onClick={() => setOpenAddTrackModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={savingTrack} sx={{ backgroundColor: '#123B32', fontWeight: 700 }}>
+              {savingTrack ? 'Adding...' : 'Add Track'}
             </Button>
           </DialogActions>
         </Box>
